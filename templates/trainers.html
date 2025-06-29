@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trainer Management - Sanchari Mentors Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem 0;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-header {
+            padding: 0 2rem 2rem;
+            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-header h2 {
+            color: #333;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            padding: 1rem 2rem;
+            color: #666;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .sidebar-nav a i {
+            margin-right: 1rem;
+            width: 20px;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .content-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .content-header h1 {
+            color: #333;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .content-header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .trainer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .trainer-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .trainer-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .trainer-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .trainer-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            font-weight: 600;
+            margin-right: 1.5rem;
+        }
+
+        .trainer-info h3 {
+            color: #333;
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .trainer-specialty {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .trainer-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+
+        .trainer-details {
+            margin-bottom: 1.5rem;
+        }
+
+        .trainer-details p {
+            color: #666;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .trainer-details i {
+            margin-right: 0.5rem;
+            width: 16px;
+            color: #4ecdc4;
+        }
+
+        .performance-indicator {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .performance-bar {
+            flex: 1;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin: 0 1rem;
+            overflow: hidden;
+        }
+
+        .performance-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .performance-score {
+            font-weight: 600;
+            color: #333;
+            min-width: 40px;
+        }
+
+        .trainer-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-success {
+            background: #4ecdc4;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #feca57;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .add-trainer-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+            color: white;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .add-trainer-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .filter-bar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-item label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .filter-item select,
+        .filter-item input {
+            padding: 0.5rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .admin-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                padding: 1rem 0;
+            }
+
+            .sidebar-nav {
+                display: flex;
+                overflow-x: auto;
+                padding: 0 1rem;
+            }
+
+            .sidebar-nav li {
+                margin-right: 1rem;
+                margin-bottom: 0;
+                white-space: nowrap;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .trainer-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Admin Panel</h2>
+            </div>
+            <ul class="sidebar-nav">
+                <li><a href="/admin/dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="/admin/users"><i class="fas fa-users"></i> User Management</a></li>
+                <li><a href="/admin/trainers" class="active"><i class="fas fa-chalkboard-teacher"></i> Trainers</a></li>
+                <li><a href="/admin/classes"><i class="fas fa-graduation-cap"></i> Classes</a></li>
+                <li><a href="/admin/sessions"><i class="fas fa-video"></i> Sessions</a></li>
+                <li><a href="/admin/content"><i class="fas fa-file-alt"></i> Content</a></li>
+                <li><a href="/admin/reports"><i class="fas fa-chart-bar"></i> Reports</a></li>
+                <li><a href="/admin/communications"><i class="fas fa-comments"></i> Communications</a></li>
+                <li><a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <div class="content-header">
+                <h1>Trainer Management</h1>
+                <p>Manage trainer profiles, performance, and assignments</p>
+            </div>
+
+            <div class="filter-bar">
+                <div class="filter-item">
+                    <label>Subject</label>
+                    <select>
+                        <option>All Subjects</option>
+                        <option>Mathematics</option>
+                        <option>Science</option>
+                        <option>English</option>
+                        <option>Social Studies</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label>Status</label>
+                    <select>
+                        <option>All Status</option>
+                        <option>Active</option>
+                        <option>Inactive</option>
+                        <option>Pending</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label>Experience</label>
+                    <select>
+                        <option>All Experience</option>
+                        <option>0-2 years</option>
+                        <option>3-5 years</option>
+                        <option>5+ years</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label>Search</label>
+                    <input type="text" placeholder="Search trainers...">
+                </div>
+            </div>
+
+            <div class="trainer-grid">
+                <div class="trainer-card">
+                    <div class="trainer-header">
+                        <div class="trainer-avatar">RP</div>
+                        <div class="trainer-info">
+                            <h3>Rajesh Patel</h3>
+                            <span class="trainer-specialty">Mathematics Expert</span>
+                        </div>
+                    </div>
+                    
+                    <div class="trainer-stats">
+                        <div class="stat-item">
+                            <div class="stat-number">45</div>
+                            <div class="stat-label">Students</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">4.8</div>
+                            <div class="stat-label">Rating</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">5</div>
+                            <div class="stat-label">Years Exp</div>
+                        </div>
+                    </div>
+
+                    <div class="trainer-details">
+                        <p><i class="fas fa-envelope"></i> rajesh.patel@sanchari.org</p>
+                        <p><i class="fas fa-phone"></i> +91 98765 43210</p>
+                        <p><i class="fas fa-graduation-cap"></i> M.Sc Mathematics, B.Ed</p>
+                        <p><i class="fas fa-clock"></i> Available: Mon-Fri, 9 AM - 6 PM</p>
+                        <p><i class="fas fa-map-marker-alt"></i> Mumbai, Maharashtra</p>
+                    </div>
+
+                    <div class="performance-indicator">
+                        <span>Performance:</span>
+                        <div class="performance-bar">
+                            <div class="performance-fill" style="width: 92%;"></div>
+                        </div>
+                        <span class="performance-score">92%</span>
+                    </div>
+
+                    <div style="margin-bottom: 1rem;">
+                        <span class="status-badge status-active">Active</span>
+                    </div>
+
+                    <div class="trainer-actions">
+                        <button class="btn btn-primary"><i class="fas fa-edit"></i> Edit</button>
+                        <button class="btn btn-success"><i class="fas fa-calendar"></i> Schedule</button>
+                        <button class="btn btn-warning"><i class="fas fa-pause"></i> Suspend</button>
+                    </div>
+                </div>
+
+                <div class="trainer-card">
+                    <div class="trainer-header">
+                        <div class="trainer-avatar">AS</div>
+                        <div class="trainer-info">
+                            <h3>Anita Sharma</h3>
+                            <span class="trainer-specialty">Science Expert</span>
+                        </div>
+                    </div>
+                    
+                    <div class="trainer-stats">
+                        <div class="stat-item">
+                            <div class="stat-number">38</div>
+                            <div class="stat-label">Students</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">4.9</div>
+                            <div class="stat-label">Rating</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">7</div>
+                            <div class="stat-label">Years Exp</div>
+                        </div>
+          
+(Content truncated due to size limit. Use line ranges to read in chunks)

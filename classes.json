@@ -1,0 +1,45 @@
+{
+  "classes": [
+    {
+      "id": 1,
+      "title": "Introduction to Artificial Intelligence",
+      "category": "Artificial Intelligence",
+      "trainer": "Dr. Priya Sharma",
+      "date": "2025-06-15",
+      "time": "10:00",
+      "duration": 90,
+      "max_participants": 30,
+      "description": "Learn the fundamentals of AI and machine learning",
+      "prerequisites": "Basic programming knowledge",
+      "enrolled_students": [
+        "mathewjose251@gmail.com",
+        "student1@sanchari.org",
+        "mcjayaprakash1106@gmail.com"
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Advanced Mathematics for Students",
+      "category": "Mathematics",
+      "trainer": "Neha Gupta",
+      "date": "2025-06-16",
+      "time": "14:00",
+      "duration": 120,
+      "max_participants": 25,
+      "description": "Advanced mathematical concepts and problem-solving techniques",
+      "prerequisites": "High school mathematics"
+    },
+    {
+      "id": 3,
+      "title": "Effective Communication Skills",
+      "category": "Communication Skills",
+      "trainer": "Anjali Desai",
+      "date": "2025-06-17",
+      "time": "16:00",
+      "duration": 60,
+      "max_participants": 20,
+      "description": "Develop confidence in verbal and written communication",
+      "prerequisites": "None"
+    }
+  ]
+}

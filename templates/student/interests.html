@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Interests - Sanchari Mentors</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .student-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem 0;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-header {
+            padding: 0 2rem 2rem;
+            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-header h2 {
+            color: #333;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            padding: 1rem 2rem;
+            color: #666;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .sidebar-nav a i {
+            margin-right: 1rem;
+            width: 20px;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .content-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .content-header h1 {
+            color: #333;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .content-header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .interests-form {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .interests-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .interest-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .interest-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .interest-card.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+        }
+
+        .interest-checkbox {
+            display: none;
+        }
+
+        .interest-icon {
+            font-size: 2rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .interest-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .interest-description {
+            font-size: 0.9rem;
+            color: #666;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .notification {
+            background: #d4edda;
+            color: #155724;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border: 1px solid #c3e6cb;
+        }
+
+        @media (max-width: 768px) {
+            .student-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                padding: 1rem 0;
+            }
+
+            .sidebar-nav {
+                display: flex;
+                overflow-x: auto;
+                padding: 0 1rem;
+            }
+
+            .sidebar-nav li {
+                margin-right: 1rem;
+                margin-bottom: 0;
+                white-space: nowrap;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .interests-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="student-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Student Portal</h2>
+            </div>
+            <ul class="sidebar-nav">
+                <li><a href="/student/dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="/student/classes"><i class="fas fa-video"></i> Live Sessions</a></li>
+                <li><a href="/student/resources"><i class="fas fa-book"></i> Resource Library</a></li>
+                <li><a href="/student/doubts"><i class="fas fa-question-circle"></i> Doubt Clearing</a></li>
+                <li><a href="/student/career"><i class="fas fa-compass"></i> Career Guidance</a></li>
+                <li><a href="/student/skills"><i class="fas fa-user-graduate"></i> Skill Development</a></li>
+                <li><a href="/student/achievements"><i class="fas fa-trophy"></i> Achievements</a></li>
+                <li><a href="/student/community"><i class="fas fa-users"></i> Community</a></li>
+                <li><a href="/student/interests" class="active"><i class="fas fa-heart"></i> My Interests</a></li>
+                <li><a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <div class="content-header">
+                <h1>My Learning Interests</h1>
+                <p>Select your areas of interest to receive personalized training notifications</p>
+            </div>
+
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="notification">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <div class="interests-form">
+                <form method="POST">
+                    <div class="interests-grid">
+                        <label class="interest-card {% if 'Artificial Intelligence' in user_interests %}selected{% endif %}" for="ai">
+                            <input type="checkbox" name="interests" value="Artificial Intelligence" id="ai" class="interest-checkbox" {% if 'Artificial Intelligence' in user_interests %}checked{% endif %}>
+                            <div class="interest-icon">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="interest-title">Artificial Intelligence</div>
+                            <div class="interest-description">Machine learning, neural networks, and AI applications</div>
+                        </label>
+
+                        <label class="interest-card {% if 'Mathematics' in user_interests %}selected{% endif %}" for="math">
+                            <input type="checkbox" name="interests" value="Mathematics" id="math" class="interest-checkbox" {% if 'Mathematics' in user_interests %}checked{% endif %}>
+                            <div class="interest-icon">
+                                <i class="fas fa-calculator"></i>
+                            </div>
+                            <div class="interest-title">Mathematics</div>
+                            <div class="interest-description">Algebra, calculus, geometry, and advanced mathematics</div>
+                        </label>
+
+                        <label class="interest-card {% if 'Science' in user_interests %}selected{% endif %}" for="science">
+                            <input type="checkbox" name="interests" value="Science" id="science" class="interest-checkbox" {% if 'Science' in user_interests %}checked{% endif %}>
+                            <div class="interest-icon">
+                                <i class="fas fa-flask"></i>
+                            </div>
+                            <div class="interest-title">Science</div>
+                            <div class="interest-description">Physics, chemistry, biology, and scientific research</div>
+                        </label>
+
+                        <label class="interest-card {% if 'Communication Skills' in user_interests %}selected{% endif %}" for="communication">
+                            <input type="checkbox" name="interests" value="Communication Skills" id="communication" class="interest-checkbox" {% if 'Communication Skills' in user_interests %}checked{% endif %}>
+                            <div class="interest-icon">
+                                <i class="fas fa-comments"></i>
+                            </div>
+                            <div class="interest-title">Communication Skills</div>
+                            <div class="interest-description">Public speaking, presentation, and interpersonal skills</div>
+                        </label>
+
+                        <label class="interest-card {% if 'Personality Development' in user_interests %}selected{% endif %}" for="personality">
+                            <input type="checkbox" name="interests" value="Personality Development" id="personality" class="interest-checkbox" {% if 'Personality Development' in user_interests %}checked{% endif %}>
+                            <div class="interest-icon">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                            <div class="interest-title">Personality Development</div>
+                            <div class="interest-description">Self-improvement, confidence building, and leadership</div>
+                        </label>
+
+                        <label class="interest-card {% if 'Spoken English' in user_interests %}selected{% endif %}" for="english">
+                            <input type="checkbox" name="interests" value="Spoken English" id="english" class="interest-checkbox" {% if 'Spoken English' in user_interests %}checked{% endif %}>
+                            <div class="interest-icon">
+                                <i class="fas fa-microphone"></i>
+                            </div>
+                            <div class="interest-title">Spoken English</div>
+                            <div class="interest-description">Fluency, pronunciation, and conversational English</div>
+                        </label>
+
+                        <label class="interest-card {% if 'Cyber Security' in user_interests %}selected{% endif %}" for="cybersecurity">
+                            <input type="checkbox" name="interests" value="Cyber Security" id="cybersecurity" class="interest-checkbox" {% if 'Cyber Security' in user_interests %}checked{% endif %}>
+                            <div class="interest-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="interest-title">Cyber Security</div>
+                            <div class="interest-description">Network security, ethical hacking, and data protection</div>
+                        </label>
+
+                        <label class="interest-card {% if 'Career Guidance' in user_interests %}selected{% endif %}" for="career">
+                            <input type="checkbox" name="interests" value="Career Guidance" id="career" class="interest-checkbox" {% if 'Career Guidance' in user_interests %}checked{% endif %}>
+                            <div class="interest-icon">
+                                <i class="fas fa-compass"></i>
+                            </div>
+                            <div class="interest-title">Career Guidance</div>
+                            <div class="interest-description">Career planning, job search, and professional development</div>
+                        </label>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Save My Interests
+                        </button>
+                        <a href="/student/dashboard" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to Dashboard
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Handle interest card selection
+        document.querySelectorAll('.interest-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const checkbox = this.querySelector('.interest-checkbox');
+                checkbox.checked = !checkbox.checked;
+                
+                if (checkbox.checked) {
+                    this.classList.add('selected');
+                } else {
+                    this.classList.remove('selected');
+                }
+            });
+        });
+
+        // Prevent double-clicking on checkbox
+        document.querySelectorAll('.interest-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        });
+    </script>
+</body>
+</html>
+

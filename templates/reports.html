@@ -1,0 +1,410 @@
+{% extends "base.html" %}
+
+{% block title %}Reports & Analytics - Sanchari Mentors{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">Reports & Analytics</h2>
+            
+            <!-- Key Metrics -->
+            <div class="row mb-4">
+                <div class="col-md-3 mb-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-primary">1,247</h3>
+                            <p class="mb-0">Total Students</p>
+                            <small class="text-success">+12% this month</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-success">89%</h3>
+                            <p class="mb-0">Completion Rate</p>
+                            <small class="text-success">+5% this month</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-info">4.7</h3>
+                            <p class="mb-0">Avg Rating</p>
+                            <small class="text-success">+0.2 this month</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-warning">156</h3>
+                            <p class="mb-0">Active Sessions</p>
+                            <small class="text-success">+8% this month</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Report Types -->
+            <div class="row mb-4">
+                <div class="col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Student Performance</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">Select Report Type:</label>
+                                <select class="form-select" id="performance-report-type">
+                                    <option value="attendance">Attendance Report</option>
+                                    <option value="grades">Grade Analysis</option>
+                                    <option value="progress">Progress Tracking</option>
+                                    <option value="engagement">Engagement Metrics</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Date Range:</label>
+                                <select class="form-select" id="performance-date-range">
+                                    <option value="week">Last Week</option>
+                                    <option value="month">Last Month</option>
+                                    <option value="quarter">Last Quarter</option>
+                                    <option value="year">Last Year</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-primary" onclick="generatePerformanceReport()">Generate Report</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Course Analytics</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">Select Course:</label>
+                                <select class="form-select" id="course-select">
+                                    <option value="all">All Courses</option>
+                                    <option value="ai">Artificial Intelligence</option>
+                                    <option value="math">Mathematics</option>
+                                    <option value="communication">Communication Skills</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Metric:</label>
+                                <select class="form-select" id="course-metric">
+                                    <option value="enrollment">Enrollment Trends</option>
+                                    <option value="completion">Completion Rates</option>
+                                    <option value="satisfaction">Student Satisfaction</option>
+                                    <option value="revenue">Revenue Analysis</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-success" onclick="generateCourseReport()">Generate Report</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Report Display Area -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Report Results</h5>
+                </div>
+                <div class="card-body">
+                    <div id="report-display">
+                        <!-- Reports will be displayed here -->
+                        <div class="text-center">
+                            <p class="text-muted">Select report type and generate to view results</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Reports -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent Reports</h5>
+                </div>
+                <div class="card-body">
+                    <div id="recent-reports">
+                        <!-- Recent reports will be loaded here -->
+                        <div class="text-center">
+                            <p class="text-muted">Loading recent reports...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadRecentReports();
+});
+
+function loadRecentReports() {
+    // Simulate loading recent reports from API
+    fetch('/api/recent-reports')
+        .then(response => response.json())
+        .then(data => {
+            displayRecentReports(data.reports);
+        })
+        .catch(error => {
+            console.error('Error loading recent reports:', error);
+            // Fallback to static data
+            const reports = [
+                {
+                    id: 1,
+                    name: "Student Performance Report - June 2025",
+                    type: "performance",
+                    generated: "2025-06-15",
+                    status: "completed",
+                    size: "2.3 MB"
+                },
+                {
+                    id: 2,
+                    name: "Course Analytics - AI Fundamentals",
+                    type: "course",
+                    generated: "2025-06-14",
+                    status: "completed",
+                    size: "1.8 MB"
+                },
+                {
+                    id: 3,
+                    name: "Attendance Report - Week 24",
+                    type: "attendance",
+                    generated: "2025-06-13",
+                    status: "completed",
+                    size: "0.9 MB"
+                }
+            ];
+            displayRecentReports(reports);
+        });
+}
+
+function displayRecentReports(reports) {
+    const container = document.getElementById('recent-reports');
+    
+    if (reports.length === 0) {
+        container.innerHTML = '<p class="text-muted">No recent reports found.</p>';
+        return;
+    }
+    
+    container.innerHTML = reports.map(report => `
+        <div class="border-bottom pb-3 mb-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="flex-grow-1">
+                    <h6 class="mb-1">${report.name}</h6>
+                    <small class="text-muted">
+                        Generated: ${report.generated} • Size: ${report.size}
+                    </small>
+                </div>
+                <div class="d-flex gap-2">
+                    <span class="badge bg-${getReportStatusColor(report.status)}">${report.status}</span>
+                    <button class="btn btn-sm btn-outline-primary" onclick="downloadReport(${report.id})">
+                        Download
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary" onclick="viewReport(${report.id})">
+                        View
+                    </button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function getReportStatusColor(status) {
+    switch(status) {
+        case 'completed': return 'success';
+        case 'processing': return 'warning';
+        case 'failed': return 'danger';
+        default: return 'secondary';
+    }
+}
+
+function generatePerformanceReport() {
+    const reportType = document.getElementById('performance-report-type').value;
+    const dateRange = document.getElementById('performance-date-range').value;
+    
+    // Show loading state
+    const displayArea = document.getElementById('report-display');
+    displayArea.innerHTML = '<div class="text-center"><p class="text-muted">Generating report...</p></div>';
+    
+    // Simulate API call
+    setTimeout(() => {
+        const reportData = generateSampleReport(reportType, dateRange);
+        displayReport(reportData);
+    }, 2000);
+}
+
+function generateCourseReport() {
+    const course = document.getElementById('course-select').value;
+    const metric = document.getElementById('course-metric').value;
+    
+    // Show loading state
+    const displayArea = document.getElementById('report-display');
+    displayArea.innerHTML = '<div class="text-center"><p class="text-muted">Generating report...</p></div>';
+    
+    // Simulate API call
+    setTimeout(() => {
+        const reportData = generateSampleCourseReport(course, metric);
+        displayReport(reportData);
+    }, 2000);
+}
+
+function generateSampleReport(type, dateRange) {
+    const reports = {
+        attendance: {
+            title: "Student Attendance Report",
+            data: {
+                totalStudents: 1247,
+                averageAttendance: 87,
+                topPerformers: ["Priya Sharma", "Rahul Kumar", "Neha Gupta"],
+                attendanceTrend: [85, 87, 89, 86, 88, 90, 87]
+            }
+        },
+        grades: {
+            title: "Grade Analysis Report",
+            data: {
+                averageGrade: 78.5,
+                gradeDistribution: {
+                    "A": 25,
+                    "B": 45,
+                    "C": 20,
+                    "D": 8,
+                    "F": 2
+                },
+                topSubjects: ["Mathematics", "AI", "Communication"]
+            }
+        },
+        progress: {
+            title: "Progress Tracking Report",
+            data: {
+                completionRate: 89,
+                averageProgress: 76,
+                onTrackStudents: 1120,
+                atRiskStudents: 127
+            }
+        },
+        engagement: {
+            title: "Engagement Metrics Report",
+            data: {
+                averageSessionTime: 45,
+                participationRate: 82,
+                forumActivity: 156,
+                resourceDownloads: 2341
+            }
+        }
+    };
+    
+    return reports[type] || reports.attendance;
+}
+
+function generateSampleCourseReport(course, metric) {
+    const reports = {
+        enrollment: {
+            title: "Course Enrollment Trends",
+            data: {
+                totalEnrollments: 456,
+                monthlyGrowth: 12,
+                popularCourses: ["AI Fundamentals", "Mathematics", "Communication Skills"],
+                enrollmentTrend: [120, 135, 145, 156, 167, 178, 189]
+            }
+        },
+        completion: {
+            title: "Course Completion Analysis",
+            data: {
+                overallCompletion: 89,
+                courseCompletions: {
+                    "AI Fundamentals": 92,
+                    "Mathematics": 87,
+                    "Communication Skills": 88
+                },
+                averageTimeToComplete: 45
+            }
+        },
+        satisfaction: {
+            title: "Student Satisfaction Report",
+            data: {
+                averageRating: 4.7,
+                satisfactionTrend: [4.5, 4.6, 4.7, 4.8, 4.7, 4.8, 4.7],
+                topRatedCourses: ["AI Fundamentals", "Communication Skills", "Mathematics"]
+            }
+        },
+        revenue: {
+            title: "Revenue Analysis Report",
+            data: {
+                totalRevenue: 125000,
+                monthlyGrowth: 8,
+                topRevenueCourses: ["AI Fundamentals", "Mathematics", "Communication Skills"],
+                revenueTrend: [15000, 16200, 17500, 18900, 20400, 22000, 23700]
+            }
+        }
+    };
+    
+    return reports[metric] || reports.enrollment;
+}
+
+function displayReport(reportData) {
+    const displayArea = document.getElementById('report-display');
+    
+    let html = `
+        <div class="mb-4">
+            <h4>${reportData.title}</h4>
+            <p class="text-muted">Generated on ${new Date().toLocaleDateString()}</p>
+        </div>
+    `;
+    
+    // Display report data based on type
+    if (reportData.data) {
+        html += '<div class="row">';
+        
+        // Key metrics
+        Object.entries(reportData.data).forEach(([key, value]) => {
+            if (typeof value === 'number') {
+                html += `
+                    <div class="col-md-3 mb-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h5 class="text-primary">${value}</h5>
+                                <p class="mb-0">${key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        });
+        
+        html += '</div>';
+        
+        // Additional data
+        if (reportData.data.topPerformers) {
+            html += `
+                <div class="mt-4">
+                    <h6>Top Performers</h6>
+                    <ul class="list-group">
+                        ${reportData.data.topPerformers.map(performer => `<li class="list-group-item">${performer}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+    }
+    
+    displayArea.innerHTML = html;
+}
+
+function downloadReport(reportId) {
+    // Simulate download
+    alert(`Downloading report ${reportId}...`);
+}
+
+function viewReport(reportId) {
+    // Simulate viewing report
+    window.location.href = `/report/${reportId}`;
+}
+</script>
+{% endblock %}

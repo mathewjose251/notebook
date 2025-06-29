@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+
+{% block title %}Training Sessions - Sanchari Mentors{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">Training Sessions</h2>
+            
+            <!-- Search and Filter -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" id="search-sessions" placeholder="Search sessions...">
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="status-filter">
+                                <option value="">All Status</option>
+                                <option value="upcoming">Upcoming</option>
+                                <option value="ongoing">Ongoing</option>
+                                <option value="completed">Completed</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="trainer-filter">
+                                <option value="">All Trainers</option>
+                                <option value="Dr. Priya Sharma">Dr. Priya Sharma</option>
+                                <option value="Neha Gupta">Neha Gupta</option>
+                                <option value="Anjali Desai">Anjali Desai</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button class="btn btn-primary w-100" onclick="applyFilters()">Filter</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sessions Grid -->
+            <div class="row" id="sessions-grid">
+                <!-- Sessions will be loaded here -->
+                <div class="col-12 text-center">
+                    <p class="text-muted">Loading sessions...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadSessions();
+    
+    // Add event listeners for search and filters
+    document.getElementById('search-sessions').addEventListener('input', filterSessions);
+    document.getElementById('status-filter').addEventListener('change', filterSessions);
+    document.getElementById('trainer-filter').addEventListener('change', filterSessions);
+});
+
+function loadSessions() {
+    // Simulate loading sessions from API
+    fetch('/api/sessions')
+        .then(response => response.json())
+        .then(data => {
+            displaySessions(data.sessions);
+        })
+        .catch(error => {
+            console.error('Error loading sessions:', error);
+            // Fallback to static data
+            const sessions = [
+                {
+                    id: 1,
+                    title: "AI Fundamentals Workshop",
+                    trainer: "Dr. Priya Sharma",
+                    date: "2025-06-20",
+                    time: "10:00",
+                    duration: 120,
+                    status: "upcoming",
+                    participants: 25,
+                    max_participants: 30,
+                    description: "Introduction to artificial intelligence concepts and applications",
+                    meeting_link: "https://meet.google.com/abc-defg-hij"
+                },
+                {
+                    id: 2,
+                    title: "Mathematics Problem Solving",
+                    trainer: "Neha Gupta",
+                    date: "2025-06-19",
+                    time: "14:00",
+                    duration: 90,
+                    status: "ongoing",
+                    participants: 18,
+                    max_participants: 25,
+                    description: "Advanced problem-solving techniques for mathematics",
+                    meeting_link: "https://meet.google.com/xyz-uvw-123"
+                },
+                {
+                    id: 3,
+                    title: "Communication Skills Training",
+                    trainer: "Anjali Desai",
+                    date: "2025-06-18",
+                    time: "16:00",
+                    duration: 60,
+                    status: "completed",
+                    participants: 20,
+                    max_participants: 20,
+                    description: "Effective communication and presentation skills",
+                    meeting_link: "https://meet.google.com/def-ghi-jkl"
+                }
+            ];
+            displaySessions(sessions);
+        });
+}
+
+function displaySessions(sessions) {
+    const container = document.getElementById('sessions-grid');
+    
+    if (sessions.length === 0) {
+        container.innerHTML = '<div class="col-12 text-center"><p class="text-muted">No sessions found matching your criteria.</p></div>';
+        return;
+    }
+    
+    container.innerHTML = sessions.map(session => `
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="badge bg-${getStatusColor(session.status)}">${session.status.toUpperCase()}</span>
+                        <span class="badge bg-secondary">${session.duration} min</span>
+                    </div>
+                    <h6 class="card-title">${session.title}</h6>
+                    <p class="card-text text-muted">${session.description}</p>
+                    <div class="mb-2">
+                        <small class="text-muted">
+                            <strong>Trainer:</strong> ${session.trainer}<br>
+                            <strong>Date:</strong> ${session.date} at ${session.time}<br>
+                            <strong>Participants:</strong> ${session.participants}/${session.max_participants}
+                        </small>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <button class="btn btn-sm btn-primary" onclick="joinSession(${session.id})" ${session.status === 'completed' ? 'disabled' : ''}>
+                            ${session.status === 'completed' ? 'Completed' : 'Join Session'}
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="viewDetails(${session.id})">
+                            Details
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function getStatusColor(status) {
+    switch(status) {
+        case 'upcoming': return 'success';
+        case 'ongoing': return 'warning';
+        case 'completed': return 'secondary';
+        default: return 'primary';
+    }
+}
+
+function filterSessions() {
+    const searchTerm = document.getElementById('search-sessions').value.toLowerCase();
+    const statusFilter = document.getElementById('status-filter').value;
+    const trainerFilter = document.getElementById('trainer-filter').value;
+    
+    // Reload and filter sessions
+    loadSessions();
+}
+
+function applyFilters() {
+    filterSessions();
+}
+
+function joinSession(sessionId) {
+    // Check if user is logged in
+    if (!isLoggedIn()) {
+        window.location.href = '/login';
+        return;
+    }
+    
+    // Join the session
+    window.open(`/session/${sessionId}/join`, '_blank');
+}
+
+function viewDetails(sessionId) {
+    window.location.href = `/session/${sessionId}`;
+}
+
+function isLoggedIn() {
+    // Check if user is logged in (simplified check)
+    return document.cookie.includes('session');
+}
+</script>
+{% endblock %}

@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}Student Detail - Trainer Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-user-graduate me-2"></i>Student Profile</h2>
+                <a href="{{ url_for('trainer_students') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Students
+                </a>
+            </div>
+            
+            <div class="row">
+                <!-- Student Information Card -->
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Student Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="text-center mb-3">
+                                <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                    <i class="fas fa-user text-white" style="font-size: 2rem;"></i>
+                                </div>
+                            </div>
+                            
+                            <h5 class="text-center">{{ student.name }}</h5>
+                            <p class="text-center text-muted">{{ student.email }}</p>
+                            
+                            <hr>
+                            
+                            <p><strong>Grade:</strong> {{ student.grade }}</p>
+                            <p><strong>School:</strong> {{ student.school }}</p>
+                            <p><strong>City:</strong> {{ student.city }}</p>
+                            <p><strong>Joined:</strong> {{ student.joined_date }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Progress Overview -->
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Progress Overview</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3 text-center">
+                                    <h4 class="text-primary">{{ student.total_classes }}</h4>
+                                    <small>Total Classes</small>
+                                </div>
+                                <div class="col-md-3 text-center">
+                                    <h4 class="text-success">{{ student.completed_classes }}</h4>
+                                    <small>Completed</small>
+                                </div>
+                                <div class="col-md-3 text-center">
+                                    <h4 class="text-warning">{{ "%.1f"|format(student.average_rating) }}</h4>
+                                    <small>Avg Rating</small>
+                                </div>
+                                <div class="col-md-3 text-center">
+                                    <h4 class="text-info">{{ student.progress_percentage }}%</h4>
+                                    <small>Progress</small>
+                                </div>
+                            </div>
+                            
+                            <div class="progress mt-3">
+                                <div class="progress-bar" role="progressbar" style="width: {{ student.progress_percentage }}%">
+                                    {{ student.progress_percentage }}%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-4">
+                <!-- Interests -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Interests</h5>
+                        </div>
+                        <div class="card-body">
+                            {% for interest in student.interests %}
+                                <span class="badge bg-primary me-1 mb-1">{{ interest }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Achievements -->
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Achievements</h5>
+                        </div>
+                        <div class="card-body">
+                            {% for achievement in student.achievements %}
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="fas fa-trophy text-warning me-2"></i>
+                                    <span>{{ achievement }}</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Activity -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Recent Activity</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Activity</th>
+                                            <th>Details</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for activity in student.recent_activity %}
+                                        <tr>
+                                            <td>{{ activity.date }}</td>
+                                            <td>{{ activity.action }}</td>
+                                            <td>
+                                                {% if activity.score %}
+                                                    <span class="badge bg-success">{{ activity.score }}</span>
+                                                {% elif activity.status %}
+                                                    <span class="badge bg-warning">{{ activity.status }}</span>
+                                                {% elif activity.duration %}
+                                                    <span class="badge bg-info">{{ activity.duration }}</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <button class="btn btn-primary me-2">
+                                <i class="fas fa-envelope me-2"></i>Send Message
+                            </button>
+                            <button class="btn btn-success me-2">
+                                <i class="fas fa-chart-line me-2"></i>View Progress Report
+                            </button>
+                            <button class="btn btn-info me-2">
+                                <i class="fas fa-calendar me-2"></i>Schedule Meeting
+                            </button>
+                            <button class="btn btn-warning me-2">
+                                <i class="fas fa-edit me-2"></i>Edit Profile
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,271 @@
+{% extends "base.html" %}
+
+{% block title %}Career Guidance - Sanchari Mentors{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">Career Guidance & Planning</h2>
+            
+            <!-- Career Assessment -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Career Assessment</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Take our career assessment to discover your strengths and interests.</p>
+                    <button class="btn btn-primary" onclick="startAssessment()">Start Assessment</button>
+                </div>
+            </div>
+
+            <!-- Career Paths -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Explore Career Paths</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row" id="career-paths">
+                        <!-- Career paths will be loaded here -->
+                        <div class="col-12 text-center">
+                            <p class="text-muted">Loading career paths...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mentorship Opportunities -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Mentorship Opportunities</h5>
+                </div>
+                <div class="card-body">
+                    <div id="mentorship-opportunities">
+                        <!-- Mentorship opportunities will be loaded here -->
+                        <div class="text-center">
+                            <p class="text-muted">Loading mentorship opportunities...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Career Resources -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Career Resources</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row" id="career-resources">
+                        <!-- Career resources will be loaded here -->
+                        <div class="col-12 text-center">
+                            <p class="text-muted">Loading career resources...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadCareerPaths();
+    loadMentorshipOpportunities();
+    loadCareerResources();
+});
+
+function loadCareerPaths() {
+    const careerPaths = [
+        {
+            id: 1,
+            title: "Software Development",
+            description: "Build applications and software solutions",
+            skills: ["Programming", "Problem Solving", "Teamwork"],
+            demand: "High",
+            salary_range: "$60,000 - $150,000"
+        },
+        {
+            id: 2,
+            title: "Data Science",
+            description: "Analyze data to drive business decisions",
+            skills: ["Statistics", "Python", "Machine Learning"],
+            demand: "Very High",
+            salary_range: "$70,000 - $180,000"
+        },
+        {
+            id: 3,
+            title: "Digital Marketing",
+            description: "Promote products and services online",
+            skills: ["Creativity", "Analytics", "Communication"],
+            demand: "High",
+            salary_range: "$45,000 - $120,000"
+        },
+        {
+            id: 4,
+            title: "Healthcare",
+            description: "Provide medical care and support",
+            skills: ["Empathy", "Attention to Detail", "Communication"],
+            demand: "Very High",
+            salary_range: "$50,000 - $200,000"
+        }
+    ];
+    
+    displayCareerPaths(careerPaths);
+}
+
+function loadMentorshipOpportunities() {
+    const opportunities = [
+        {
+            id: 1,
+            mentor: "Dr. Sarah Johnson",
+            field: "Software Engineering",
+            company: "Google",
+            experience: "15 years",
+            availability: "Weekly sessions"
+        },
+        {
+            id: 2,
+            mentor: "Rajesh Kumar",
+            field: "Data Science",
+            company: "Microsoft",
+            experience: "12 years",
+            availability: "Bi-weekly sessions"
+        },
+        {
+            id: 3,
+            mentor: "Priya Sharma",
+            field: "Digital Marketing",
+            company: "Amazon",
+            experience: "8 years",
+            availability: "Monthly sessions"
+        }
+    ];
+    
+    displayMentorshipOpportunities(opportunities);
+}
+
+function loadCareerResources() {
+    const resources = [
+        {
+            id: 1,
+            title: "Resume Writing Guide",
+            type: "document",
+            description: "Learn how to create a compelling resume"
+        },
+        {
+            id: 2,
+            title: "Interview Preparation",
+            type: "video",
+            description: "Video series on interview techniques"
+        },
+        {
+            id: 3,
+            title: "Networking Strategies",
+            type: "presentation",
+            description: "How to build professional networks"
+        },
+        {
+            id: 4,
+            title: "Salary Negotiation",
+            type: "document",
+            description: "Tips for negotiating your salary"
+        }
+    ];
+    
+    displayCareerResources(resources);
+}
+
+function displayCareerPaths(careerPaths) {
+    const container = document.getElementById('career-paths');
+    
+    container.innerHTML = careerPaths.map(path => `
+        <div class="col-md-6 mb-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h6 class="card-title">${path.title}</h6>
+                    <p class="card-text text-muted">${path.description}</p>
+                    <div class="mb-2">
+                        <strong>Key Skills:</strong>
+                        <div class="mt-1">
+                            ${path.skills.map(skill => `<span class="badge bg-light text-dark me-1">${skill}</span>`).join('')}
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            <span class="badge bg-success">${path.demand} Demand</span>
+                            <span class="ms-2">${path.salary_range}</span>
+                        </small>
+                        <button class="btn btn-sm btn-primary" onclick="exploreCareer(${path.id})">Explore</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function displayMentorshipOpportunities(opportunities) {
+    const container = document.getElementById('mentorship-opportunities');
+    
+    container.innerHTML = opportunities.map(opp => `
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h6 class="card-title">${opp.mentor}</h6>
+                        <p class="card-text text-muted">${opp.field} at ${opp.company}</p>
+                        <small class="text-muted">
+                            Experience: ${opp.experience} | 
+                            Availability: ${opp.availability}
+                        </small>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <button class="btn btn-primary" onclick="requestMentorship(${opp.id})">Request Mentorship</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function displayCareerResources(resources) {
+    const container = document.getElementById('career-resources');
+    
+    container.innerHTML = resources.map(resource => `
+        <div class="col-md-6 col-lg-3 mb-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="badge bg-primary">${resource.type.toUpperCase()}</span>
+                    </div>
+                    <h6 class="card-title">${resource.title}</h6>
+                    <p class="card-text text-muted">${resource.description}</p>
+                    <button class="btn btn-sm btn-outline-primary" onclick="accessResource(${resource.id})">Access</button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function startAssessment() {
+    // Navigate to career assessment
+    window.location.href = '/student/career-assessment';
+}
+
+function exploreCareer(careerId) {
+    // Navigate to detailed career information
+    window.location.href = `/student/career/${careerId}`;
+}
+
+function requestMentorship(mentorId) {
+    // Request mentorship logic
+    if (confirm('Are you sure you want to request mentorship?')) {
+        alert('Mentorship request sent! The mentor will contact you soon.');
+    }
+}
+
+function accessResource(resourceId) {
+    // Access career resource
+    window.open(`/student/career-resource/${resourceId}`, '_blank');
+}
+</script>
+{% endblock %} 

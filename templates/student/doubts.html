@@ -1,0 +1,272 @@
+{% extends "base.html" %}
+
+{% block title %}Ask Questions - Sanchari Mentors{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">Ask Questions & Get Help</h2>
+            
+            <!-- Ask New Question -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Ask a New Question</h5>
+                </div>
+                <div class="card-body">
+                    <form id="question-form">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="question-subject" class="form-label">Subject</label>
+                                <select class="form-select" id="question-subject" required>
+                                    <option value="">Select Subject</option>
+                                    <option value="mathematics">Mathematics</option>
+                                    <option value="ai">Artificial Intelligence</option>
+                                    <option value="communication">Communication Skills</option>
+                                    <option value="career">Career Guidance</option>
+                                    <option value="general">General</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="question-priority" class="form-label">Priority</label>
+                                <select class="form-select" id="question-priority" required>
+                                    <option value="low">Low</option>
+                                    <option value="medium" selected>Medium</option>
+                                    <option value="high">High</option>
+                                    <option value="urgent">Urgent</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="question-title" class="form-label">Question Title</label>
+                            <input type="text" class="form-control" id="question-title" placeholder="Brief title for your question" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="question-description" class="form-label">Detailed Description</label>
+                            <textarea class="form-control" id="question-description" rows="4" placeholder="Provide detailed description of your question or problem..." required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="question-attachments" class="form-label">Attachments (optional)</label>
+                            <input type="file" class="form-control" id="question-attachments" multiple>
+                            <small class="text-muted">You can attach images, documents, or code files</small>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit Question</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- My Questions -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">My Questions</h5>
+                </div>
+                <div class="card-body">
+                    <div id="my-questions">
+                        <!-- Questions will be loaded here -->
+                        <div class="text-center">
+                            <p class="text-muted">Loading your questions...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Questions from Others -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent Questions from Community</h5>
+                </div>
+                <div class="card-body">
+                    <div id="community-questions">
+                        <!-- Community questions will be loaded here -->
+                        <div class="text-center">
+                            <p class="text-muted">Loading community questions...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadMyQuestions();
+    loadCommunityQuestions();
+    
+    // Handle question form submission
+    document.getElementById('question-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        submitQuestion();
+    });
+});
+
+function loadMyQuestions() {
+    // Simulate loading user's questions
+    const myQuestions = [
+        {
+            id: 1,
+            title: "How to solve quadratic equations?",
+            subject: "mathematics",
+            priority: "medium",
+            status: "answered",
+            created_at: "2025-06-15",
+            answers_count: 2,
+            description: "I'm having trouble understanding how to solve quadratic equations using the quadratic formula..."
+        },
+        {
+            id: 2,
+            title: "AI model training best practices",
+            subject: "ai",
+            priority: "high",
+            status: "pending",
+            created_at: "2025-06-14",
+            answers_count: 0,
+            description: "What are the best practices for training machine learning models?"
+        }
+    ];
+    
+    displayMyQuestions(myQuestions);
+}
+
+function loadCommunityQuestions() {
+    // Simulate loading community questions
+    const communityQuestions = [
+        {
+            id: 3,
+            title: "Career advice for computer science students",
+            subject: "career",
+            priority: "medium",
+            status: "answered",
+            created_at: "2025-06-13",
+            answers_count: 5,
+            author: "student2@gmail.com"
+        },
+        {
+            id: 4,
+            title: "Public speaking tips",
+            subject: "communication",
+            priority: "low",
+            status: "answered",
+            created_at: "2025-06-12",
+            answers_count: 3,
+            author: "student3@gmail.com"
+        }
+    ];
+    
+    displayCommunityQuestions(communityQuestions);
+}
+
+function displayMyQuestions(questions) {
+    const container = document.getElementById('my-questions');
+    
+    if (questions.length === 0) {
+        container.innerHTML = '<p class="text-muted">You haven\'t asked any questions yet.</p>';
+        return;
+    }
+    
+    container.innerHTML = questions.map(question => `
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="card-title">${question.title}</h6>
+                        <p class="card-text text-muted">${question.description.substring(0, 100)}...</p>
+                    </div>
+                    <div class="text-end">
+                        <span class="badge bg-${getPriorityColor(question.priority)}">${question.priority}</span>
+                        <span class="badge bg-${getStatusColor(question.status)} ms-1">${question.status}</span>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-2">
+                    <small class="text-muted">
+                        Subject: ${question.subject} | 
+                        Created: ${question.created_at} | 
+                        Answers: ${question.answers_count}
+                    </small>
+                    <button class="btn btn-sm btn-primary" onclick="viewQuestion(${question.id})">View Details</button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function displayCommunityQuestions(questions) {
+    const container = document.getElementById('community-questions');
+    
+    if (questions.length === 0) {
+        container.innerHTML = '<p class="text-muted">No recent questions from the community.</p>';
+        return;
+    }
+    
+    container.innerHTML = questions.map(question => `
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="card-title">${question.title}</h6>
+                        <small class="text-muted">Asked by: ${question.author}</small>
+                    </div>
+                    <div class="text-end">
+                        <span class="badge bg-${getPriorityColor(question.priority)}">${question.priority}</span>
+                        <span class="badge bg-${getStatusColor(question.status)} ms-1">${question.status}</span>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-2">
+                    <small class="text-muted">
+                        Subject: ${question.subject} | 
+                        Created: ${question.created_at} | 
+                        Answers: ${question.answers_count}
+                    </small>
+                    <button class="btn btn-sm btn-outline-primary" onclick="viewQuestion(${question.id})">View</button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function getPriorityColor(priority) {
+    const colors = {
+        'low': 'success',
+        'medium': 'warning',
+        'high': 'danger',
+        'urgent': 'dark'
+    };
+    return colors[priority] || 'secondary';
+}
+
+function getStatusColor(status) {
+    const colors = {
+        'pending': 'warning',
+        'answered': 'success',
+        'closed': 'secondary'
+    };
+    return colors[status] || 'secondary';
+}
+
+function submitQuestion() {
+    const formData = {
+        subject: document.getElementById('question-subject').value,
+        priority: document.getElementById('question-priority').value,
+        title: document.getElementById('question-title').value,
+        description: document.getElementById('question-description').value
+    };
+    
+    // Simulate API call
+    console.log('Submitting question:', formData);
+    
+    // Show success message
+    alert('Question submitted successfully! Our mentors will respond soon.');
+    
+    // Reset form
+    document.getElementById('question-form').reset();
+    
+    // Reload questions
+    loadMyQuestions();
+}
+
+function viewQuestion(questionId) {
+    // Navigate to question details page
+    window.location.href = `/student/question/${questionId}`;
+}
+</script>
+{% endblock %} 

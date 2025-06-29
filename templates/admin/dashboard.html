@@ -1,0 +1,456 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Sanchari Mentors{% endblock %}
+
+{% block content %}
+<div class="d-flex admin-theme">
+    <!-- Futuristic Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h3><i class="fas fa-shield-alt"></i> Admin Portal</h3>
+        </div>
+        
+        <ul class="sidebar-nav">
+            <li>
+                <a href="{{ url_for('admin_dashboard') }}" class="active">
+                    <i class="fas fa-tachometer-alt"></i>
+                    Dashboard
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('admin_users') }}">
+                    <i class="fas fa-users"></i>
+                    Manage Users
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('admin_classes') }}">
+                    <i class="fas fa-book"></i>
+                    Manage Classes
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('admin_sessions') }}">
+                    <i class="fas fa-calendar"></i>
+                    Manage Sessions
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('admin_trainers') }}">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    Manage Trainers
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('admin_content') }}">
+                    <i class="fas fa-file-alt"></i>
+                    Content Management
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('admin_communications') }}">
+                    <i class="fas fa-comments"></i>
+                    Communications
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('admin_reports') }}">
+                    <i class="fas fa-chart-bar"></i>
+                    Reports & Analytics
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('logout') }}">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Welcome Header -->
+        <div class="card mb-4">
+            <div class="card-body text-center">
+                <h1 class="display-4 mb-3">
+                    <i class="fas fa-rocket text-primary"></i>
+                    Welcome back, {{ session.get('user_name', 'Admin') }}!
+                </h1>
+                <p class="lead">Manage the platform and monitor overall performance.</p>
+            </div>
+        </div>
+
+        <!-- Dashboard Stats -->
+        <div class="dashboard-stats">
+            <div class="stat-card glow">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-number">1,247</div>
+                <div class="stat-label">Total Students</div>
+            </div>
+            
+            <div class="stat-card glow">
+                <div class="stat-icon">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                </div>
+                <div class="stat-number">45</div>
+                <div class="stat-label">Active Trainers</div>
+            </div>
+            
+            <div class="stat-card glow">
+                <div class="stat-icon">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div class="stat-number">89</div>
+                <div class="stat-label">Active Classes</div>
+            </div>
+            
+            <div class="stat-card glow">
+                <div class="stat-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-number">94%</div>
+                <div class="stat-label">Platform Uptime</div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <a href="{{ url_for('admin_users') }}" class="action-card">
+                <div class="action-icon">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <div class="action-title">Add User</div>
+                <div class="action-desc">Create new student or trainer account</div>
+            </a>
+            
+            <a href="{{ url_for('admin_classes') }}" class="action-card">
+                <div class="action-icon">
+                    <i class="fas fa-plus-circle"></i>
+                </div>
+                <div class="action-title">Create Class</div>
+                <div class="action-desc">Add new course or training program</div>
+            </a>
+            
+            <a href="{{ url_for('admin_reports') }}" class="action-card">
+                <div class="action-icon">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <div class="action-title">View Reports</div>
+                <div class="action-desc">Analyze platform performance</div>
+            </a>
+            
+            <a href="{{ url_for('admin_communications') }}" class="action-card">
+                <div class="action-icon">
+                    <i class="fas fa-bullhorn"></i>
+                </div>
+                <div class="action-title">Send Announcement</div>
+                <div class="action-desc">Broadcast message to all users</div>
+            </a>
+        </div>
+
+        <!-- Platform Overview -->
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-chart-area"></i> Platform Activity</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Metric</th>
+                                        <th>Today</th>
+                                        <th>This Week</th>
+                                        <th>This Month</th>
+                                        <th>Trend</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><i class="fas fa-user-graduate text-primary"></i> New Students</td>
+                                        <td>12</td>
+                                        <td>89</td>
+                                        <td>342</td>
+                                        <td><i class="fas fa-arrow-up text-success"></i> +15%</td>
+                                    </tr>
+                                    <tr>
+                                        <td><i class="fas fa-video text-success"></i> Sessions Conducted</td>
+                                        <td>8</td>
+                                        <td>45</td>
+                                        <td>156</td>
+                                        <td><i class="fas fa-arrow-up text-success"></i> +8%</td>
+                                    </tr>
+                                    <tr>
+                                        <td><i class="fas fa-download text-info"></i> Resources Downloaded</td>
+                                        <td>156</td>
+                                        <td>1,234</td>
+                                        <td>4,567</td>
+                                        <td><i class="fas fa-arrow-up text-success"></i> +22%</td>
+                                    </tr>
+                                    <tr>
+                                        <td><i class="fas fa-comment text-warning"></i> Questions Asked</td>
+                                        <td>23</td>
+                                        <td>167</td>
+                                        <td>589</td>
+                                        <td><i class="fas fa-arrow-up text-success"></i> +12%</td>
+                                    </tr>
+                                    <tr>
+                                        <td><i class="fas fa-star text-primary"></i> Average Rating</td>
+                                        <td>4.7</td>
+                                        <td>4.6</td>
+                                        <td>4.5</td>
+                                        <td><i class="fas fa-arrow-up text-success"></i> +0.2</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-bell"></i> System Notifications</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="notification-item mb-3">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-server text-success me-3"></i>
+                                <div>
+                                    <div class="fw-bold">System Status</div>
+                                    <small class="text-muted">All systems operational</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="notification-item mb-3">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-user-plus text-primary me-3"></i>
+                                <div>
+                                    <div class="fw-bold">New Registration</div>
+                                    <small class="text-muted">15 new students joined today</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="notification-item mb-3">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-exclamation-triangle text-warning me-3"></i>
+                                <div>
+                                    <div class="fw-bold">Storage Alert</div>
+                                    <small class="text-muted">Storage usage at 85%</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="notification-item mb-3">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-shield-alt text-info me-3"></i>
+                                <div>
+                                    <div class="fw-bold">Security Update</div>
+                                    <small class="text-muted">Latest security patch applied</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="notification-item mb-3">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-database text-secondary me-3"></i>
+                                <div>
+                                    <div class="fw-bold">Backup Complete</div>
+                                    <small class="text-muted">Daily backup completed successfully</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activities -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5><i class="fas fa-history"></i> Recent Platform Activities</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="activity-item d-flex align-items-center mb-3">
+                            <i class="fas fa-user-plus text-success me-3"></i>
+                            <div>
+                                <div class="fw-bold">New Student Registration</div>
+                                <small class="text-muted">Sarah Johnson joined Python Programming course</small>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-item d-flex align-items-center mb-3">
+                            <i class="fas fa-chalkboard-teacher text-primary me-3"></i>
+                            <div>
+                                <div class="fw-bold">Trainer Onboarded</div>
+                                <small class="text-muted">Dr. Michael Chen joined as Data Science trainer</small>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-item d-flex align-items-center mb-3">
+                            <i class="fas fa-book text-info me-3"></i>
+                            <div>
+                                <div class="fw-bold">New Course Added</div>
+                                <small class="text-muted">Advanced Machine Learning course created</small>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-item d-flex align-items-center mb-3">
+                            <i class="fas fa-video text-warning me-3"></i>
+                            <div>
+                                <div class="fw-bold">Session Completed</div>
+                                <small class="text-muted">Web Development session with 25 students</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="activity-item d-flex align-items-center mb-3">
+                            <i class="fas fa-file-alt text-success me-3"></i>
+                            <div>
+                                <div class="fw-bold">Resource Uploaded</div>
+                                <small class="text-muted">JavaScript Advanced Guide.pdf uploaded</small>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-item d-flex align-items-center mb-3">
+                            <i class="fas fa-star text-primary me-3"></i>
+                            <div>
+                                <div class="fw-bold">High Rating Received</div>
+                                <small class="text-muted">Trainer Priya received 5-star rating</small>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-item d-flex align-items-center mb-3">
+                            <i class="fas fa-chart-line text-info me-3"></i>
+                            <div>
+                                <div class="fw-bold">Analytics Generated</div>
+                                <small class="text-muted">Monthly performance report created</small>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-item d-flex align-items-center mb-3">
+                            <i class="fas fa-cog text-secondary me-3"></i>
+                            <div>
+                                <div class="fw-bold">System Maintenance</div>
+                                <small class="text-muted">Platform optimization completed</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Stats Cards -->
+        <div class="row mt-4">
+            <div class="col-md-3 mb-3">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <div class="action-icon mb-3">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <h6>Active Sessions</h6>
+                        <p class="text-primary">8</p>
+                        <small class="text-muted">Currently running</small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 mb-3">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <div class="action-icon mb-3">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h6>Online Users</h6>
+                        <p class="text-success">234</p>
+                        <small class="text-muted">Currently active</small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 mb-3">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <div class="action-icon mb-3">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <h6>Storage Used</h6>
+                        <p class="text-warning">85%</p>
+                        <small class="text-muted">2.1 GB / 2.5 GB</small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 mb-3">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <div class="action-icon mb-3">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h6>Security Status</h6>
+                        <p class="text-success">Secure</p>
+                        <small class="text-muted">All systems protected</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.notification-item {
+    padding: 0.75rem;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+}
+
+.notification-item:hover {
+    background: rgba(0, 212, 255, 0.1);
+    transform: translateX(5px);
+}
+
+.activity-item {
+    padding: 0.75rem;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+}
+
+.activity-item:hover {
+    background: rgba(0, 212, 255, 0.1);
+    transform: translateX(5px);
+}
+
+.badge {
+    border-radius: 15px;
+    padding: 0.5rem 1rem;
+}
+
+.active {
+    background: var(--gradient-primary) !important;
+    color: #ffffff !important;
+    box-shadow: var(--shadow-glow);
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.table i {
+    width: 20px;
+    text-align: center;
+}
+</style>
+{% endblock %} 

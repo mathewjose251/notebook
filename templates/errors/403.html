@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Access Forbidden - Sanchari Mentors{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="error-page">
+                <div class="error-icon">
+                    <i class="fas fa-ban"></i>
+                </div>
+                <h1 class="error-code">403</h1>
+                <h2 class="error-title">Access Forbidden</h2>
+                <p class="error-message">
+                    You don't have permission to access this page. Please make sure you're logged in with the correct account type or contact an administrator.
+                </p>
+                <div class="error-actions">
+                    <a href="{{ url_for('login') }}" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt me-2"></i>Login
+                    </a>
+                    <a href="{{ url_for('index') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-home me-2"></i>Go to Homepage
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .error-page {
+        padding: 4rem 0;
+        min-height: 60vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .error-icon {
+        font-size: 4rem;
+        color: var(--danger);
+        margin-bottom: 2rem;
+    }
+    
+    .error-code {
+        font-size: 6rem;
+        font-weight: 700;
+        color: var(--danger);
+        margin-bottom: 1rem;
+        line-height: 1;
+    }
+    
+    .error-title {
+        font-size: 2rem;
+        color: var(--gray-700);
+        margin-bottom: 1rem;
+    }
+    
+    .error-message {
+        font-size: 1.1rem;
+        color: var(--gray-600);
+        margin-bottom: 2rem;
+        max-width: 500px;
+    }
+    
+    .error-actions {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    @media (max-width: 768px) {
+        .error-code {
+            font-size: 4rem;
+        }
+        
+        .error-title {
+            font-size: 1.5rem;
+        }
+        
+        .error-actions {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .error-actions .btn {
+            width: 200px;
+        }
+    }
+</style>
+{% endblock %} 

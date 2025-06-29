@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block title %}Communications - Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Communications Management</h2>
+                <button class="btn btn-primary" onclick="sendMessage()">Send Message</button>
+            </div>
+            
+            <!-- Communication Stats -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Communication Overview</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 text-center">
+                            <div class="border rounded p-3">
+                                <h4 class="text-primary" id="total-messages">0</h4>
+                                <p class="text-muted mb-0">Total Messages</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="border rounded p-3">
+                                <h4 class="text-success" id="sent-messages">0</h4>
+                                <p class="text-muted mb-0">Sent</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="border rounded p-3">
+                                <h4 class="text-warning" id="pending-messages">0</h4>
+                                <p class="text-muted mb-0">Pending</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="border rounded p-3">
+                                <h4 class="text-info" id="read-rate">0%</h4>
+                                <p class="text-muted mb-0">Read Rate</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Messages Table -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">All Messages</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Subject</th>
+                                    <th>Recipients</th>
+                                    <th>Type</th>
+                                    <th>Sent Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="messages-table">
+                                <!-- Messages will be loaded here -->
+                                <tr>
+                                    <td colspan="6" class="text-center">
+                                        <p class="text-muted">Loading messages...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadCommunicationStats();
+    loadMessages();
+});
+
+function loadCommunicationStats() {
+    const stats = {
+        total: 25,
+        sent: 22,
+        pending: 3,
+        readRate: 78
+    };
+    
+    document.getElementById('total-messages').textContent = stats.total;
+    document.getElementById('sent-messages').textContent = stats.sent;
+    document.getElementById('pending-messages').textContent = stats.pending;
+    document.getElementById('read-rate').textContent = stats.readRate + '%';
+}
+
+function loadMessages() {
+    const messages = [
+        {
+            id: 1,
+            subject: "Welcome to Sanchari Mentors",
+            recipients: "All Students",
+            type: "announcement",
+            sentDate: "2025-06-10",
+            status: "sent"
+        },
+        {
+            id: 2,
+            subject: "Upcoming Career Fair",
+            recipients: "Final Year Students",
+            type: "notification",
+            sentDate: "2025-06-12",
+            status: "sent"
+        },
+        {
+            id: 3,
+            subject: "Class Schedule Update",
+            recipients: "AI Course Students",
+            type: "update",
+            sentDate: "2025-06-15",
+            status: "pending"
+        }
+    ];
+    
+    displayMessages(messages);
+}
+
+function displayMessages(messages) {
+    const tbody = document.getElementById('messages-table');
+    
+    tbody.innerHTML = messages.map(message => `
+        <tr>
+            <td><strong>${message.subject}</strong></td>
+            <td>${message.recipients}</td>
+            <td><span class="badge bg-primary">${message.type}</span></td>
+            <td>${message.sentDate}</td>
+            <td>
+                <span class="badge bg-${message.status === 'sent' ? 'success' : 'warning'}">${message.status}</span>
+            </td>
+            <td>
+                <div class="btn-group btn-group-sm">
+                    <button class="btn btn-outline-info" onclick="viewMessage(${message.id})">View</button>
+                    <button class="btn btn-outline-primary" onclick="editMessage(${message.id})">Edit</button>
+                    <button class="btn btn-outline-danger" onclick="deleteMessage(${message.id})">Delete</button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function sendMessage() {
+    alert('Send message functionality will be implemented here.');
+}
+
+function viewMessage(messageId) {
+    window.location.href = `/admin/message/${messageId}`;
+}
+
+function editMessage(messageId) {
+    alert('Edit message functionality will be implemented here.');
+}
+
+function deleteMessage(messageId) {
+    if (confirm('Are you sure you want to delete this message?')) {
+        alert('Message deleted successfully!');
+        loadMessages();
+    }
+}
+</script>
+{% endblock %} 

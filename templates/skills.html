@@ -1,0 +1,389 @@
+{% extends "base.html" %}
+
+{% block title %}Skill Development - Sanchari Mentors{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">Skill Development</h2>
+            
+            <!-- Skill Categories -->
+            <div class="row mb-4">
+                <div class="col-md-3 mb-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="fas fa-brain fa-3x text-primary mb-3"></i>
+                            <h5 class="card-title">Technical Skills</h5>
+                            <p class="card-text">Programming, AI, Mathematics</p>
+                            <button class="btn btn-primary" onclick="viewSkills('technical')">Explore</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="fas fa-comments fa-3x text-success mb-3"></i>
+                            <h5 class="card-title">Communication</h5>
+                            <p class="card-text">Public speaking, Writing</p>
+                            <button class="btn btn-success" onclick="viewSkills('communication')">Explore</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="fas fa-users fa-3x text-info mb-3"></i>
+                            <h5 class="card-title">Leadership</h5>
+                            <p class="card-text">Team management, Decision making</p>
+                            <button class="btn btn-info" onclick="viewSkills('leadership')">Explore</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="fas fa-lightbulb fa-3x text-warning mb-3"></i>
+                            <h5 class="card-title">Creativity</h5>
+                            <p class="card-text">Problem solving, Innovation</p>
+                            <button class="btn btn-warning" onclick="viewSkills('creativity')">Explore</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- My Skills -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">My Skills Assessment</h5>
+                </div>
+                <div class="card-body">
+                    <div id="my-skills">
+                        <!-- Skills will be loaded here -->
+                        <div class="text-center">
+                            <p class="text-muted">Loading skills assessment...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recommended Skills -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Recommended Skills</h5>
+                </div>
+                <div class="card-body">
+                    <div id="recommended-skills">
+                        <!-- Recommended skills will be loaded here -->
+                        <div class="text-center">
+                            <p class="text-muted">Loading recommendations...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Skill Development Path -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Development Path</h5>
+                </div>
+                <div class="card-body">
+                    <div id="development-path">
+                        <!-- Development path will be loaded here -->
+                        <div class="text-center">
+                            <p class="text-muted">Loading development path...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadMySkills();
+    loadRecommendedSkills();
+    loadDevelopmentPath();
+});
+
+function loadMySkills() {
+    // Simulate loading skills from API
+    fetch('/api/my-skills')
+        .then(response => response.json())
+        .then(data => {
+            displayMySkills(data.skills);
+        })
+        .catch(error => {
+            console.error('Error loading skills:', error);
+            // Fallback to static data
+            const skills = [
+                {
+                    id: 1,
+                    name: "Python Programming",
+                    category: "technical",
+                    level: 75,
+                    description: "Intermediate level Python programming skills"
+                },
+                {
+                    id: 2,
+                    name: "Public Speaking",
+                    category: "communication",
+                    level: 60,
+                    description: "Basic public speaking and presentation skills"
+                },
+                {
+                    id: 3,
+                    name: "Problem Solving",
+                    category: "creativity",
+                    level: 80,
+                    description: "Strong analytical and problem-solving abilities"
+                },
+                {
+                    id: 4,
+                    name: "Team Leadership",
+                    category: "leadership",
+                    level: 45,
+                    description: "Basic team management and leadership skills"
+                }
+            ];
+            displayMySkills(skills);
+        });
+}
+
+function displayMySkills(skills) {
+    const container = document.getElementById('my-skills');
+    
+    if (skills.length === 0) {
+        container.innerHTML = '<p class="text-muted">No skills found.</p>';
+        return;
+    }
+    
+    container.innerHTML = skills.map(skill => `
+        <div class="border-bottom pb-3 mb-3">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <div class="flex-grow-1">
+                    <h6 class="mb-1">${skill.name}</h6>
+                    <p class="text-muted mb-2">${skill.description}</p>
+                    <span class="badge bg-${getCategoryColor(skill.category)}">${skill.category}</span>
+                </div>
+                <span class="badge bg-${getLevelColor(skill.level)}">${skill.level}%</span>
+            </div>
+            <div class="progress mb-2" style="height: 8px;">
+                <div class="progress-bar bg-${getLevelColor(skill.level)}" style="width: ${skill.level}%"></div>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-outline-primary" onclick="improveSkill(${skill.id})">Improve</button>
+                <button class="btn btn-sm btn-outline-secondary" onclick="viewSkillDetails(${skill.id})">Details</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function loadRecommendedSkills() {
+    // Simulate loading recommended skills from API
+    fetch('/api/recommended-skills')
+        .then(response => response.json())
+        .then(data => {
+            displayRecommendedSkills(data.skills);
+        })
+        .catch(error => {
+            console.error('Error loading recommended skills:', error);
+            // Fallback to static data
+            const skills = [
+                {
+                    id: 5,
+                    name: "Machine Learning",
+                    category: "technical",
+                    priority: "high",
+                    description: "Learn ML algorithms and frameworks",
+                    estimatedTime: "3 months"
+                },
+                {
+                    id: 6,
+                    name: "Data Analysis",
+                    category: "technical",
+                    priority: "medium",
+                    description: "Master data analysis and visualization",
+                    estimatedTime: "2 months"
+                },
+                {
+                    id: 7,
+                    name: "Conflict Resolution",
+                    category: "leadership",
+                    priority: "medium",
+                    description: "Develop conflict resolution skills",
+                    estimatedTime: "1 month"
+                }
+            ];
+            displayRecommendedSkills(skills);
+        });
+}
+
+function displayRecommendedSkills(skills) {
+    const container = document.getElementById('recommended-skills');
+    
+    if (skills.length === 0) {
+        container.innerHTML = '<p class="text-muted">No recommendations found.</p>';
+        return;
+    }
+    
+    container.innerHTML = skills.map(skill => `
+        <div class="border-bottom pb-3 mb-3">
+            <div class="d-flex justify-content-between align-items-start">
+                <div class="flex-grow-1">
+                    <div class="d-flex align-items-center mb-2">
+                        <h6 class="mb-0">${skill.name}</h6>
+                        <span class="badge bg-${getPriorityColor(skill.priority)} ms-2">${skill.priority}</span>
+                    </div>
+                    <p class="text-muted mb-2">${skill.description}</p>
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="badge bg-${getCategoryColor(skill.category)}">${skill.category}</span>
+                        <small class="text-muted">Estimated time: ${skill.estimatedTime}</small>
+                    </div>
+                </div>
+                <button class="btn btn-sm btn-primary" onclick="startLearning(${skill.id})">Start Learning</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function loadDevelopmentPath() {
+    // Simulate loading development path from API
+    fetch('/api/development-path')
+        .then(response => response.json())
+        .then(data => {
+            displayDevelopmentPath(data.path);
+        })
+        .catch(error => {
+            console.error('Error loading development path:', error);
+            // Fallback to static data
+            const path = [
+                {
+                    id: 1,
+                    title: "Foundation Phase",
+                    skills: ["Python Programming", "Basic Mathematics"],
+                    status: "completed",
+                    duration: "2 months"
+                },
+                {
+                    id: 2,
+                    title: "Intermediate Phase",
+                    skills: ["Machine Learning", "Data Analysis"],
+                    status: "in-progress",
+                    duration: "3 months"
+                },
+                {
+                    id: 3,
+                    title: "Advanced Phase",
+                    skills: ["Deep Learning", "AI Applications"],
+                    status: "locked",
+                    duration: "4 months"
+                }
+            ];
+            displayDevelopmentPath(path);
+        });
+}
+
+function displayDevelopmentPath(path) {
+    const container = document.getElementById('development-path');
+    
+    if (path.length === 0) {
+        container.innerHTML = '<p class="text-muted">No development path found.</p>';
+        return;
+    }
+    
+    container.innerHTML = path.map((phase, index) => `
+        <div class="d-flex align-items-center mb-4">
+            <div class="flex-shrink-0 me-3">
+                <div class="rounded-circle d-flex align-items-center justify-content-center" 
+                     style="width: 50px; height: 50px; background-color: ${getPhaseColor(phase.status)};">
+                    <i class="fas ${getPhaseIcon(phase.status)} text-white"></i>
+                </div>
+            </div>
+            <div class="flex-grow-1">
+                <h6 class="mb-1">${phase.title}</h6>
+                <p class="text-muted mb-2">Skills: ${phase.skills.join(', ')}</p>
+                <small class="text-muted">Duration: ${phase.duration}</small>
+            </div>
+            ${index < path.length - 1 ? '<div class="ms-3"><i class="fas fa-arrow-down text-muted"></i></div>' : ''}
+        </div>
+    `).join('');
+}
+
+function getCategoryColor(category) {
+    switch(category) {
+        case 'technical': return 'primary';
+        case 'communication': return 'success';
+        case 'leadership': return 'info';
+        case 'creativity': return 'warning';
+        default: return 'secondary';
+    }
+}
+
+function getLevelColor(level) {
+    if (level >= 80) return 'success';
+    if (level >= 60) return 'warning';
+    return 'danger';
+}
+
+function getPriorityColor(priority) {
+    switch(priority) {
+        case 'high': return 'danger';
+        case 'medium': return 'warning';
+        case 'low': return 'secondary';
+        default: return 'secondary';
+    }
+}
+
+function getPhaseColor(status) {
+    switch(status) {
+        case 'completed': return '#28a745';
+        case 'in-progress': return '#007bff';
+        case 'locked': return '#6c757d';
+        default: return '#6c757d';
+    }
+}
+
+function getPhaseIcon(status) {
+    switch(status) {
+        case 'completed': return 'fa-check';
+        case 'in-progress': return 'fa-play';
+        case 'locked': return 'fa-lock';
+        default: return 'fa-circle';
+    }
+}
+
+function viewSkills(category) {
+    // Filter skills by category
+    console.log(`Viewing ${category} skills`);
+    // In a real app, you'd filter the skills display
+}
+
+function improveSkill(skillId) {
+    if (!isLoggedIn()) {
+        window.location.href = '/login';
+        return;
+    }
+    // Navigate to skill improvement page
+    window.location.href = `/skill/${skillId}/improve`;
+}
+
+function viewSkillDetails(skillId) {
+    window.location.href = `/skill/${skillId}`;
+}
+
+function startLearning(skillId) {
+    if (!isLoggedIn()) {
+        window.location.href = '/login';
+        return;
+    }
+    // Start learning the skill
+    window.location.href = `/skill/${skillId}/learn`;
+}
+
+function isLoggedIn() {
+    return document.cookie.includes('session');
+}
+</script>
+{% endblock %}

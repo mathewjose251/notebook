@@ -1,0 +1,411 @@
+{% extends "base.html" %}
+
+{% block title %}Community - Sanchari Mentors{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">Student Community</h2>
+            
+            <!-- Community Stats -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Community Overview</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 text-center">
+                            <div class="border rounded p-3">
+                                <h4 class="text-primary" id="total-students">0</h4>
+                                <p class="text-muted mb-0">Active Students</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="border rounded p-3">
+                                <h4 class="text-success" id="study-groups">0</h4>
+                                <p class="text-muted mb-0">Study Groups</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="border rounded p-3">
+                                <h4 class="text-info" id="discussions">0</h4>
+                                <p class="text-muted mb-0">Active Discussions</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="border rounded p-3">
+                                <h4 class="text-warning" id="events">0</h4>
+                                <p class="text-muted mb-0">Upcoming Events</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Create Post -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Share Something</h5>
+                </div>
+                <div class="card-body">
+                    <form id="post-form">
+                        <div class="mb-3">
+                            <select class="form-select" id="post-type" required>
+                                <option value="">Select Post Type</option>
+                                <option value="question">Question</option>
+                                <option value="discussion">Discussion</option>
+                                <option value="resource">Resource Share</option>
+                                <option value="achievement">Achievement</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <input type="text" class="form-control" id="post-title" placeholder="Post title" required>
+                        </div>
+                        <div class="mb-3">
+                            <textarea class="form-control" id="post-content" rows="4" placeholder="What would you like to share?" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <select class="form-select" id="post-category">
+                                <option value="">Select Category (optional)</option>
+                                <option value="mathematics">Mathematics</option>
+                                <option value="ai">Artificial Intelligence</option>
+                                <option value="communication">Communication Skills</option>
+                                <option value="career">Career Guidance</option>
+                                <option value="general">General</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Post</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Study Groups -->
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Study Groups</h5>
+                    <button class="btn btn-sm btn-outline-primary" onclick="createStudyGroup()">Create Group</button>
+                </div>
+                <div class="card-body">
+                    <div class="row" id="study-groups-container">
+                        <!-- Study groups will be loaded here -->
+                        <div class="col-12 text-center">
+                            <p class="text-muted">Loading study groups...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Community Feed -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Community Feed</h5>
+                </div>
+                <div class="card-body">
+                    <div id="community-feed">
+                        <!-- Community posts will be loaded here -->
+                        <div class="text-center">
+                            <p class="text-muted">Loading community feed...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upcoming Events -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Upcoming Events</h5>
+                </div>
+                <div class="card-body">
+                    <div id="upcoming-events">
+                        <!-- Events will be loaded here -->
+                        <div class="text-center">
+                            <p class="text-muted">Loading events...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadCommunityStats();
+    loadStudyGroups();
+    loadCommunityFeed();
+    loadUpcomingEvents();
+    
+    // Handle post form submission
+    document.getElementById('post-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        submitPost();
+    });
+});
+
+function loadCommunityStats() {
+    const stats = {
+        totalStudents: 156,
+        studyGroups: 12,
+        discussions: 45,
+        events: 8
+    };
+    
+    document.getElementById('total-students').textContent = stats.totalStudents;
+    document.getElementById('study-groups').textContent = stats.studyGroups;
+    document.getElementById('discussions').textContent = stats.discussions;
+    document.getElementById('events').textContent = stats.events;
+}
+
+function loadStudyGroups() {
+    const studyGroups = [
+        {
+            id: 1,
+            name: "Python Programming",
+            members: 15,
+            maxMembers: 20,
+            description: "Study group for Python programming concepts",
+            category: "Technical Skills",
+            nextMeeting: "2025-06-20 14:00"
+        },
+        {
+            id: 2,
+            name: "Mathematics Problem Solving",
+            members: 8,
+            maxMembers: 15,
+            description: "Advanced mathematics problem solving techniques",
+            category: "Academic Skills",
+            nextMeeting: "2025-06-22 16:00"
+        },
+        {
+            id: 3,
+            name: "Career Planning",
+            members: 12,
+            maxMembers: 25,
+            description: "Career guidance and planning discussions",
+            category: "Career Skills",
+            nextMeeting: "2025-06-25 10:00"
+        }
+    ];
+    
+    displayStudyGroups(studyGroups);
+}
+
+function loadCommunityFeed() {
+    const posts = [
+        {
+            id: 1,
+            author: "Priya Sharma",
+            type: "question",
+            title: "Help with quadratic equations",
+            content: "I'm struggling with solving quadratic equations. Can anyone help me understand the quadratic formula?",
+            category: "mathematics",
+            likes: 5,
+            comments: 3,
+            time: "2 hours ago"
+        },
+        {
+            id: 2,
+            author: "Rahul Kumar",
+            type: "achievement",
+            title: "Completed Python Course!",
+            content: "Just finished the Python programming course with 95% score. Thanks everyone for the support!",
+            category: "ai",
+            likes: 12,
+            comments: 8,
+            time: "4 hours ago"
+        },
+        {
+            id: 3,
+            author: "Anjali Desai",
+            type: "resource",
+            title: "Great resource for data analysis",
+            content: "Found this amazing YouTube playlist for learning data analysis with Python. Check it out!",
+            category: "ai",
+            likes: 7,
+            comments: 2,
+            time: "6 hours ago"
+        }
+    ];
+    
+    displayCommunityFeed(posts);
+}
+
+function loadUpcomingEvents() {
+    const events = [
+        {
+            id: 1,
+            title: "Career Fair 2025",
+            date: "2025-06-30",
+            time: "10:00 AM",
+            description: "Virtual career fair with top companies",
+            attendees: 45
+        },
+        {
+            id: 2,
+            title: "Python Workshop",
+            date: "2025-06-25",
+            time: "2:00 PM",
+            description: "Hands-on Python programming workshop",
+            attendees: 20
+        },
+        {
+            id: 3,
+            title: "Study Group Meetup",
+            date: "2025-06-28",
+            time: "4:00 PM",
+            description: "Monthly study group meetup",
+            attendees: 15
+        }
+    ];
+    
+    displayUpcomingEvents(events);
+}
+
+function displayStudyGroups(groups) {
+    const container = document.getElementById('study-groups-container');
+    
+    container.innerHTML = groups.map(group => `
+        <div class="col-md-6 col-lg-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h6 class="card-title">${group.name}</h6>
+                    <p class="card-text text-muted">${group.description}</p>
+                    <div class="mb-2">
+                        <span class="badge bg-primary">${group.category}</span>
+                    </div>
+                    <div class="mb-2">
+                        <small class="text-muted">
+                            Members: ${group.members}/${group.maxMembers} | 
+                            Next Meeting: ${group.nextMeeting}
+                        </small>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="progress flex-grow-1 me-2" style="height: 6px;">
+                            <div class="progress-bar" style="width: ${(group.members/group.maxMembers)*100}%"></div>
+                        </div>
+                        <button class="btn btn-sm btn-primary" onclick="joinStudyGroup(${group.id})">Join</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function displayCommunityFeed(posts) {
+    const container = document.getElementById('community-feed');
+    
+    container.innerHTML = posts.map(post => `
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                        <h6 class="card-title">${post.title}</h6>
+                        <small class="text-muted">Posted by ${post.author} • ${post.time}</small>
+                    </div>
+                    <span class="badge bg-${getPostTypeColor(post.type)}">${post.type}</span>
+                </div>
+                <p class="card-text">${post.content}</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <button class="btn btn-sm btn-outline-primary me-2" onclick="likePost(${post.id})">
+                            👍 ${post.likes}
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="commentOnPost(${post.id})">
+                            💬 ${post.comments}
+                        </button>
+                    </div>
+                    <span class="badge bg-light text-dark">${post.category}</span>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function displayUpcomingEvents(events) {
+    const container = document.getElementById('upcoming-events');
+    
+    container.innerHTML = events.map(event => `
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h6 class="card-title">${event.title}</h6>
+                        <p class="card-text text-muted">${event.description}</p>
+                        <small class="text-muted">
+                            📅 ${event.date} at ${event.time} | 
+                            👥 ${event.attendees} attending
+                        </small>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <button class="btn btn-primary" onclick="joinEvent(${event.id})">Join Event</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function getPostTypeColor(type) {
+    const colors = {
+        'question': 'warning',
+        'discussion': 'info',
+        'resource': 'success',
+        'achievement': 'primary'
+    };
+    return colors[type] || 'secondary';
+}
+
+function submitPost() {
+    const formData = {
+        type: document.getElementById('post-type').value,
+        title: document.getElementById('post-title').value,
+        content: document.getElementById('post-content').value,
+        category: document.getElementById('post-category').value
+    };
+    
+    // Simulate API call
+    console.log('Submitting post:', formData);
+    
+    // Show success message
+    alert('Post submitted successfully!');
+    
+    // Reset form
+    document.getElementById('post-form').reset();
+    
+    // Reload feed
+    loadCommunityFeed();
+}
+
+function createStudyGroup() {
+    // Navigate to create study group page
+    window.location.href = '/student/create-study-group';
+}
+
+function joinStudyGroup(groupId) {
+    if (confirm('Are you sure you want to join this study group?')) {
+        alert('Successfully joined the study group!');
+    }
+}
+
+function likePost(postId) {
+    // Like post logic
+    console.log('Liking post:', postId);
+}
+
+function commentOnPost(postId) {
+    // Comment on post logic
+    const comment = prompt('Enter your comment:');
+    if (comment) {
+        console.log('Commenting on post:', postId, comment);
+        alert('Comment posted!');
+    }
+}
+
+function joinEvent(eventId) {
+    if (confirm('Are you sure you want to join this event?')) {
+        alert('Successfully registered for the event!');
+    }
+}
+</script>
+{% endblock %} 

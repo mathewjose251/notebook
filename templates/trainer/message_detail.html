@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Message Detail - Trainer Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-envelope me-2"></i>Message Detail</h2>
+                <a href="{{ url_for('trainer_communications') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Communications
+                </a>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">{{ message.subject }}</h5>
+                        <span class="badge bg-{{ 'danger' if message.status == 'unread' else 'success' }}">
+                            {{ message.status.title() }}
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p><strong>From:</strong> {{ message.from_name }} ({{ message.from_email }})</p>
+                            <p><strong>Date:</strong> {{ message.date }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Priority:</strong> 
+                                <span class="badge bg-{{ 'danger' if message.priority == 'high' else 'warning' if message.priority == 'medium' else 'info' }}">
+                                    {{ message.priority.title() }}
+                                </span>
+                            </p>
+                            <p><strong>Message ID:</strong> #{{ message.id }}</p>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="row">
+                        <div class="col-12">
+                            <h6>Message Content</h6>
+                            <div class="alert alert-light border">
+                                {{ message.content }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <button class="btn btn-primary me-2">
+                                <i class="fas fa-reply me-2"></i>Reply
+                            </button>
+                            <button class="btn btn-success me-2">
+                                <i class="fas fa-forward me-2"></i>Forward
+                            </button>
+                            <button class="btn btn-outline-danger">
+                                <i class="fas fa-trash me-2"></i>Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

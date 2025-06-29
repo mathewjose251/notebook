@@ -1,0 +1,417 @@
+{% extends "base.html" %}
+
+{% block title %}Community - Sanchari Mentors{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">Community</h2>
+            
+            <!-- Community Stats -->
+            <div class="row mb-4">
+                <div class="col-md-3 mb-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-primary">1,247</h3>
+                            <p class="mb-0">Active Members</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-success">156</h3>
+                            <p class="mb-0">Discussions</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-info">89</h3>
+                            <p class="mb-0">Study Groups</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-warning">2,341</h3>
+                            <p class="mb-0">Posts</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Community Features -->
+            <div class="row mb-4">
+                <div class="col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Study Groups</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="study-groups-list">
+                                <!-- Study groups will be loaded here -->
+                                <div class="text-center">
+                                    <p class="text-muted">Loading study groups...</p>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary mt-3" onclick="createStudyGroup()">Create Study Group</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Recent Discussions</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="discussions-list">
+                                <!-- Discussions will be loaded here -->
+                                <div class="text-center">
+                                    <p class="text-muted">Loading discussions...</p>
+                                </div>
+                            </div>
+                            <button class="btn btn-success mt-3" onclick="startDiscussion()">Start Discussion</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Community Feed -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Community Feed</h5>
+                </div>
+                <div class="card-body">
+                    <div id="community-feed">
+                        <!-- Community feed will be loaded here -->
+                        <div class="text-center">
+                            <p class="text-muted">Loading community feed...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadStudyGroups();
+    loadDiscussions();
+    loadCommunityFeed();
+});
+
+function loadStudyGroups() {
+    // Simulate loading study groups from API
+    fetch('/api/study-groups')
+        .then(response => response.json())
+        .then(data => {
+            displayStudyGroups(data.groups);
+        })
+        .catch(error => {
+            console.error('Error loading study groups:', error);
+            // Fallback to static data
+            const groups = [
+                {
+                    id: 1,
+                    name: "Mathematics Enthusiasts",
+                    subject: "Mathematics",
+                    members: 45,
+                    description: "Advanced problem solving and mathematical concepts"
+                },
+                {
+                    id: 2,
+                    name: "AI & ML Learners",
+                    subject: "Artificial Intelligence",
+                    members: 32,
+                    description: "Exploring machine learning and AI fundamentals"
+                },
+                {
+                    id: 3,
+                    name: "Communication Skills",
+                    subject: "Communication",
+                    members: 28,
+                    description: "Improving public speaking and communication"
+                }
+            ];
+            displayStudyGroups(groups);
+        });
+}
+
+function displayStudyGroups(groups) {
+    const container = document.getElementById('study-groups-list');
+    
+    if (groups.length === 0) {
+        container.innerHTML = '<p class="text-muted">No study groups found.</p>';
+        return;
+    }
+    
+    container.innerHTML = groups.map(group => `
+        <div class="border-bottom pb-2 mb-2">
+            <div class="d-flex justify-content-between align-items-start">
+                <div class="flex-grow-1">
+                    <h6 class="mb-1">${group.name}</h6>
+                    <p class="text-muted mb-1">${group.description}</p>
+                    <small class="text-muted">
+                        ${group.members} members • ${group.subject}
+                    </small>
+                </div>
+                <button class="btn btn-sm btn-outline-primary" onclick="joinGroup(${group.id})">
+                    Join
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function loadDiscussions() {
+    // Simulate loading discussions from API
+    fetch('/api/discussions')
+        .then(response => response.json())
+        .then(data => {
+            displayDiscussions(data.discussions);
+        })
+        .catch(error => {
+            console.error('Error loading discussions:', error);
+            // Fallback to static data
+            const discussions = [
+                {
+                    id: 1,
+                    title: "Best study techniques for mathematics?",
+                    author: "Priya Sharma",
+                    replies: 12,
+                    views: 89,
+                    date: "2025-06-15"
+                },
+                {
+                    id: 2,
+                    title: "AI career opportunities discussion",
+                    author: "Rahul Kumar",
+                    replies: 8,
+                    views: 67,
+                    date: "2025-06-14"
+                },
+                {
+                    id: 3,
+                    title: "Communication tips for presentations",
+                    author: "Anjali Desai",
+                    replies: 15,
+                    views: 123,
+                    date: "2025-06-13"
+                }
+            ];
+            displayDiscussions(discussions);
+        });
+}
+
+function displayDiscussions(discussions) {
+    const container = document.getElementById('discussions-list');
+    
+    if (discussions.length === 0) {
+        container.innerHTML = '<p class="text-muted">No discussions found.</p>';
+        return;
+    }
+    
+    container.innerHTML = discussions.map(discussion => `
+        <div class="border-bottom pb-2 mb-2">
+            <div class="d-flex justify-content-between align-items-start">
+                <div class="flex-grow-1">
+                    <h6 class="mb-1">${discussion.title}</h6>
+                    <small class="text-muted">
+                        By ${discussion.author} • ${discussion.replies} replies • ${discussion.views} views • ${discussion.date}
+                    </small>
+                </div>
+                <button class="btn btn-sm btn-outline-success" onclick="viewDiscussion(${discussion.id})">
+                    View
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function loadCommunityFeed() {
+    // Simulate loading community feed from API
+    fetch('/api/community-feed')
+        .then(response => response.json())
+        .then(data => {
+            displayCommunityFeed(data.posts);
+        })
+        .catch(error => {
+            console.error('Error loading community feed:', error);
+            // Fallback to static data
+            const posts = [
+                {
+                    id: 1,
+                    type: "achievement",
+                    author: "Neha Gupta",
+                    content: "Just completed the AI fundamentals course! 🎉",
+                    likes: 24,
+                    comments: 8,
+                    date: "2025-06-15"
+                },
+                {
+                    id: 2,
+                    type: "question",
+                    author: "Rajesh Patel",
+                    content: "Can anyone help me understand quadratic equations?",
+                    likes: 5,
+                    comments: 12,
+                    date: "2025-06-14"
+                },
+                {
+                    id: 3,
+                    type: "resource",
+                    author: "Dr. Priya Sharma",
+                    content: "Shared a new study guide for mathematics. Check it out!",
+                    likes: 18,
+                    comments: 6,
+                    date: "2025-06-13"
+                }
+            ];
+            displayCommunityFeed(posts);
+        });
+}
+
+function displayCommunityFeed(posts) {
+    const container = document.getElementById('community-feed');
+    
+    if (posts.length === 0) {
+        container.innerHTML = '<p class="text-muted">No posts found.</p>';
+        return;
+    }
+    
+    container.innerHTML = posts.map(post => `
+        <div class="border-bottom pb-3 mb-3">
+            <div class="d-flex align-items-start">
+                <div class="flex-shrink-0 me-3">
+                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                        ${post.author.charAt(0)}
+                    </div>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h6 class="mb-0">${post.author}</h6>
+                        <small class="text-muted">${post.date}</small>
+                    </div>
+                    <p class="mb-2">${post.content}</p>
+                    <div class="d-flex align-items-center gap-3">
+                        <button class="btn btn-sm btn-outline-primary" onclick="likePost(${post.id})">
+                            <i class="fas fa-thumbs-up"></i> ${post.likes}
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="commentPost(${post.id})">
+                            <i class="fas fa-comment"></i> ${post.comments}
+                        </button>
+                        <span class="badge bg-${getPostTypeColor(post.type)}">${post.type}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function getPostTypeColor(type) {
+    switch(type) {
+        case 'achievement': return 'success';
+        case 'question': return 'warning';
+        case 'resource': return 'info';
+        default: return 'secondary';
+    }
+}
+
+function createStudyGroup() {
+    if (!isLoggedIn()) {
+        window.location.href = '/login';
+        return;
+    }
+    window.location.href = '/create-study-group';
+}
+
+function startDiscussion() {
+    if (!isLoggedIn()) {
+        window.location.href = '/login';
+        return;
+    }
+    window.location.href = '/start-discussion';
+}
+
+function joinGroup(groupId) {
+    if (!isLoggedIn()) {
+        window.location.href = '/login';
+        return;
+    }
+    // Join the study group
+    fetch(`/api/study-groups/${groupId}/join`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert('Successfully joined the study group!');
+        loadStudyGroups(); // Reload to update UI
+    })
+    .catch(error => {
+        console.error('Error joining group:', error);
+        alert('Failed to join group. Please try again.');
+    });
+}
+
+function viewDiscussion(discussionId) {
+    window.location.href = `/discussion/${discussionId}`;
+}
+
+function likePost(postId) {
+    if (!isLoggedIn()) {
+        window.location.href = '/login';
+        return;
+    }
+    // Like the post
+    fetch(`/api/posts/${postId}/like`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        loadCommunityFeed(); // Reload to update UI
+    })
+    .catch(error => {
+        console.error('Error liking post:', error);
+    });
+}
+
+function commentPost(postId) {
+    if (!isLoggedIn()) {
+        window.location.href = '/login';
+        return;
+    }
+    const comment = prompt('Enter your comment:');
+    if (comment) {
+        fetch(`/api/posts/${postId}/comment`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ comment: comment })
+        })
+        .then(response => response.json())
+        .then(data => {
+            loadCommunityFeed(); // Reload to update UI
+        })
+        .catch(error => {
+            console.error('Error commenting on post:', error);
+        });
+    }
+}
+
+function isLoggedIn() {
+    return document.cookie.includes('session');
+}
+</script>
+{% endblock %}

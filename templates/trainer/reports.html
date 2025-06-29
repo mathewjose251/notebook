@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}Trainer Reports{% endblock %}
+
+{% block content %}
+<div class="container mt-4 trainer-theme">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('trainer_dashboard') }}">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Reports</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Trainer Reports</h2>
+        <div>
+            <button class="btn btn-primary"><i class="fas fa-file-download me-2"></i>Export All</button>
+        </div>
+    </div>
+
+    <!-- Key Metrics -->
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card text-center mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Total Students</h5>
+                    <p class="card-text display-4">120</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Active Classes</h5>
+                    <p class="card-text display-4">5</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Average Attendance</h5>
+                    <p class="card-text display-4">92%</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reports Table -->
+    <div class="card">
+        <div class="card-header">
+            <h4>Detailed Reports</h4>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Report Name</th>
+                        <th>Date Generated</th>
+                        <th>Type</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Q2 2024 Student Performance</td>
+                        <td>2024-07-01</td>
+                        <td>Performance</td>
+                        <td>
+                            <a href="#" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i> View</a>
+                            <a href="#" class="btn btn-sm btn-secondary"><i class="fas fa-download"></i> Download</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>June 2024 Attendance Report</td>
+                        <td>2024-07-01</td>
+                        <td>Attendance</td>
+                        <td>
+                            <a href="#" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i> View</a>
+                            <a href="#" class="btn btn-sm btn-secondary"><i class="fas fa-download"></i> Download</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Python Fundamentals - Completion Rate</td>
+                        <td>2024-06-30</td>
+                        <td>Class</td>
+                        <td>
+                            <a href="#" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i> View</a>
+                            <a href="#" class="btn btn-sm btn-secondary"><i class="fas fa-download"></i> Download</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %} 

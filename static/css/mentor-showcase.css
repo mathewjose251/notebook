@@ -1,0 +1,561 @@
+/* Mentor Showcase and Carousel Styles */
+
+.mentor-carousel {
+    position: relative;
+    max-width: 1200px;
+    margin: 0 auto;
+    overflow: hidden;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.mentor-carousel-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.mentor-slide {
+    display: none;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.mentor-slide.active {
+    display: block;
+}
+
+.mentor-card {
+    display: flex;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 16px;
+    min-height: 400px;
+    position: relative;
+    overflow: hidden;
+}
+
+.mentor-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    z-index: 1;
+}
+
+.mentor-image {
+    flex: 0 0 200px;
+    margin-right: 2rem;
+    position: relative;
+    z-index: 2;
+}
+
+.mentor-image img {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+}
+
+.mentor-image img:hover {
+    transform: scale(1.05);
+}
+
+.mentor-info {
+    flex: 1;
+    position: relative;
+    z-index: 2;
+}
+
+.mentor-name {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: white;
+}
+
+.mentor-title {
+    font-size: 1.2rem;
+    font-weight: 500;
+    margin-bottom: 1rem;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.mentor-expertise {
+    font-size: 1rem;
+    margin-bottom: 2rem;
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.6;
+}
+
+.mentor-stats {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.stat {
+    text-align: center;
+}
+
+.stat-number {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+}
+
+.stat-label {
+    display: block;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.mentor-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.mentor-actions .btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.mentor-actions .btn-primary {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+.mentor-actions .btn-primary:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.mentor-actions .btn-outline-primary {
+    background: transparent;
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.mentor-actions .btn-outline-primary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: white;
+    transform: translateY(-2px);
+}
+
+/* Carousel Navigation */
+.carousel-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 10;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.carousel-arrow:hover {
+    background: white;
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.carousel-arrow:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: translateY(-50%) scale(1);
+}
+
+.carousel-prev {
+    left: 20px;
+}
+
+.carousel-next {
+    right: 20px;
+}
+
+.carousel-arrow i {
+    font-size: 1.2rem;
+    color: #333;
+}
+
+/* Carousel Dots */
+.carousel-dots {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.5rem;
+    z-index: 10;
+}
+
+.carousel-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.carousel-dot:hover {
+    background: rgba(255, 255, 255, 0.8);
+    transform: scale(1.2);
+}
+
+.carousel-dot.active {
+    background: white;
+    transform: scale(1.2);
+}
+
+/* Mentor Grid Layout */
+.mentor-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    padding: 2rem 0;
+}
+
+.mentor-grid-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.mentor-grid-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15);
+    border-color: #667eea;
+}
+
+.mentor-grid-image {
+    width: 100%;
+    height: 200px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.mentor-grid-image img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid white;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.mentor-grid-info {
+    padding: 1.5rem;
+}
+
+.mentor-grid-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.mentor-grid-title {
+    font-size: 1rem;
+    color: #667eea;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.mentor-grid-expertise {
+    font-size: 0.9rem;
+    color: #666;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+}
+
+.mentor-grid-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.mentor-grid-stat {
+    text-align: center;
+}
+
+.mentor-grid-stat-number {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #667eea;
+}
+
+.mentor-grid-stat-label {
+    display: block;
+    font-size: 0.8rem;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.mentor-grid-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.mentor-grid-actions .btn {
+    flex: 1;
+    padding: 0.75rem;
+    font-size: 0.9rem;
+}
+
+/* Mentor Profile Page */
+.mentor-profile {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    margin: 2rem 0;
+}
+
+.mentor-profile-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 3rem 2rem;
+    text-align: center;
+    position: relative;
+}
+
+.mentor-profile-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.mentor-profile-image {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    border: 6px solid rgba(255, 255, 255, 0.3);
+    margin: 0 auto 1.5rem;
+    position: relative;
+    z-index: 2;
+}
+
+.mentor-profile-name {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    position: relative;
+    z-index: 2;
+}
+
+.mentor-profile-title {
+    font-size: 1.25rem;
+    opacity: 0.9;
+    position: relative;
+    z-index: 2;
+}
+
+.mentor-profile-body {
+    padding: 2rem;
+}
+
+.mentor-profile-section {
+    margin-bottom: 2rem;
+}
+
+.mentor-profile-section h3 {
+    color: #333;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.mentor-profile-expertise {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.expertise-tag {
+    background: #f8f9fa;
+    color: #667eea;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border: 2px solid #e9ecef;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .mentor-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 1.5rem;
+    }
+    
+    .mentor-image {
+        margin-right: 0;
+        margin-bottom: 1.5rem;
+    }
+    
+    .mentor-image img {
+        width: 150px;
+        height: 150px;
+    }
+    
+    .mentor-stats {
+        justify-content: center;
+        gap: 1rem;
+    }
+    
+    .mentor-actions {
+        justify-content: center;
+    }
+    
+    .carousel-arrow {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .carousel-prev {
+        left: 10px;
+    }
+    
+    .carousel-next {
+        right: 10px;
+    }
+    
+    .mentor-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .mentor-profile-header {
+        padding: 2rem 1rem;
+    }
+    
+    .mentor-profile-name {
+        font-size: 2rem;
+    }
+    
+    .mentor-profile-image {
+        width: 120px;
+        height: 120px;
+    }
+}
+
+@media (max-width: 480px) {
+    .mentor-card {
+        padding: 1rem;
+    }
+    
+    .mentor-name {
+        font-size: 1.5rem;
+    }
+    
+    .mentor-stats {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .mentor-actions {
+        flex-direction: column;
+    }
+    
+    .mentor-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+.mentor-slide.active {
+    animation: slideIn 0.5s ease-out;
+}
+
+/* Loading States */
+.mentor-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 400px;
+    background: #f8f9fa;
+    border-radius: 16px;
+}
+
+.mentor-loading .spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #e9ecef;
+    border-top: 4px solid #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+} 

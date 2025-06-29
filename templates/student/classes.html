@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}My Classes - Sanchari Mentors{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">My Classes</h2>
+            
+            <!-- Enrolled Classes -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Enrolled Classes</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row" id="enrolled-classes">
+                        <!-- Enrolled classes will be loaded here -->
+                        <div class="col-12 text-center">
+                            <p class="text-muted">Loading your enrolled classes...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Available Classes -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Available Classes</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row" id="available-classes">
+                        <!-- Available classes will be loaded here -->
+                        <div class="col-12 text-center">
+                            <p class="text-muted">Loading available classes...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Load classes data
+    fetch('/api/classes')
+        .then(response => response.json())
+        .then(data => {
+            displayClasses(data);
+        })
+        .catch(error => {
+            console.error('Error loading classes:', error);
+        });
+});
+
+function displayClasses(classesData) {
+    const enrolledContainer = document.getElementById('enrolled-classes');
+    const availableContainer = document.getElementById('available-classes');
+    
+    // Filter enrolled vs available classes (placeholder logic)
+    const enrolledClasses = classesData.classes.filter(c => c.enrolled);
+    const availableClasses = classesData.classes.filter(c => !c.enrolled);
+    
+    // Display enrolled classes
+    if (enrolledClasses.length > 0) {
+        enrolledContainer.innerHTML = enrolledClasses.map(classItem => `
+            <div class="col-md-6 col-lg-4 mb-3">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h6 class="card-title">${classItem.title}</h6>
+                        <p class="card-text text-muted">${classItem.category}</p>
+                        <p class="card-text"><small>Trainer: ${classItem.trainer}</small></p>
+                        <p class="card-text"><small>Date: ${classItem.date} at ${classItem.time}</small></p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge bg-success">Enrolled</span>
+                            <button class="btn btn-sm btn-primary" onclick="viewClass(${classItem.id})">View Details</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    } else {
+        enrolledContainer.innerHTML = '<div class="col-12 text-center"><p class="text-muted">You are not enrolled in any classes yet.</p></div>';
+    }
+    
+    // Display available classes
+    if (availableClasses.length > 0) {
+        availableContainer.innerHTML = availableClasses.map(classItem => `
+            <div class="col-md-6 col-lg-4 mb-3">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h6 class="card-title">${classItem.title}</h6>
+                        <p class="card-text text-muted">${classItem.category}</p>
+                        <p class="card-text"><small>Trainer: ${classItem.trainer}</small></p>
+                        <p class="card-text"><small>Date: ${classItem.date} at ${classItem.time}</small></p>
+                        <p class="card-text"><small>Duration: ${classItem.duration} minutes</small></p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge bg-warning">Available</span>
+                            <button class="btn btn-sm btn-success" onclick="enrollInClass(${classItem.id})">Enroll</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    } else {
+        availableContainer.innerHTML = '<div class="col-12 text-center"><p class="text-muted">No available classes at the moment.</p></div>';
+    }
+}
+
+function viewClass(classId) {
+    // Navigate to class details page
+    window.location.href = `/student/class/${classId}`;
+}
+
+function enrollInClass(classId) {
+    // Enroll in class logic
+    if (confirm('Are you sure you want to enroll in this class?')) {
+        fetch(`/api/enroll/${classId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Successfully enrolled in class!');
+                location.reload();
+            } else {
+                alert('Failed to enroll: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error enrolling:', error);
+            alert('Error enrolling in class. Please try again.');
+        });
+    }
+}
+</script>
+{% endblock %} 

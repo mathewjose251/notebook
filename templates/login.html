@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Sanchari Mentors</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .login-container {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            padding: 2.5rem 2rem;
+            max-width: 400px;
+            width: 100%;
+        }
+        .google-btn {
+            background: #fff;
+            color: #444;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: all 0.2s;
+            margin-bottom: 1.5rem;
+        }
+        .google-btn:hover {
+            background: #f5f5f5;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        }
+        .google-icon {
+            width: 24px;
+            height: 24px;
+        }
+        .note {
+            font-size: 0.95rem;
+            color: #888;
+            margin-bottom: 1.5rem;
+        }
+        .dummy-login {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1.5rem;
+            font-size: 0.95rem;
+            color: #555;
+        }
+        .dummy-login strong {
+            color: #764ba2;
+        }
+        .admin-login-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.8);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+        .admin-login-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+        }
+        .password-toggle {
+            cursor: pointer;
+            color: #007bff;
+            font-size: 0.9rem;
+            text-decoration: underline;
+        }
+        .password-hidden {
+            color: #999;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <!-- Admin Login Button (Top Right) -->
+    <a href="#" class="admin-login-btn" onclick="showAdminLogin()">
+        <i class="fas fa-user-shield me-1"></i>Admin Access
+    </a>
+
+    <div class="login-container">
+        <h2 class="mb-4 text-center">Login to Sanchari Mentors</h2>
+        <a href="{{ url_for('google.login') }}" class="google-btn">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" class="google-icon" alt="Google Logo">
+            Login with Google
+        </a>
+        <div class="note text-center">
+            <i class="fas fa-info-circle me-1"></i>
+            Only Google (Gmail) login is allowed for regular users.<br>
+            <span class="text-danger">Direct registration is disabled.</span>
+        </div>
+        <div class="dummy-login">
+            <strong>For Admin/Testing Only:</strong><br>
+            <b>Admin:</b> admin@sanchari.org / <span class="password-hidden">••••••••</span><br>
+            <b>Dummy Trainer:</b> trainer1@sanchari.org / <span class="password-hidden">•••••</span><br>
+            <b>Dummy Student:</b> student1@sanchari.org / <span class="password-hidden">•••••</span><br>
+            <span class="text-danger">(Do not share these credentials!)</span><br>
+            <span class="password-toggle" onclick="togglePasswords()">Show/Hide Passwords</span>
+        </div>
+    </div>
+
+    <!-- Admin Login Modal -->
+    <div class="modal fade" id="adminLoginModal" tabindex="-1">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Admin Login</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action="{{ url_for('login') }}">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Login</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function showAdminLogin() {
+            const modal = new bootstrap.Modal(document.getElementById('adminLoginModal'));
+            modal.show();
+        }
+
+        function togglePasswords() {
+            const hiddenPasswords = document.querySelectorAll('.password-hidden');
+            const toggleBtn = document.querySelector('.password-toggle');
+            
+            hiddenPasswords.forEach((span, index) => {
+                const passwords = ['Admin@2025', 'dummy', 'dummy'];
+                if (span.textContent === '••••••••' || span.textContent === '•••••') {
+                    span.textContent = passwords[index];
+                    span.style.color = '#dc3545';
+                    span.style.fontWeight = 'bold';
+                } else {
+                    span.textContent = span.textContent.length > 5 ? '••••••••' : '•••••';
+                    span.style.color = '#999';
+                    span.style.fontWeight = 'normal';
+                }
+            });
+            
+            if (toggleBtn.textContent === 'Show/Hide Passwords') {
+                toggleBtn.textContent = 'Hide Passwords';
+            } else {
+                toggleBtn.textContent = 'Show/Hide Passwords';
+            }
+        }
+    </script>
+</body>
+</html>
+

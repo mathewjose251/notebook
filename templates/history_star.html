@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History Star - Interactive History Learning | Sanchari Mentors</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body class="bg-gradient-to-br from-red-100 via-pink-50 to-purple-100 min-h-screen">
+<div id="historystar-root" class="max-w-4xl mx-auto py-8"></div>
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function shuffle(array) {
+  let currentIndex = array.length, randomIndex;
+  while (currentIndex !== 0) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+    [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+  }
+  return array;
+}
+
+// Enhanced History questions with grade levels
+const HISTORY_QUESTIONS = {
+  ancient: {
+    4: [
+      { question: "Which ancient wonder was located in Egypt?", options: ['Colossus of Rhodes', 'Hanging Gardens', 'Pyramids of Giza', 'Temple of Artemis'], correct: 'Pyramids of Giza' },
+      { question: "Who was the first emperor of Rome?", options: ['Julius Caesar', 'Augustus', 'Nero', 'Constantine'], correct: 'Augustus' },
+      { question: "Which ancient civilization built the Great Wall?", options: ['Egypt', 'Greece', 'China', 'India'], correct: 'China' }
+    ],
+    5: [
+      { question: "What was the capital of the Roman Empire?", options: ['Athens', 'Rome', 'Constantinople', 'Alexandria'], correct: 'Rome' },
+      { question: "Who was the famous Greek philosopher who taught Alexander the Great?", options: ['Socrates', 'Plato', 'Aristotle', 'Pythagoras'], correct: 'Aristotle' },
+      { question: "Which ancient civilization invented paper?", options: ['Egypt', 'China', 'Greece', 'Rome'], correct: 'China' }
+    ],
+    6: [
+      { question: "What was the Pax Romana?", options: ['A war', 'A peace period', 'A festival', 'A law'], correct: 'A peace period' },
+      { question: "Who was the first emperor of China?", options: ['Confucius', 'Qin Shi Huang', 'Han Wudi', 'Tang Taizong'], correct: 'Qin Shi Huang' },
+      { question: "What was the Silk Road?", options: ['A military road', 'A trade route', 'A religious path', 'A river'], correct: 'A trade route' }
+    ]
+  },
+  medieval: {
+    4: [
+      { question: "What was a knight?", options: ['A farmer', 'A warrior', 'A merchant', 'A priest'], correct: 'A warrior' },
+      { question: "Who lived in castles?", options: ['Kings and queens', 'Farmers', 'Merchants', 'Priests'], correct: 'Kings and queens' },
+      { question: "What was the Black Death?", options: ['A war', 'A disease', 'A famine', 'A storm'], correct: 'A disease' }
+    ],
+    5: [
+      { question: "What was the Magna Carta?", options: ['A castle', 'A document', 'A weapon', 'A ship'], correct: 'A document' },
+      { question: "Who was Joan of Arc?", options: ['A queen', 'A warrior', 'A saint', 'All of the above'], correct: 'All of the above' },
+      { question: "What was the Crusades?", options: ['Religious wars', 'Trade routes', 'Festivals', 'Schools'], correct: 'Religious wars' }
+    ],
+    6: [
+      { question: "What was feudalism?", options: ['A religion', 'A government system', 'A trade system', 'A military system'], correct: 'A government system' },
+      { question: "Who was Charlemagne?", options: ['A French king', 'A German emperor', 'A Roman emperor', 'A British king'], correct: 'A German emperor' },
+      { question: "What was the Hundred Years' War fought between?", options: ['England and France', 'Spain and Portugal', 'Germany and Italy', 'Russia and Poland'], correct: 'England and France' }
+    ]
+  },
+  modern: {
+    4: [
+      { question: "Who discovered America?", options: ['Christopher Columbus', 'Marco Polo', 'Vasco da Gama', 'Ferdinand Magellan'], correct: 'Christopher Columbus' },
+      { question: "What was the Industrial Revolution?", options: ['A war', 'A period of change', 'A disease', 'A famine'], correct: 'A period of change' },
+      { question: "Who was Napoleon?", options: ['A French emperor', 'A British king', 'A German leader', 'A Russian tsar'], correct: 'A French emperor' }
+    ],
+    5: [
+      { question: "What was the American Revolution?", options: ['A war for independence', 'A civil war', 'A religious war', 'A trade war'], correct: 'A war for independence' },
+      { question: "Who was the first President of the United States?", options: ['Benjamin Franklin', 'Thomas Jefferson', 'John Adams', 'George Washington'], correct: 'George Washington' },
+      { question: "What was the French Revolution?", options: ['A war', 'A social change', 'A famine', 'A disease'], correct: 'A social change' }
+    ],
+    6: [
+      { question: "What was the Civil War fought over?", options: ['Taxes', 'Slavery', 'Trade', 'Religion'], correct: 'Slavery' },
+      { question: "Who was Abraham Lincoln?", options: ['A general', 'A president', 'A senator', 'A governor'], correct: 'A president' },
+      { question: "What was the Gold Rush?", options: ['A war', 'A migration', 'A famine', 'A disease'], correct: 'A migration' }
+    ]
+  }
+};
+
+const topics = {
+  ancient: { name: 'Ancient History', icon: '🏛️', color: 'bg-yellow-500' },
+  medieval: { name: 'Medieval History', icon: '⚔️', color: 'bg-red-500' },
+  modern: { name: 'Modern History', icon: '🚀', color: 'bg-blue-500' }
+};
+
+function generateHistoryQuestion(selectedTopic, selectedGrade) {
+  if (HISTORY_QUESTIONS[selectedTopic] && HISTORY_QUESTIONS[selectedTopic][selectedGrade]) {
+    const questions = HISTORY_QUESTIONS[selectedTopic][selectedGrade];
+    return questions[getRandomInt(0, questions.length - 1)];
+  }
+  // Fallback
+  return {
+    question: "Who discovered America?",
+    options: ['Christopher Columbus', 'Marco Polo', 'Vasco da Gama', 'Ferdinand Magellan'],
+    correct: 'Christopher Columbus'
+  };
+}
+
+function HistoryStarGame() {
+  const [studentName, setStudentName] = useState(localStorage.getItem('historystar_student_name') || '');
+  const [studentClass, setStudentClass] = useState(localStorage.getItem('historystar_student_class') || '');
+  const [showNameInput, setShowNameInput] = useState(!(studentName && studentClass));
+  const [selectedGrade, setSelectedGrade] = useState(4);
+  const [selectedTopic, setSelectedTopic] = useState('ancient');
+  const [stars, setStars] = useState(100);
+  const [problemsSolved, setProblemsSolved] = useState(0);
+  const [currentQ, setCurrentQ] = useState(generateHistoryQuestion('ancient', 4));
+  const [selected, setSelected] = useState('');
+  const [showResult, setShowResult] = useState(false);
+  const [isCorrect, setIsCorrect] = useState(false);
+  const [attempts, setAttempts] = useState(0);
+  const [leaderboard, setLeaderboard] = useState(JSON.parse(localStorage.getItem('historystar_leaderboard') || '[]'));
+
+  useEffect(() => {
+    if (!showNameInput) {
+      localStorage.setItem('historystar_student_name', studentName);
+      localStorage.setItem('historystar_student_class', studentClass);
+    }
+  }, [studentName, studentClass, showNameInput]);
+
+  function saveStudentInfo() {
+    if (studentName && studentClass) setShowNameInput(false);
+  }
+
+  function selectGrade(grade) {
+    setSelectedGrade(grade);
+    setCurrentQ(generateHistoryQuestion(selectedTopic, grade));
+    setSelected('');
+    setShowResult(false);
+    setIsCorrect(false);
+    setAttempts(0);
+  }
+
+  function selectTopic(topic) {
+    setSelectedTopic(topic);
+    setCurrentQ(generateHistoryQuestion(topic, selectedGrade));
+    setSelected('');
+    setShowResult(false);
+    setIsCorrect(false);
+    setAttempts(0);
+  }
+
+  function checkAnswer() {
+    if (!selected) return;
+    setAttempts(a => a + 1);
+    if (selected === currentQ.correct) {
+      setIsCorrect(true);
+      setShowResult(true);
+      setStars(s => s + (attempts === 0 ? 5 : attempts === 1 ? 3 : 1));
+      setProblemsSolved(p => p + 1);
+      updateLeaderboard(stars + (attempts === 0 ? 5 : attempts === 1 ? 3 : 1), problemsSolved + 1);
+    } else {
+      setIsCorrect(false);
+      setShowResult(true);
+    }
+  }
+
+  function nextQuestion() {
+    setCurrentQ(generateHistoryQuestion(selectedTopic, selectedGrade));
+    setSelected('');
+    setShowResult(false);
+    setIsCorrect(false);
+    setAttempts(0);
+  }
+
+  function updateLeaderboard(newStars, newSolved) {
+    let lb = JSON.parse(localStorage.getItem('historystar_leaderboard') || '[]');
+    const idx = lb.findIndex(e => e.name === studentName && e.class === studentClass);
+    if (idx >= 0) {
+      lb[idx].stars = Math.max(lb[idx].stars, newStars);
+      lb[idx].solved = Math.max(lb[idx].solved, newSolved);
+    } else {
+      lb.push({ name: studentName, class: studentClass, stars: newStars, solved: newSolved });
+    }
+    lb.sort((a, b) => b.stars - a.stars);
+    lb = lb.slice(0, 10);
+    localStorage.setItem('historystar_leaderboard', JSON.stringify(lb));
+    setLeaderboard(lb);
+  }
+
+  function resetStudent() {
+    setStudentName('');
+    setStudentClass('');
+    setShowNameInput(true);
+    setStars(100);
+    setProblemsSolved(0);
+  }
+
+  function selectExistingStudent(name, className) {
+    setStudentName(name);
+    setStudentClass(className);
+    localStorage.setItem('historystar_student_name', name);
+    localStorage.setItem('historystar_student_class', className);
+    setShowNameInput(false);
+  }
+
+  return (
+    <div className="bg-white rounded-xl shadow-lg p-6">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-3xl font-bold text-red-600 mb-2">History Star</h1>
+          <p className="text-gray-600">Interactive History Learning with Grade & Topic Selection</p>
+        </div>
+        <div className="flex items-center space-x-4">
+          <div className="bg-yellow-100 px-3 py-1 rounded-full">
+            <span className="font-bold text-yellow-700">⭐ {stars}</span>
+          </div>
+          <div className="bg-red-100 px-3 py-1 rounded-full">
+            <span className="font-bold text-red-700">✔️ {problemsSolved}</span>
+          </div>
+        </div>
+      </div>
+
+      {showNameInput ? (
+        <div className="mb-6">
+          <h3 className="text-xl font-bold mb-4">Welcome to History Star!</h3>
+          <div className="space-y-3">
+            <input className="w-full border p-2 rounded" placeholder="Your Name" value={studentName} onChange={e => setStudentName(e.target.value)} />
+            <input className="w-full border p-2 rounded" placeholder="Your Class" value={studentClass} onChange={e => setStudentClass(e.target.value)} />
+            <button className="w-full bg-red-500 text-white px-4 py-2 rounded" onClick={saveStudentInfo}>Start Learning</button>
+          </div>
+          <div id="existing-students" className="mt-4">
+            <h4 className="text-md font-semibold mb-2">Or select your name:</h4>
+            <div className="flex flex-wrap gap-2">
+              {leaderboard.map(entry => (
+                <button key={entry.name + entry.class} onClick={() => selectExistingStudent(entry.name, entry.class)} className="bg-red-100 hover:bg-red-200 text-red-800 px-3 py-1 rounded">{entry.name} ({entry.class})</button>
+              ))}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <>
+          <div className="mb-4 flex items-center justify-between bg-blue-50 p-2 rounded">
+            <span className="font-semibold text-blue-800">{studentName} - {studentClass}</span>
+            <button className="text-sm text-red-600 underline" onClick={resetStudent}>Change</button>
+          </div>
+
+          {/* Grade Selection */}
+          <div className="mb-4">
+            <h3 className="font-bold mb-2">Grade Level:</h3>
+            <div className="grid grid-cols-3 gap-2">
+              {[4, 5, 6, 7, 8, 9, 10, 11, 12].map(grade => (
+                <button
+                  key={grade}
+                  className={`p-2 rounded ${selectedGrade === grade ? 'bg-red-500 text-white' : 'bg-gray-200'}`}
+                  onClick={() => selectGrade(grade)}
+                >
+                  Grade {grade}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Topic Selection */}
+          <div className="mb-6">
+            <h3 className="font-bold mb-2">History Topics:</h3>
+            <div className="grid grid-cols-1 gap-2">
+              {Object.entries(topics).map(([key, topic]) => (
+                <button
+                  key={key}
+                  className={`p-3 rounded text-left ${selectedTopic === key ? 'bg-red-500 text-white' : 'bg-gray-100'}`}
+                  onClick={() => selectTopic(key)}
+                >
+                  {topic.icon} {topic.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Question */}
+          <div className="mb-6">
+            <div className="text-xl font-bold mb-4">{currentQ.question}</div>
+            <div className="grid grid-cols-2 gap-3">
+              {currentQ.options.map(opt => (
+                <button
+                  key={opt}
+                  className={`border rounded p-3 text-left ${selected === opt ? 'bg-red-200' : 'bg-white'} ${showResult && opt === currentQ.correct ? 'border-green-500' : ''}`}
+                  disabled={showResult}
+                  onClick={() => setSelected(opt)}
+                >
+                  {opt}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="mb-6">
+            {!showResult ? (
+              <button className="bg-red-500 text-white px-4 py-2 rounded" disabled={!selected} onClick={checkAnswer}>Check Answer</button>
+            ) : (
+              <div className="flex items-center space-x-4">
+                <span className={`font-bold ${isCorrect ? 'text-green-600' : 'text-red-600'}`}>
+                  {isCorrect ? '✅ Correct!' : '❌ Try Again!'}
+                </span>
+                <button className="bg-red-500 text-white px-4 py-2 rounded" onClick={nextQuestion}>Next Question</button>
+              </div>
+            )}
+          </div>
+
+          {/* Leaderboard */}
+          <div className="mt-8">
+            <h2 className="text-xl font-bold mb-4">🏆 Leaderboard</h2>
+            <div className="bg-gray-50 rounded p-4">
+              {leaderboard.length === 0 ? <div>No scores yet.</div> : leaderboard.map((entry, i) => (
+                <div key={i} className={`flex justify-between ${entry.name === studentName && entry.class === studentClass ? 'font-bold text-red-600' : ''}`}>
+                  <span>{i + 1}. {entry.name} ({entry.class})</span>
+                  <span>⭐ {entry.stars} | ✔️ {entry.solved}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.render(<HistoryStarGame />, document.getElementById('historystar-root'));
+</script>
+</body>
+</html> 

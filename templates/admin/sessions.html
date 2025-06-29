@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block title %}Session Management - Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">Session Management</h2>
+            
+            <!-- Session Stats -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Session Overview</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 text-center">
+                            <div class="border rounded p-3">
+                                <h4 class="text-primary" id="total-sessions">0</h4>
+                                <p class="text-muted mb-0">Total Sessions</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="border rounded p-3">
+                                <h4 class="text-success" id="completed-sessions">0</h4>
+                                <p class="text-muted mb-0">Completed</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="border rounded p-3">
+                                <h4 class="text-warning" id="upcoming-sessions">0</h4>
+                                <p class="text-muted mb-0">Upcoming</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="border rounded p-3">
+                                <h4 class="text-info" id="avg-attendance">0%</h4>
+                                <p class="text-muted mb-0">Avg Attendance</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sessions Table -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">All Sessions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Class</th>
+                                    <th>Date & Time</th>
+                                    <th>Trainer</th>
+                                    <th>Attendance</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sessions-table">
+                                <!-- Sessions will be loaded here -->
+                                <tr>
+                                    <td colspan="6" class="text-center">
+                                        <p class="text-muted">Loading sessions...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadSessionStats();
+    loadSessions();
+});
+
+function loadSessionStats() {
+    const stats = {
+        total: 45,
+        completed: 32,
+        upcoming: 13,
+        attendance: 87
+    };
+    
+    document.getElementById('total-sessions').textContent = stats.total;
+    document.getElementById('completed-sessions').textContent = stats.completed;
+    document.getElementById('upcoming-sessions').textContent = stats.upcoming;
+    document.getElementById('avg-attendance').textContent = stats.attendance + '%';
+}
+
+function loadSessions() {
+    const sessions = [
+        {
+            id: 1,
+            class: "Introduction to AI",
+            date: "2025-06-15",
+            time: "10:00",
+            trainer: "Dr. Priya Sharma",
+            attendance: "28/30",
+            status: "completed"
+        },
+        {
+            id: 2,
+            class: "Advanced Mathematics",
+            date: "2025-06-16",
+            time: "14:00",
+            trainer: "Neha Gupta",
+            attendance: "22/25",
+            status: "completed"
+        },
+        {
+            id: 3,
+            class: "Communication Skills",
+            date: "2025-06-20",
+            time: "16:00",
+            trainer: "Anjali Desai",
+            attendance: "18/20",
+            status: "upcoming"
+        }
+    ];
+    
+    displaySessions(sessions);
+}
+
+function displaySessions(sessions) {
+    const tbody = document.getElementById('sessions-table');
+    
+    tbody.innerHTML = sessions.map(session => `
+        <tr>
+            <td><strong>${session.class}</strong></td>
+            <td>${session.date} at ${session.time}</td>
+            <td>${session.trainer}</td>
+            <td>${session.attendance}</td>
+            <td>
+                <span class="badge bg-${session.status === 'completed' ? 'success' : 'warning'}">${session.status}</span>
+            </td>
+            <td>
+                <div class="btn-group btn-group-sm">
+                    <button class="btn btn-outline-info" onclick="viewSession(${session.id})">View</button>
+                    <button class="btn btn-outline-primary" onclick="editSession(${session.id})">Edit</button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function viewSession(sessionId) {
+    window.location.href = `/admin/session/${sessionId}`;
+}
+
+function editSession(sessionId) {
+    alert('Edit session functionality will be implemented here.');
+}
+</script>
+{% endblock %} 

@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career Guidance - Sanchari Mentors</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .student-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem 0;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-header {
+            padding: 0 2rem 2rem;
+            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-header h2 {
+            color: #333;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            padding: 1rem 2rem;
+            color: #666;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .sidebar-nav a i {
+            margin-right: 1rem;
+            width: 20px;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .content-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .content-header h1 {
+            color: #333;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .content-header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .career-sections {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .career-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .career-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .career-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .career-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+            margin-bottom: 1.5rem;
+        }
+
+        .icon-assessment {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+        }
+
+        .icon-explore {
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+        }
+
+        .icon-college {
+            background: linear-gradient(135deg, #45b7d1, #96c93d);
+        }
+
+        .icon-counseling {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+        }
+
+        .career-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .career-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .career-features {
+            list-style: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .career-features li {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .career-features i {
+            color: #28a745;
+            width: 16px;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #666;
+            border: 1px solid #e0e0e0;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .assessment-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .assessment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .assessment-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .assessment-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .assessment-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .assessment-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: white;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .assessment-info h3 {
+            color: #333;
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .assessment-meta {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .assessment-description {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .assessment-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .career-paths {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .path-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .path-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+
+        .path-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .path-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .path-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .path-description {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .path-requirements {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .path-requirements h4 {
+            color: #333;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .path-requirements ul {
+            list-style: none;
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .path-requirements li {
+            margin-bottom: 0.25rem;
+            padding-left: 1rem;
+            position: relative;
+        }
+
+        .path-requirements li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: #667eea;
+        }
+
+        .college-info {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .college-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .college-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .college-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .college-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .college-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.25rem;
+        }
+
+        .college-location {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .college-ranking {
+            background: linear-gradient(135deg, #ffc107, #ff8f00);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .college-details {
+            margin-bottom: 1rem;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .detail-label {
+            color: #666;
+        }
+
+        .detail-value {
+            color: #333;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .student-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                padding: 1rem 0;
+            }
+
+            .sidebar-nav {
+                display: flex;
+                overflow-x: auto;
+                padding: 0 1rem;
+            }
+
+            .sidebar-nav li {
+                margin-right: 1rem;
+                margin-bottom: 0;
+                white-space: nowrap;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .career-sections {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="student-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Student Portal</h2>
+            </div>
+            <ul class="sidebar-nav">
+                <li><a href="/student/dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="/student/classes"><i class="fas fa-video"></i> Live Sessions</a></li>
+                <li><a href="/student/resources"><i class="fas fa-book"></i> Resource Library</a></li>
+                <li><a href="/student/doubts"><i class="fas fa-question-circle"></i> Doubt Clearing</a></li>
+                <li><a href="/student/career" class="active"><i class="fas fa-compass"></i> Career Guidance</a></li>
+                <li><a href="/student/skills"><i class="fas fa-user-graduate"></i> Skill Development</a></li>
+                <li><a href="/student/achievements"><i class="fas fa-trophy"></i> Achievements</a></li>
+                <li><a href="/student/community"><i class="fas fa-users"></i> Community</a></li>
+                <li><a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <div class="content-header">
+                <h1>Career Guidance Center</h1>
+                <p>Discover your potential, explore career paths, and plan your future with expert guidance</p>
+            </div>
+
+            <div class="career-sections">
+                <div class="career-card">
+                    <div class="career-icon icon-assessment">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <h3 class="career-title">Career Assessment</h3>
+                    <p class="career-description">Take comprehensive assessments to discover your interests, strengths, and ideal career matches based on your personality and skills.</p>
+                    <ul class="career-features">
+                        <li><i class="fas fa-check"></i> Personality Assessment</li>
+                        <li><i class="fas fa-check"></i> Interest Inventory</li>
+                        <li><i class="fas fa-check"></i> Skills Evaluation</li>
+                        <li><i class="fas fa-check"></i> Career Matching</li>
+                    </ul>
+                    <button class="btn btn-primary"><i class="fas fa-play"></i> Start Assessment</button>
+                </div>
+
+                <div class="career-card">
+                    <div class="career-icon icon-explore">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3 class="career-title">Explore Careers</h3>
+                    <p class="career-description">Browse detailed information about various career paths, job roles, salary expectations, and growth opportunities in different fields.</p>
+                    <ul class="career-features">
+                        <li><i class="fas fa-check"></i> 500+ Career Profiles</li>
+                        <li><i class="fas fa-check"></i> Salary Information</li>
+                        <li><i class="fas fa-check"></i> Growth Prospects</li>
+                        <li><i class="fas fa-check"></i> Industry Insights</li>
+                    </ul>
+                    <button class="btn btn-primary"><i class="fas fa-compass"></i> Explore Now</button>
+                </div>
+
+                <div class="career-card">
+                    <div class
+(Content truncated due to size limit. Use line ranges to read in chunks)

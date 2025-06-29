@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block title %}My Students - Trainer Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-4 trainer-theme">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">My Students</h2>
+            
+            <!-- Student Stats -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Student Overview</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 text-center">
+                            <div class="border rounded p-3">
+                                <h4 class="text-primary" id="total-students">0</h4>
+                                <p class="text-muted mb-0">Total Students</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="border rounded p-3">
+                                <h4 class="text-success" id="active-students">0</h4>
+                                <p class="text-muted mb-0">Active</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="border rounded p-3">
+                                <h4 class="text-warning" id="avg-progress">0%</h4>
+                                <p class="text-muted mb-0">Avg Progress</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="border rounded p-3">
+                                <h4 class="text-info" id="avg-attendance">0%</h4>
+                                <p class="text-muted mb-0">Avg Attendance</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Students Table -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">All Students</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Progress</th>
+                                    <th>Attendance</th>
+                                    <th>Last Active</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="students-table">
+                                <!-- Students will be loaded here -->
+                                <tr>
+                                    <td colspan="6" class="text-center">
+                                        <p class="text-muted">Loading students...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadStudentStats();
+    loadStudents();
+});
+
+function loadStudentStats() {
+    const stats = {
+        total: 45,
+        active: 42,
+        avgProgress: 78,
+        avgAttendance: 85
+    };
+    
+    document.getElementById('total-students').textContent = stats.total;
+    document.getElementById('active-students').textContent = stats.active;
+    document.getElementById('avg-progress').textContent = stats.avgProgress + '%';
+    document.getElementById('avg-attendance').textContent = stats.avgAttendance + '%';
+}
+
+function loadStudents() {
+    const students = [
+        {
+            id: 1,
+            name: "Priya Sharma",
+            email: "priya.sharma@gmail.com",
+            progress: 85,
+            attendance: 90,
+            lastActive: "2025-06-15"
+        },
+        {
+            id: 2,
+            name: "Rahul Kumar",
+            email: "rahul.kumar@gmail.com",
+            progress: 72,
+            attendance: 85,
+            lastActive: "2025-06-14"
+        },
+        {
+            id: 3,
+            name: "Anjali Desai",
+            email: "anjali.desai@gmail.com",
+            progress: 95,
+            attendance: 95,
+            lastActive: "2025-06-15"
+        }
+    ];
+    
+    displayStudents(students);
+}
+
+function displayStudents(students) {
+    const tbody = document.getElementById('students-table');
+    
+    tbody.innerHTML = students.map(student => `
+        <tr>
+            <td><strong>${student.name}</strong></td>
+            <td>${student.email}</td>
+            <td>
+                <div class="progress" style="height: 6px;">
+                    <div class="progress-bar" style="width: ${student.progress}%"></div>
+                </div>
+                <small class="text-muted">${student.progress}%</small>
+            </td>
+            <td>${student.attendance}%</td>
+            <td>${student.lastActive}</td>
+            <td>
+                <div class="btn-group btn-group-sm">
+                    <button class="btn btn-outline-primary" onclick="viewStudent(${student.id})">View</button>
+                    <button class="btn btn-outline-info" onclick="messageStudent(${student.id})">Message</button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function viewStudent(studentId) {
+    window.location.href = `/trainer/student/${studentId}`;
+}
+
+function messageStudent(studentId) {
+    alert('Message student functionality will be implemented here.');
+}
+</script>
+{% endblock %} 

@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computer Star - Interactive Computer Science Learning | Sanchari Mentors</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body class="bg-gradient-to-br from-purple-100 via-indigo-50 to-blue-100 min-h-screen">
+<div id="computerstar-root" class="max-w-4xl mx-auto py-8"></div>
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+// Enhanced Computer Science questions with grade levels
+const COMPUTER_QUESTIONS = {
+  programming: {
+    6: [
+      { question: "What is a variable in programming?", options: ['A number', 'A container for data', 'A function', 'A loop'], correct: 'A container for data' },
+      { question: "What does HTML stand for?", options: ['Hyper Text Markup Language', 'High Tech Modern Language', 'Home Tool Markup Language', 'Hyperlink and Text Markup Language'], correct: 'Hyper Text Markup Language' },
+      { question: "What is a loop used for?", options: ['To stop a program', 'To repeat code', 'To create variables', 'To print text'], correct: 'To repeat code' }
+    ],
+    7: [
+      { question: "What is an algorithm?", options: ['A computer program', 'A step-by-step solution', 'A programming language', 'A computer part'], correct: 'A step-by-step solution' },
+      { question: "What is the main function in programming?", options: ['A variable', 'The starting point', 'A loop', 'A comment'], correct: 'The starting point' },
+      { question: "What is debugging?", options: ['Writing code', 'Finding and fixing errors', 'Running a program', 'Creating variables'], correct: 'Finding and fixing errors' }
+    ],
+    8: [
+      { question: "What is a function in programming?", options: ['A variable', 'A reusable block of code', 'A loop', 'A comment'], correct: 'A reusable block of code' },
+      { question: "What is an array?", options: ['A single value', 'A collection of values', 'A function', 'A loop'], correct: 'A collection of values' },
+      { question: "What is object-oriented programming?", options: ['A programming style', 'A computer brand', 'A programming language', 'A software tool'], correct: 'A programming style' }
+    ]
+  },
+  hardware: {
+    6: [
+      { question: "What is the brain of the computer?", options: ['Monitor', 'CPU', 'Keyboard', 'Mouse'], correct: 'CPU' },
+      { question: "What does RAM stand for?", options: ['Random Access Memory', 'Read Access Memory', 'Random Available Memory', 'Read Available Memory'], correct: 'Random Access Memory' },
+      { question: "What is the main storage device in a computer?", options: ['RAM', 'CPU', 'Hard Drive', 'Monitor'], correct: 'Hard Drive' }
+    ],
+    7: [
+      { question: "What is a GPU?", options: ['Graphics Processing Unit', 'General Processing Unit', 'Global Processing Unit', 'Gaming Processing Unit'], correct: 'Graphics Processing Unit' },
+      { question: "What is the purpose of a motherboard?", options: ['To connect all parts', 'To store data', 'To process data', 'To display images'], correct: 'To connect all parts' },
+      { question: "What is cache memory?", options: ['Slow memory', 'Fast memory', 'External memory', 'Network memory'], correct: 'Fast memory' }
+    ],
+    8: [
+      { question: "What is a binary number system?", options: ['Base 2', 'Base 10', 'Base 16', 'Base 8'], correct: 'Base 2' },
+      { question: "What is a bit?", options: ['A byte', 'The smallest unit of data', 'A program', 'A file'], correct: 'The smallest unit of data' },
+      { question: "What is a byte?", options: ['8 bits', '4 bits', '16 bits', '32 bits'], correct: '8 bits' }
+    ]
+  },
+  internet: {
+    6: [
+      { question: "What does URL stand for?", options: ['Uniform Resource Locator', 'Universal Resource Link', 'United Resource Location', 'Universal Resource Location'], correct: 'Uniform Resource Locator' },
+      { question: "What is a web browser?", options: ['A website', 'A program to view websites', 'A search engine', 'An email service'], correct: 'A program to view websites' },
+      { question: "What is the internet?", options: ['A computer', 'A global network', 'A website', 'A program'], correct: 'A global network' }
+    ],
+    7: [
+      { question: "What is a server?", options: ['A computer that provides services', 'A website', 'A program', 'A network cable'], correct: 'A computer that provides services' },
+      { question: "What is a firewall?", options: ['A security system', 'A computer part', 'A program', 'A website'], correct: 'A security system' },
+      { question: "What is a domain name?", options: ['A website address', 'A computer name', 'A program name', 'A file name'], correct: 'A website address' }
+    ],
+    8: [
+      { question: "What is cloud computing?", options: ['Using remote servers', 'Using local storage', 'Using a computer', 'Using the internet'], correct: 'Using remote servers' },
+      { question: "What is a VPN?", options: ['Virtual Private Network', 'Very Private Network', 'Virtual Public Network', 'Very Public Network'], correct: 'Virtual Private Network' },
+      { question: "What is bandwidth?", options: ['Data transfer speed', 'Computer speed', 'Internet speed', 'Network speed'], correct: 'Data transfer speed' }
+    ]
+  }
+};
+
+const topics = {
+  programming: { name: 'Programming', icon: '💻', color: 'bg-blue-500' },
+  hardware: { name: 'Hardware', icon: '🔧', color: 'bg-green-500' },
+  internet: { name: 'Internet & Networks', icon: '🌐', color: 'bg-purple-500' }
+};
+
+function generateComputerQuestion(selectedTopic, selectedGrade) {
+  if (COMPUTER_QUESTIONS[selectedTopic] && COMPUTER_QUESTIONS[selectedTopic][selectedGrade]) {
+    const questions = COMPUTER_QUESTIONS[selectedTopic][selectedGrade];
+    return questions[getRandomInt(0, questions.length - 1)];
+  }
+  // Fallback
+  return {
+    question: "What is a variable in programming?",
+    options: ['A number', 'A container for data', 'A function', 'A loop'],
+    correct: 'A container for data'
+  };
+}
+
+function ComputerStarGame() {
+  const [studentName, setStudentName] = useState(localStorage.getItem('computerstar_student_name') || '');
+  const [studentClass, setStudentClass] = useState(localStorage.getItem('computerstar_student_class') || '');
+  const [showNameInput, setShowNameInput] = useState(!(studentName && studentClass));
+  const [selectedGrade, setSelectedGrade] = useState(6);
+  const [selectedTopic, setSelectedTopic] = useState('programming');
+  const [stars, setStars] = useState(100);
+  const [problemsSolved, setProblemsSolved] = useState(0);
+  const [currentQ, setCurrentQ] = useState(generateComputerQuestion('programming', 6));
+  const [selected, setSelected] = useState('');
+  const [showResult, setShowResult] = useState(false);
+  const [isCorrect, setIsCorrect] = useState(false);
+  const [attempts, setAttempts] = useState(0);
+  const [leaderboard, setLeaderboard] = useState(JSON.parse(localStorage.getItem('computerstar_leaderboard') || '[]'));
+
+  useEffect(() => {
+    if (!showNameInput) {
+      localStorage.setItem('computerstar_student_name', studentName);
+      localStorage.setItem('computerstar_student_class', studentClass);
+    }
+  }, [studentName, studentClass, showNameInput]);
+
+  function saveStudentInfo() {
+    if (studentName && studentClass) setShowNameInput(false);
+  }
+
+  function selectGrade(grade) {
+    setSelectedGrade(grade);
+    setCurrentQ(generateComputerQuestion(selectedTopic, grade));
+    setSelected('');
+    setShowResult(false);
+    setIsCorrect(false);
+    setAttempts(0);
+  }
+
+  function selectTopic(topic) {
+    setSelectedTopic(topic);
+    setCurrentQ(generateComputerQuestion(topic, selectedGrade));
+    setSelected('');
+    setShowResult(false);
+    setIsCorrect(false);
+    setAttempts(0);
+  }
+
+  function checkAnswer() {
+    if (!selected) return;
+    setAttempts(a => a + 1);
+    if (selected === currentQ.correct) {
+      setIsCorrect(true);
+      setShowResult(true);
+      setStars(s => s + (attempts === 0 ? 5 : attempts === 1 ? 3 : 1));
+      setProblemsSolved(p => p + 1);
+      updateLeaderboard(stars + (attempts === 0 ? 5 : attempts === 1 ? 3 : 1), problemsSolved + 1);
+    } else {
+      setIsCorrect(false);
+      setShowResult(true);
+    }
+  }
+
+  function nextQuestion() {
+    setCurrentQ(generateComputerQuestion(selectedTopic, selectedGrade));
+    setSelected('');
+    setShowResult(false);
+    setIsCorrect(false);
+    setAttempts(0);
+  }
+
+  function updateLeaderboard(newStars, newSolved) {
+    let lb = JSON.parse(localStorage.getItem('computerstar_leaderboard') || '[]');
+    const idx = lb.findIndex(e => e.name === studentName && e.class === studentClass);
+    if (idx >= 0) {
+      lb[idx].stars = Math.max(lb[idx].stars, newStars);
+      lb[idx].solved = Math.max(lb[idx].solved, newSolved);
+    } else {
+      lb.push({ name: studentName, class: studentClass, stars: newStars, solved: newSolved });
+    }
+    lb.sort((a, b) => b.stars - a.stars);
+    lb = lb.slice(0, 10);
+    localStorage.setItem('computerstar_leaderboard', JSON.stringify(lb));
+    setLeaderboard(lb);
+  }
+
+  function resetStudent() {
+    setStudentName('');
+    setStudentClass('');
+    setShowNameInput(true);
+    setStars(100);
+    setProblemsSolved(0);
+  }
+
+  function selectExistingStudent(name, className) {
+    setStudentName(name);
+    setStudentClass(className);
+    localStorage.setItem('computerstar_student_name', name);
+    localStorage.setItem('computerstar_student_class', className);
+    setShowNameInput(false);
+  }
+
+  return (
+    <div className="bg-white rounded-xl shadow-lg p-6">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-3xl font-bold text-purple-600 mb-2">Computer Star</h1>
+          <p className="text-gray-600">Interactive Computer Science Learning with Grade & Topic Selection</p>
+        </div>
+        <div className="flex items-center space-x-4">
+          <div className="bg-yellow-100 px-3 py-1 rounded-full">
+            <span className="font-bold text-yellow-700">⭐ {stars}</span>
+          </div>
+          <div className="bg-purple-100 px-3 py-1 rounded-full">
+            <span className="font-bold text-purple-700">✔️ {problemsSolved}</span>
+          </div>
+        </div>
+      </div>
+
+      {showNameInput ? (
+        <div className="mb-6">
+          <h3 className="text-xl font-bold mb-4">Welcome to Computer Star!</h3>
+          <div className="space-y-3">
+            <input className="w-full border p-2 rounded" placeholder="Your Name" value={studentName} onChange={e => setStudentName(e.target.value)} />
+            <input className="w-full border p-2 rounded" placeholder="Your Class" value={studentClass} onChange={e => setStudentClass(e.target.value)} />
+            <button className="w-full bg-purple-500 text-white px-4 py-2 rounded" onClick={saveStudentInfo}>Start Learning</button>
+          </div>
+          {/*
+          <div id="existing-students" className="mt-4">
+            <h4 className="text-md font-semibold mb-2">Or select your name:</h4>
+            <div className="flex flex-wrap gap-2">
+              {leaderboard.map(entry => (
+                <button key={entry.name + entry.class} onClick={() => selectExistingStudent(entry.name, entry.class)} className="bg-purple-100 hover:bg-purple-200 text-purple-800 px-3 py-1 rounded">{entry.name} ({entry.class})</button>
+              ))}
+            </div>
+          </div>
+          */}
+        </div>
+      ) : (
+        <>
+          <div className="mb-4 flex items-center justify-between bg-blue-50 p-2 rounded">
+            <span className="font-semibold text-blue-800">{studentName} - {studentClass}</span>
+            <button className="text-sm text-red-600 underline" onClick={resetStudent}>Change</button>
+          </div>
+
+          {/* Grade Selection */}
+          <div className="mb-4">
+            <h3 className="font-bold mb-2">Grade Level:</h3>
+            <div className="grid grid-cols-3 gap-2">
+              {[6, 7, 8, 9, 10, 11, 12].map(grade => (
+                <button
+                  key={grade}
+                  className={`p-2 rounded ${selectedGrade === grade ? 'bg-purple-500 text-white' : 'bg-gray-200'}`}
+                  onClick={() => selectGrade(grade)}
+                >
+                  Grade {grade}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Topic Selection */}
+          <div className="mb-6">
+            <h3 className="font-bold mb-2">Computer Science Topics:</h3>
+            <div className="grid grid-cols-1 gap-2">
+              {Object.entries(topics).map(([key, topic]) => (
+                <button
+                  key={key}
+                  className={`p-3 rounded text-left ${selectedTopic === key ? 'bg-purple-500 text-white' : 'bg-gray-100'}`}
+                  onClick={() => selectTopic(key)}
+                >
+                  {topic.icon} {topic.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Question */}
+          <div className="mb-6">
+            <div className="text-xl font-bold mb-4">{currentQ.question}</div>
+            <div className="grid grid-cols-2 gap-3">
+              {currentQ.options.map(opt => (
+                <button
+                  key={opt}
+                  className={`border rounded p-3 text-left ${selected === opt ? 'bg-purple-200' : 'bg-white'} ${showResult && opt === currentQ.correct ? 'border-green-500' : ''}`}
+                  disabled={showResult}
+                  onClick={() => setSelected(opt)}
+                >
+                  {opt}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="mb-6">
+            {!showResult ? (
+              <button className="bg-purple-500 text-white px-4 py-2 rounded" disabled={!selected} onClick={checkAnswer}>Check Answer</button>
+            ) : (
+              <div className="flex items-center space-x-4">
+                <span className={`font-bold ${isCorrect ? 'text-green-600' : 'text-red-600'}`}>
+                  {isCorrect ? '✅ Correct!' : '❌ Try Again!'}
+                </span>
+                <button className="bg-purple-500 text-white px-4 py-2 rounded" onClick={nextQuestion}>Next Question</button>
+              </div>
+            )}
+          </div>
+
+          {/* Leaderboard */}
+          <div className="mt-8">
+            <h2 className="text-xl font-bold mb-4">🏆 Leaderboard</h2>
+            <div className="bg-gray-50 rounded p-4">
+              {leaderboard.length === 0 ? <div>No scores yet.</div> : leaderboard.map((entry, i) => (
+                <div key={i} className={`flex justify-between ${entry.name === studentName && entry.class === studentClass ? 'font-bold text-purple-600' : ''}`}>
+                  <span>{i + 1}. {entry.name} ({entry.class})</span>
+                  <span>⭐ {entry.stars} | ✔️ {entry.solved}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.render(<ComputerStarGame />, document.getElementById('computerstar-root'));
+</script>
+</body>
+</html> 

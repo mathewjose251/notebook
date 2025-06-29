@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Science Star - Interactive Science Learning | Sanchari Mentors</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body class="bg-gradient-to-br from-orange-100 via-yellow-50 to-red-100 min-h-screen">
+<div id="sciencestar-root" class="max-w-4xl mx-auto py-8"></div>
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function shuffle(array) {
+  let currentIndex = array.length, randomIndex;
+  while (currentIndex !== 0) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+    [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+  }
+  return array;
+}
+
+// Enhanced Science questions with grade levels
+const SCIENCE_QUESTIONS = {
+  physics: {
+    4: [
+      { question: "What is the force that pulls objects toward Earth?", options: ['Gravity', 'Magnetism', 'Electricity', 'Wind'], correct: 'Gravity' },
+      { question: "What happens when you heat water to 100°C?", options: ['It freezes', 'It boils', 'It melts', 'It evaporates'], correct: 'It boils' },
+      { question: "Which of these is a source of light?", options: ['Moon', 'Sun', 'Earth', 'Mars'], correct: 'Sun' }
+    ],
+    5: [
+      { question: "What is the unit of measurement for force?", options: ['Newton', 'Watt', 'Joule', 'Meter'], correct: 'Newton' },
+      { question: "What type of energy does a moving car have?", options: ['Potential', 'Kinetic', 'Chemical', 'Electrical'], correct: 'Kinetic' },
+      { question: "What is the speed of light?", options: ['300,000 km/s', '200,000 km/s', '400,000 km/s', '100,000 km/s'], correct: '300,000 km/s' }
+    ],
+    6: [
+      { question: "What is the law of conservation of energy?", options: ['Energy can be created', 'Energy can be destroyed', 'Energy cannot be created or destroyed', 'Energy always increases'], correct: 'Energy cannot be created or destroyed' },
+      { question: "What is the SI unit of power?", options: ['Watt', 'Joule', 'Newton', 'Meter'], correct: 'Watt' },
+      { question: "What is the formula for density?", options: ['mass × volume', 'mass ÷ volume', 'volume ÷ mass', 'mass + volume'], correct: 'mass ÷ volume' }
+    ]
+  },
+  chemistry: {
+    4: [
+      { question: "What is the chemical symbol for water?", options: ['H2O', 'CO2', 'O2', 'N2'], correct: 'H2O' },
+      { question: "What is the most abundant element in the universe?", options: ['Oxygen', 'Carbon', 'Hydrogen', 'Nitrogen'], correct: 'Hydrogen' },
+      { question: "What state of matter is ice?", options: ['Solid', 'Liquid', 'Gas', 'Plasma'], correct: 'Solid' }
+    ],
+    5: [
+      { question: "What is the atomic number of carbon?", options: ['6', '12', '14', '16'], correct: '6' },
+      { question: "What is the chemical symbol for gold?", options: ['Ag', 'Au', 'Fe', 'Cu'], correct: 'Au' },
+      { question: "What is the pH of a neutral solution?", options: ['0', '7', '14', '10'], correct: '7' }
+    ],
+    6: [
+      { question: "What is the molecular formula for glucose?", options: ['C6H12O6', 'C12H22O11', 'CH3COOH', 'NaHCO3'], correct: 'C6H12O6' },
+      { question: "What type of bond is formed when electrons are shared?", options: ['Ionic', 'Covalent', 'Metallic', 'Hydrogen'], correct: 'Covalent' },
+      { question: "What is the chemical symbol for iron?", options: ['Ir', 'Fe', 'In', 'Fr'], correct: 'Fe' }
+    ]
+  },
+  biology: {
+    4: [
+      { question: "What is the powerhouse of the cell?", options: ['Nucleus', 'Mitochondria', 'Cell wall', 'Cytoplasm'], correct: 'Mitochondria' },
+      { question: "What do plants need for photosynthesis?", options: ['Water and soil', 'Sunlight and CO2', 'Oxygen and food', 'Heat and light'], correct: 'Sunlight and CO2' },
+      { question: "What is the largest organ in the human body?", options: ['Heart', 'Brain', 'Liver', 'Skin'], correct: 'Skin' }
+    ],
+    5: [
+      { question: "What is the process by which plants make their own food?", options: ['Respiration', 'Photosynthesis', 'Digestion', 'Circulation'], correct: 'Photosynthesis' },
+      { question: "What is the basic unit of life?", options: ['Atom', 'Cell', 'Molecule', 'Tissue'], correct: 'Cell' },
+      { question: "What system pumps blood through the body?", options: ['Digestive', 'Circulatory', 'Respiratory', 'Nervous'], correct: 'Circulatory' }
+    ],
+    6: [
+      { question: "What is the study of heredity called?", options: ['Ecology', 'Genetics', 'Anatomy', 'Physiology'], correct: 'Genetics' },
+      { question: "What is the function of DNA?", options: ['Energy storage', 'Genetic information', 'Cell structure', 'Protein synthesis'], correct: 'Genetic information' },
+      { question: "What is the process of cell division called?", options: ['Mitosis', 'Meiosis', 'Photosynthesis', 'Respiration'], correct: 'Mitosis' }
+    ]
+  }
+};
+
+const topics = {
+  physics: { name: 'Physics', icon: '⚡', color: 'bg-blue-500' },
+  chemistry: { name: 'Chemistry', icon: '🧪', color: 'bg-green-500' },
+  biology: { name: 'Biology', icon: '🧬', color: 'bg-purple-500' }
+};
+
+function generateScienceQuestion(selectedTopic, selectedGrade) {
+  if (SCIENCE_QUESTIONS[selectedTopic] && SCIENCE_QUESTIONS[selectedTopic][selectedGrade]) {
+    const questions = SCIENCE_QUESTIONS[selectedTopic][selectedGrade];
+    return questions[getRandomInt(0, questions.length - 1)];
+  }
+  // Fallback
+  return {
+    question: "What is the force that pulls objects toward Earth?",
+    options: ['Gravity', 'Magnetism', 'Electricity', 'Wind'],
+    correct: 'Gravity'
+  };
+}
+
+function ScienceStarGame() {
+  const [studentName, setStudentName] = useState(localStorage.getItem('sciencestar_student_name') || '');
+  const [studentClass, setStudentClass] = useState(localStorage.getItem('sciencestar_student_class') || '');
+  const [showNameInput, setShowNameInput] = useState(!(studentName && studentClass));
+  const [selectedGrade, setSelectedGrade] = useState(4);
+  const [selectedTopic, setSelectedTopic] = useState('physics');
+  const [stars, setStars] = useState(100);
+  const [problemsSolved, setProblemsSolved] = useState(0);
+  const [currentQ, setCurrentQ] = useState(generateScienceQuestion('physics', 4));
+  const [selected, setSelected] = useState('');
+  const [showResult, setShowResult] = useState(false);
+  const [isCorrect, setIsCorrect] = useState(false);
+  const [attempts, setAttempts] = useState(0);
+  const [leaderboard, setLeaderboard] = useState(JSON.parse(localStorage.getItem('sciencestar_leaderboard') || '[]'));
+
+  useEffect(() => {
+    if (!showNameInput) {
+      localStorage.setItem('sciencestar_student_name', studentName);
+      localStorage.setItem('sciencestar_student_class', studentClass);
+    }
+  }, [studentName, studentClass, showNameInput]);
+
+  function saveStudentInfo() {
+    if (studentName && studentClass) setShowNameInput(false);
+  }
+
+  function selectGrade(grade) {
+    setSelectedGrade(grade);
+    setCurrentQ(generateScienceQuestion(selectedTopic, grade));
+    setSelected('');
+    setShowResult(false);
+    setIsCorrect(false);
+    setAttempts(0);
+  }
+
+  function selectTopic(topic) {
+    setSelectedTopic(topic);
+    setCurrentQ(generateScienceQuestion(topic, selectedGrade));
+    setSelected('');
+    setShowResult(false);
+    setIsCorrect(false);
+    setAttempts(0);
+  }
+
+  function checkAnswer() {
+    if (!selected) return;
+    setAttempts(a => a + 1);
+    if (selected === currentQ.correct) {
+      setIsCorrect(true);
+      setShowResult(true);
+      setStars(s => s + (attempts === 0 ? 5 : attempts === 1 ? 3 : 1));
+      setProblemsSolved(p => p + 1);
+      updateLeaderboard(stars + (attempts === 0 ? 5 : attempts === 1 ? 3 : 1), problemsSolved + 1);
+    } else {
+      setIsCorrect(false);
+      setShowResult(true);
+    }
+  }
+
+  function nextQuestion() {
+    setCurrentQ(generateScienceQuestion(selectedTopic, selectedGrade));
+    setSelected('');
+    setShowResult(false);
+    setIsCorrect(false);
+    setAttempts(0);
+  }
+
+  function updateLeaderboard(newStars, newSolved) {
+    let lb = JSON.parse(localStorage.getItem('sciencestar_leaderboard') || '[]');
+    const idx = lb.findIndex(e => e.name === studentName && e.class === studentClass);
+    if (idx >= 0) {
+      lb[idx].stars = Math.max(lb[idx].stars, newStars);
+      lb[idx].solved = Math.max(lb[idx].solved, newSolved);
+    } else {
+      lb.push({ name: studentName, class: studentClass, stars: newStars, solved: newSolved });
+    }
+    lb.sort((a, b) => b.stars - a.stars);
+    lb = lb.slice(0, 10);
+    localStorage.setItem('sciencestar_leaderboard', JSON.stringify(lb));
+    setLeaderboard(lb);
+  }
+
+  function resetStudent() {
+    setStudentName('');
+    setStudentClass('');
+    setShowNameInput(true);
+    setStars(100);
+    setProblemsSolved(0);
+  }
+
+  function selectExistingStudent(name, className) {
+    setStudentName(name);
+    setStudentClass(className);
+    localStorage.setItem('sciencestar_student_name', name);
+    localStorage.setItem('sciencestar_student_class', className);
+    setShowNameInput(false);
+  }
+
+  return (
+    <div className="bg-white rounded-xl shadow-lg p-6">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-3xl font-bold text-orange-600 mb-2">Science Star</h1>
+          <p className="text-gray-600">Interactive Science Learning with Grade & Topic Selection</p>
+        </div>
+        <div className="flex items-center space-x-4">
+          <div className="bg-yellow-100 px-3 py-1 rounded-full">
+            <span className="font-bold text-yellow-700">⭐ {stars}</span>
+          </div>
+          <div className="bg-orange-100 px-3 py-1 rounded-full">
+            <span className="font-bold text-orange-700">✔️ {problemsSolved}</span>
+          </div>
+        </div>
+      </div>
+
+      {showNameInput ? (
+        <div className="mb-6">
+          <h3 className="text-xl font-bold mb-4">Welcome to Science Star!</h3>
+          <div className="space-y-3">
+            <input className="w-full border p-2 rounded" placeholder="Your Name" value={studentName} onChange={e => setStudentName(e.target.value)} />
+            <input className="w-full border p-2 rounded" placeholder="Your Class" value={studentClass} onChange={e => setStudentClass(e.target.value)} />
+            <button className="w-full bg-orange-500 text-white px-4 py-2 rounded" onClick={saveStudentInfo}>Start Learning</button>
+          </div>
+          <div id="existing-students" className="mt-4">
+            <h4 className="text-md font-semibold mb-2">Or select your name:</h4>
+            <div className="flex flex-wrap gap-2">
+              {leaderboard.map(entry => (
+                <button key={entry.name + entry.class} onClick={() => selectExistingStudent(entry.name, entry.class)} className="bg-orange-100 hover:bg-orange-200 text-orange-800 px-3 py-1 rounded">{entry.name} ({entry.class})</button>
+              ))}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <>
+          <div className="mb-4 flex items-center justify-between bg-blue-50 p-2 rounded">
+            <span className="font-semibold text-blue-800">{studentName} - {studentClass}</span>
+            <button className="text-sm text-red-600 underline" onClick={resetStudent}>Change</button>
+          </div>
+
+          {/* Grade Selection */}
+          <div className="mb-4">
+            <h3 className="font-bold mb-2">Grade Level:</h3>
+            <div className="grid grid-cols-3 gap-2">
+              {[4, 5, 6, 7, 8, 9, 10, 11, 12].map(grade => (
+                <button
+                  key={grade}
+                  className={`p-2 rounded ${selectedGrade === grade ? 'bg-orange-500 text-white' : 'bg-gray-200'}`}
+                  onClick={() => selectGrade(grade)}
+                >
+                  Grade {grade}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Topic Selection */}
+          <div className="mb-6">
+            <h3 className="font-bold mb-2">Science Topics:</h3>
+            <div className="grid grid-cols-1 gap-2">
+              {Object.entries(topics).map(([key, topic]) => (
+                <button
+                  key={key}
+                  className={`p-3 rounded text-left ${selectedTopic === key ? 'bg-orange-500 text-white' : 'bg-gray-100'}`}
+                  onClick={() => selectTopic(key)}
+                >
+                  {topic.icon} {topic.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Question */}
+          <div className="mb-6">
+            <div className="text-xl font-bold mb-4">{currentQ.question}</div>
+            <div className="grid grid-cols-2 gap-3">
+              {currentQ.options.map(opt => (
+                <button
+                  key={opt}
+                  className={`border rounded p-3 text-left ${selected === opt ? 'bg-orange-200' : 'bg-white'} ${showResult && opt === currentQ.correct ? 'border-green-500' : ''}`}
+                  disabled={showResult}
+                  onClick={() => setSelected(opt)}
+                >
+                  {opt}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="mb-6">
+            {!showResult ? (
+              <button className="bg-orange-500 text-white px-4 py-2 rounded" disabled={!selected} onClick={checkAnswer}>Check Answer</button>
+            ) : (
+              <div className="flex items-center space-x-4">
+                <span className={`font-bold ${isCorrect ? 'text-green-600' : 'text-red-600'}`}>
+                  {isCorrect ? '✅ Correct!' : '❌ Try Again!'}
+                </span>
+                <button className="bg-orange-500 text-white px-4 py-2 rounded" onClick={nextQuestion}>Next Question</button>
+              </div>
+            )}
+          </div>
+
+          {/* Leaderboard */}
+          <div className="mt-8">
+            <h2 className="text-xl font-bold mb-4">🏆 Leaderboard</h2>
+            <div className="bg-gray-50 rounded p-4">
+              {leaderboard.length === 0 ? <div>No scores yet.</div> : leaderboard.map((entry, i) => (
+                <div key={i} className={`flex justify-between ${entry.name === studentName && entry.class === studentClass ? 'font-bold text-orange-600' : ''}`}>
+                  <span>{i + 1}. {entry.name} ({entry.class})</span>
+                  <span>⭐ {entry.stars} | ✔️ {entry.solved}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.render(<ScienceStarGame />, document.getElementById('sciencestar-root'));
+</script>
+</body>
+</html> 

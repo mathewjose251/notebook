@@ -1,0 +1,290 @@
+{% extends "base.html" %}
+
+{% block title %}Achievements - Sanchari Mentors{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">My Achievements</h2>
+            
+            <!-- Achievement Stats -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Achievement Overview</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 text-center">
+                            <div class="border rounded p-3">
+                                <h4 class="text-warning" id="total-achievements">0</h4>
+                                <p class="text-muted mb-0">Total Achievements</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="border rounded p-3">
+                                <h4 class="text-success" id="completed-courses">0</h4>
+                                <p class="text-muted mb-0">Courses Completed</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="border rounded p-3">
+                                <h4 class="text-info" id="certificates-earned">0</h4>
+                                <p class="text-muted mb-0">Certificates</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="border rounded p-3">
+                                <h4 class="text-primary" id="points-earned">0</h4>
+                                <p class="text-muted mb-0">Points Earned</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Achievements -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent Achievements</h5>
+                </div>
+                <div class="card-body">
+                    <div id="recent-achievements">
+                        <!-- Recent achievements will be loaded here -->
+                        <div class="text-center">
+                            <p class="text-muted">Loading recent achievements...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- All Achievements -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">All Achievements</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row" id="all-achievements">
+                        <!-- All achievements will be loaded here -->
+                        <div class="col-12 text-center">
+                            <p class="text-muted">Loading all achievements...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Leaderboard -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Leaderboard</h5>
+                </div>
+                <div class="card-body">
+                    <div id="leaderboard">
+                        <!-- Leaderboard will be loaded here -->
+                        <div class="text-center">
+                            <p class="text-muted">Loading leaderboard...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadAchievementStats();
+    loadRecentAchievements();
+    loadAllAchievements();
+    loadLeaderboard();
+});
+
+function loadAchievementStats() {
+    const stats = {
+        total: 15,
+        completedCourses: 8,
+        certificates: 5,
+        points: 1250
+    };
+    
+    document.getElementById('total-achievements').textContent = stats.total;
+    document.getElementById('completed-courses').textContent = stats.completedCourses;
+    document.getElementById('certificates-earned').textContent = stats.certificates;
+    document.getElementById('points-earned').textContent = stats.points;
+}
+
+function loadRecentAchievements() {
+    const recentAchievements = [
+        {
+            id: 1,
+            title: "Python Programming Master",
+            description: "Completed Python Programming course with distinction",
+            date: "2025-06-15",
+            points: 100,
+            type: "course_completion",
+            icon: "🎓"
+        },
+        {
+            id: 2,
+            title: "Perfect Attendance",
+            description: "Attended 10 consecutive sessions without missing any",
+            date: "2025-06-14",
+            points: 50,
+            type: "attendance",
+            icon: "📅"
+        },
+        {
+            id: 3,
+            title: "Helpful Mentor",
+            description: "Helped 5 other students with their questions",
+            date: "2025-06-13",
+            points: 75,
+            type: "community",
+            icon: "🤝"
+        }
+    ];
+    
+    displayRecentAchievements(recentAchievements);
+}
+
+function loadAllAchievements() {
+    const allAchievements = [
+        {
+            category: "Course Achievements",
+            achievements: [
+                { title: "Python Programming Master", earned: true, points: 100 },
+                { title: "Data Analysis Expert", earned: true, points: 150 },
+                { title: "Web Development Pro", earned: false, points: 200 },
+                { title: "AI Fundamentals", earned: true, points: 120 }
+            ]
+        },
+        {
+            category: "Skill Achievements",
+            achievements: [
+                { title: "Communication Champion", earned: true, points: 80 },
+                { title: "Problem Solver", earned: true, points: 90 },
+                { title: "Leadership Skills", earned: false, points: 100 },
+                { title: "Critical Thinker", earned: true, points: 75 }
+            ]
+        },
+        {
+            category: "Community Achievements",
+            achievements: [
+                { title: "Helpful Mentor", earned: true, points: 75 },
+                { title: "Active Participant", earned: true, points: 60 },
+                { title: "Discussion Leader", earned: false, points: 100 },
+                { title: "Knowledge Sharer", earned: true, points: 50 }
+            ]
+        },
+        {
+            category: "Special Achievements",
+            achievements: [
+                { title: "Perfect Attendance", earned: true, points: 50 },
+                { title: "Early Bird", earned: true, points: 30 },
+                { title: "Weekend Warrior", earned: false, points: 40 },
+                { title: "Consistency King", earned: true, points: 80 }
+            ]
+        }
+    ];
+    
+    displayAllAchievements(allAchievements);
+}
+
+function loadLeaderboard() {
+    const leaderboard = [
+        { rank: 1, name: "Priya Sharma", points: 1850, achievements: 18 },
+        { rank: 2, name: "Rahul Kumar", points: 1620, achievements: 15 },
+        { rank: 3, name: "Anjali Desai", points: 1480, achievements: 14 },
+        { rank: 4, name: "You", points: 1250, achievements: 15, isCurrentUser: true },
+        { rank: 5, name: "Suresh Patel", points: 1120, achievements: 12 }
+    ];
+    
+    displayLeaderboard(leaderboard);
+}
+
+function displayRecentAchievements(achievements) {
+    const container = document.getElementById('recent-achievements');
+    
+    container.innerHTML = achievements.map(achievement => `
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-1 text-center">
+                        <h3 class="mb-0">${achievement.icon}</h3>
+                    </div>
+                    <div class="col-md-8">
+                        <h6 class="card-title">${achievement.title}</h6>
+                        <p class="card-text text-muted">${achievement.description}</p>
+                        <small class="text-muted">Earned on ${achievement.date}</small>
+                    </div>
+                    <div class="col-md-3 text-end">
+                        <span class="badge bg-warning text-dark">+${achievement.points} points</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function displayAllAchievements(categories) {
+    const container = document.getElementById('all-achievements');
+    
+    container.innerHTML = categories.map(category => `
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h6 class="mb-0">${category.category}</h6>
+                </div>
+                <div class="card-body">
+                    ${category.achievements.map(achievement => `
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div>
+                                <span class="fw-medium">${achievement.title}</span>
+                                ${achievement.earned ? 
+                                    '<span class="badge bg-success ms-2">Earned</span>' : 
+                                    '<span class="badge bg-secondary ms-2">Locked</span>'
+                                }
+                            </div>
+                            <span class="text-muted">${achievement.points} pts</span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function displayLeaderboard(leaderboard) {
+    const container = document.getElementById('leaderboard');
+    
+    container.innerHTML = `
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Student</th>
+                        <th>Points</th>
+                        <th>Achievements</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${leaderboard.map(entry => `
+                        <tr ${entry.isCurrentUser ? 'class="table-primary"' : ''}>
+                            <td>
+                                ${entry.rank === 1 ? '🥇' : entry.rank === 2 ? '🥈' : entry.rank === 3 ? '🥉' : entry.rank}
+                            </td>
+                            <td>
+                                ${entry.name} ${entry.isCurrentUser ? '<span class="badge bg-primary">You</span>' : ''}
+                            </td>
+                            <td>${entry.points}</td>
+                            <td>${entry.achievements}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        </div>
+    `;
+}
+</script>
+{% endblock %} 

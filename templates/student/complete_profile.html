@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Your Profile - Sanchari Mentors</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/new-theme.css">
+    <style>
+        .profile-form-container {
+            max-width: 480px;
+            margin: 60px auto;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            padding: 2.5rem 2rem 2rem 2rem;
+        }
+        .profile-form-container h2 {
+            font-weight: 600;
+            margin-bottom: 1.2rem;
+            color: #3a3a3a;
+        }
+        .profile-form-container label {
+            font-weight: 500;
+            margin-bottom: 0.4rem;
+            display: block;
+        }
+        .profile-form-container input,
+        .profile-form-container select {
+            width: 100%;
+            padding: 0.7rem 0.9rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            margin-bottom: 1.2rem;
+            font-size: 1rem;
+        }
+        .profile-form-container .subjects-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.7rem;
+            margin-bottom: 1.2rem;
+        }
+        .profile-form-container .subjects-list label {
+            font-weight: 400;
+            background: #f3f4f6;
+            border-radius: 6px;
+            padding: 0.4rem 0.8rem;
+            cursor: pointer;
+        }
+        .profile-form-container button {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 0.8rem 1.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .profile-form-container button:hover {
+            background: linear-gradient(90deg, #764ba2 0%, #667eea 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-form-container">
+        <h2>Complete Your Profile</h2>
+        <form method="POST">
+            <label for="grade">Your Grade or Degree</label>
+            <input type="text" id="grade" name="grade" placeholder="e.g. 10th, 12th, B.Sc, B.Tech, etc." value="{{ user.get('grade', '') }}" required>
+
+            <label for="dob">Date of Birth</label>
+            <input type="date" id="dob" name="dob" value="{{ user.get('dob', '') }}" required>
+
+            <label for="gender">Gender</label>
+            <select id="gender" name="gender" required>
+                <option value="" disabled {% if not user.get('gender') %}selected{% endif %}>Select Gender</option>
+                <option value="Male" {% if user.get('gender') == 'Male' %}selected{% endif %}>Male</option>
+                <option value="Female" {% if user.get('gender') == 'Female' %}selected{% endif %}>Female</option>
+                <option value="Other" {% if user.get('gender') == 'Other' %}selected{% endif %}>Other</option>
+                <option value="Prefer not to say" {% if user.get('gender') == 'Prefer not to say' %}selected{% endif %}>Prefer not to say</option>
+            </select>
+
+            <label for="school">School / College Name</label>
+            <input type="text" id="school" name="school" placeholder="Your institution name" value="{{ user.get('school', '') }}" required>
+
+            <label for="city">City</label>
+            <input type="text" id="city" name="city" placeholder="Your city" value="{{ user.get('city', '') }}" required>
+
+            <label>Interested Subjects</label>
+            <div class="subjects-list">
+                {% set all_subjects = [
+                    'Artificial Intelligence', 'Mathematics', 'Communication Skills',
+                    'Science', 'English', 'Programming', 'Robotics', 'Entrepreneurship',
+                    'Public Speaking', 'Biology', 'Physics', 'Chemistry', 'History',
+                    'Geography', 'Economics', 'Computer Science', 'Data Science',
+                    'Machine Learning', 'Deep Learning', 'Statistics', 'Psychology',
+                    'Sociology', 'Philosophy', 'Political Science', 'Environmental Science',
+                    'Other'
+                ] %}
+                {% for subject in all_subjects %}
+                <label>
+                    <input type="checkbox" name="interested_subjects" value="{{ subject }}" {% if subject in user.get('interested_subjects', []) %}checked{% endif %}>
+                    {{ subject }}
+                </label>
+                {% endfor %}
+            </div>
+
+            <label for="bio">Short Bio (optional)</label>
+            <textarea id="bio" name="bio" rows="3" placeholder="Tell us a little about yourself..." style="width:100%;border-radius:8px;border:1px solid #d1d5db;padding:0.7rem 0.9rem;margin-bottom:1.2rem;">{{ user.get('bio', '') }}</textarea>
+
+            <button type="submit">Save Profile</button>
+        </form>
+    </div>
+</body>
+</html> 

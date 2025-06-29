@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Publish Training - Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem 0;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-header {
+            padding: 0 2rem 2rem;
+            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-header h2 {
+            color: #333;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            padding: 1rem 2rem;
+            color: #666;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .sidebar-nav a i {
+            margin-right: 1rem;
+            width: 20px;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .content-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .content-header h1 {
+            color: #333;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .content-header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .training-form {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+
+        .notification {
+            background: #d4edda;
+            color: #155724;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border: 1px solid #c3e6cb;
+        }
+
+        .notification.error {
+            background: #f8d7da;
+            color: #721c24;
+            border-color: #f5c6cb;
+        }
+
+        .preview-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            margin-top: 2rem;
+        }
+
+        .preview-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .email-preview {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1rem;
+            background: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+
+        @media (max-width: 768px) {
+            .admin-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                padding: 1rem 0;
+            }
+
+            .sidebar-nav {
+                display: flex;
+                overflow-x: auto;
+                padding: 0 1rem;
+            }
+
+            .sidebar-nav li {
+                margin-right: 1rem;
+                margin-bottom: 0;
+                white-space: nowrap;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .form-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Admin Portal</h2>
+            </div>
+            <ul class="sidebar-nav">
+                <li><a href="/admin/dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="/admin/users"><i class="fas fa-users"></i> User Management</a></li>
+                <li><a href="/admin/trainers"><i class="fas fa-chalkboard-teacher"></i> Trainers</a></li>
+                <li><a href="/admin/classes"><i class="fas fa-graduation-cap"></i> Classes</a></li>
+                <li><a href="/admin/sessions"><i class="fas fa-video"></i> Sessions</a></li>
+                <li><a href="/admin/content"><i class="fas fa-file-alt"></i> Content</a></li>
+                <li><a href="/admin/reports"><i class="fas fa-chart-bar"></i> Reports</a></li>
+                <li><a href="/admin/communications"><i class="fas fa-envelope"></i> Communications</a></li>
+                <li><a href="#" class="active"><i class="fas fa-plus-circle"></i> Publish Training</a></li>
+                <li><a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <div class="content-header">
+                <h1>Publish New Training</h1>
+                <p>Create and publish training sessions with automatic email notifications to interested students</p>
+            </div>
+
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="notification">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <div class="training-form">
+                <form method="POST" action="/admin/publish-training">
+                    <div class="form-group">
+                        <label for="title">Training Title</label>
+                        <input type="text" id="title" name="title" placeholder="Enter training title" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="category">Category</label>
+                            <select id="category" name="category" required>
+                                <option value="">Select Category</option>
+                                <option value="Artificial Intelligence">Artificial Intelligence</option>
+                                <option value="Mathematics">Mathematics</option>
+                                <option value="Science">Science</option>
+                                <option value="Communication Skills">Communication Skills</option>
+                                <option value="Personality Development">Personality Development</option>
+                                <option value="Spoken English">Spoken English</option>
+                                <option value="Cyber Security">Cyber Security</option>
+                                <option value="Career Guidance">Career Guidance</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="trainer">Assigned Trainer</label>
+                            <select id="trainer" name="trainer">
+                                <option value="">Select Trainer</option>
+                                <option value="Dr. Priya Sharma">Dr. Priya Sharma - AI & ML</option>
+                                <option value="Vikram Singh">Vikram Singh - Cyber Security</option>
+                                <option value="Anjali Desai">Anjali Desai - Communication</option>
+                                <option value="Rahul Mehta">Rahul Mehta - Personality Development</option>
+                                <option value="Neha Gupta">Neha Gupta - Mathematics</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="date">Training Date</label>
+                            <input type="date" id="date" name="date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="time">Training Time</label>
+                            <input type="time" id="time" name="time" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="duration">Duration (minutes)</label>
+                            <select id="duration" name="duration">
+                                <option value="60">60 minutes</option>
+                                <option value="90">90 minutes</option>
+                                <option value="120">120 minutes</option>
+                                <option value="180">180 minutes</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="max_participants">Max Participants</label>
+                            <input type="number" id="max_participants" name="max_participants" min="1" max="100" value="30">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Training Description</label>
+                        <textarea id="description" name="description" placeholder="Provide detailed description of the training content, objectives, and what students will learn..." required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="prerequisites">Prerequisites (Optional)</label>
+                        <textarea id="prerequisites" name="prerequisites" placeholder="Any prerequisites or prior knowledge required for this training..."></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="previewEmail()">
+                            <i class="fas fa-eye"></i> Preview Email
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i> Publish & Send Notifications
+                        </button>
+                    </div>
+                </form>
+
+                <div class="preview-section" id="email-preview" style="display: none;">
+                    <div class="preview-title">Email Notification Preview</div>
+                    <div class="email-preview" id="preview-content">
+                        <!-- Email preview will be generated here -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function previewEmail() {
+            const title = document.getElementById('title').value;
+            const category = document.getElementById('category').value;
+            const date = document.getElementById('date').value;
+            const time = document.getElementById('time').value;
+            const description = document.getElementById('description').value;
+            const trainer = document.getElementById('trainer').value;
+            const duration = document.getElementById('duration').value;
+
+            if (!title || !category || !date || !time || !description) {
+                alert('Please fill in all required fields before previewing the email.');
+                return;
+            }
+
+            const emailContent = `
+                <h2 style="color: #667eea;">New Training Opportunity!</h2>
+                <p>Dear Student,</p>
+                <p>A new training session has been published that matches your interests:</p>
+                
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                    <h3 style="color: #333; margin-bottom: 10px;">${title}</h3>
+                    <p><strong>Category:</strong> ${category}</p>
+                    <p><strong>Date:</strong> ${new Date(date).toLocaleDateString()}</p>
+                    <p><strong>Time:</strong> ${time}</p>
+                    ${trainer ? `<p><strong>Trainer:</strong> ${trainer}</p>` : ''}
+                    <p><strong>Duration:</strong> ${duration} minutes</p>
+                </div>
+                
+                <p><strong>Description:</strong></p>
+                <p>${description}</p>
+                
+                <div style="margin: 20px 0;">
+                    <a href="#" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block;">Login to Join</a>
+                </div>
+                
+                <p>Visit our platform to login and join this training session.</p>
+                <p>Best regards,<br><strong>Sanchari Mentors Team</strong></p>
+                
+                <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
+                <p style="font-size: 12px; color: #666;">
+                    Follow us: 
+
+(Content truncated due to size limit. Use line ranges to read in chunks)

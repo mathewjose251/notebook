@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block title %}Communications - Trainer Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-4 trainer-theme">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">Communications</h2>
+            
+            <!-- Send Message -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Send Message</h5>
+                </div>
+                <div class="card-body">
+                    <form id="message-form">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="message-recipients" class="form-label">Recipients</label>
+                                <select class="form-select" id="message-recipients" required>
+                                    <option value="">Select Recipients</option>
+                                    <option value="all">All Students</option>
+                                    <option value="class">Specific Class</option>
+                                    <option value="individual">Individual Student</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="message-type" class="form-label">Message Type</label>
+                                <select class="form-select" id="message-type" required>
+                                    <option value="">Select Type</option>
+                                    <option value="announcement">Announcement</option>
+                                    <option value="reminder">Reminder</option>
+                                    <option value="feedback">Feedback</option>
+                                    <option value="general">General</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="message-subject" class="form-label">Subject</label>
+                            <input type="text" class="form-control" id="message-subject" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="message-content" class="form-label">Message</label>
+                            <textarea class="form-control" id="message-content" rows="4" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Send Message</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Message History -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Message History</h5>
+                </div>
+                <div class="card-body">
+                    <div id="message-history">
+                        <!-- Messages will be loaded here -->
+                        <div class="text-center">
+                            <p class="text-muted">Loading messages...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadMessages();
+    
+    // Handle message form submission
+    document.getElementById('message-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        sendMessage();
+    });
+});
+
+function loadMessages() {
+    const messages = [
+        {
+            id: 1,
+            subject: "Class Reminder - AI Session",
+            recipients: "AI Course Students",
+            type: "reminder",
+            sentDate: "2025-06-15",
+            readCount: 25
+        },
+        {
+            id: 2,
+            subject: "Assignment Feedback",
+            recipients: "Individual Students",
+            type: "feedback",
+            sentDate: "2025-06-14",
+            readCount: 8
+        },
+        {
+            id: 3,
+            subject: "Welcome to New Students",
+            recipients: "All Students",
+            type: "announcement",
+            sentDate: "2025-06-10",
+            readCount: 45
+        }
+    ];
+    
+    displayMessages(messages);
+}
+
+function displayMessages(messages) {
+    const container = document.getElementById('message-history');
+    
+    container.innerHTML = messages.map(message => `
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h6 class="card-title">${message.subject}</h6>
+                        <p class="card-text text-muted">
+                            To: ${message.recipients} | 
+                            Type: ${message.type} | 
+                            Sent: ${message.sentDate}
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <small class="text-muted">Read by ${message.readCount} recipients</small>
+                        <div class="mt-2">
+                            <button class="btn btn-sm btn-outline-info" onclick="viewMessage(${message.id})">View</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function sendMessage() {
+    const formData = {
+        recipients: document.getElementById('message-recipients').value,
+        type: document.getElementById('message-type').value,
+        subject: document.getElementById('message-subject').value,
+        content: document.getElementById('message-content').value
+    };
+    
+    // Validate form
+    if (!formData.recipients || !formData.type || !formData.subject || !formData.content) {
+        alert('Please fill in all required fields.');
+        return;
+    }
+    
+    // Simulate API call
+    console.log('Sending message:', formData);
+    
+    // Show success message
+    alert('Message sent successfully!');
+    
+    // Reset form
+    document.getElementById('message-form').reset();
+    
+    // Reload messages
+    loadMessages();
+}
+
+function viewMessage(messageId) {
+    window.location.href = `/trainer/message/${messageId}`;
+}
+</script>
+{% endblock %} 

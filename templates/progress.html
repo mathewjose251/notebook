@@ -1,0 +1,322 @@
+{% extends "base.html" %}
+
+{% block title %}Progress Tracking - Sanchari Mentors{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">Progress Tracking</h2>
+            
+            <!-- Progress Overview -->
+            <div class="row mb-4">
+                <div class="col-md-3 mb-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-primary">78%</h3>
+                            <p class="mb-0">Overall Progress</p>
+                            <small class="text-success">+5% this week</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-success">12</h3>
+                            <p class="mb-0">Courses Completed</p>
+                            <small class="text-success">+2 this month</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-info">45</h3>
+                            <p class="mb-0">Hours Studied</p>
+                            <small class="text-success">+8 hours this week</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-warning">4.7</h3>
+                            <p class="mb-0">Average Score</p>
+                            <small class="text-success">+0.3 this month</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Course Progress -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Course Progress</h5>
+                </div>
+                <div class="card-body">
+                    <div id="course-progress">
+                        <!-- Course progress will be loaded here -->
+                        <div class="text-center">
+                            <p class="text-muted">Loading course progress...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Learning Path -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Learning Path</h5>
+                </div>
+                <div class="card-body">
+                    <div id="learning-path">
+                        <!-- Learning path will be loaded here -->
+                        <div class="text-center">
+                            <p class="text-muted">Loading learning path...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Achievements -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent Achievements</h5>
+                </div>
+                <div class="card-body">
+                    <div id="achievements">
+                        <!-- Achievements will be loaded here -->
+                        <div class="text-center">
+                            <p class="text-muted">Loading achievements...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadCourseProgress();
+    loadLearningPath();
+    loadAchievements();
+});
+
+function loadCourseProgress() {
+    // Simulate loading course progress from API
+    fetch('/api/course-progress')
+        .then(response => response.json())
+        .then(data => {
+            displayCourseProgress(data.courses);
+        })
+        .catch(error => {
+            console.error('Error loading course progress:', error);
+            // Fallback to static data
+            const courses = [
+                {
+                    id: 1,
+                    title: "Introduction to AI",
+                    progress: 85,
+                    completed: 17,
+                    total: 20,
+                    lastAccessed: "2025-06-15"
+                },
+                {
+                    id: 2,
+                    title: "Advanced Mathematics",
+                    progress: 60,
+                    completed: 12,
+                    total: 20,
+                    lastAccessed: "2025-06-14"
+                },
+                {
+                    id: 3,
+                    title: "Communication Skills",
+                    progress: 100,
+                    completed: 15,
+                    total: 15,
+                    lastAccessed: "2025-06-13"
+                }
+            ];
+            displayCourseProgress(courses);
+        });
+}
+
+function displayCourseProgress(courses) {
+    const container = document.getElementById('course-progress');
+    
+    if (courses.length === 0) {
+        container.innerHTML = '<p class="text-muted">No courses found.</p>';
+        return;
+    }
+    
+    container.innerHTML = courses.map(course => `
+        <div class="border-bottom pb-3 mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="mb-0">${course.title}</h6>
+                <span class="badge bg-${course.progress === 100 ? 'success' : 'primary'}">${course.progress}%</span>
+            </div>
+            <div class="progress mb-2" style="height: 8px;">
+                <div class="progress-bar" style="width: ${course.progress}%"></div>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+                <small class="text-muted">
+                    ${course.completed}/${course.total} modules completed
+                </small>
+                <small class="text-muted">
+                    Last accessed: ${course.lastAccessed}
+                </small>
+            </div>
+        </div>
+    `).join('');
+}
+
+function loadLearningPath() {
+    // Simulate loading learning path from API
+    fetch('/api/learning-path')
+        .then(response => response.json())
+        .then(data => {
+            displayLearningPath(data.path);
+        })
+        .catch(error => {
+            console.error('Error loading learning path:', error);
+            // Fallback to static data
+            const path = [
+                {
+                    id: 1,
+                    title: "Foundation Skills",
+                    status: "completed",
+                    description: "Basic programming and mathematics"
+                },
+                {
+                    id: 2,
+                    title: "AI Fundamentals",
+                    status: "in-progress",
+                    description: "Introduction to artificial intelligence"
+                },
+                {
+                    id: 3,
+                    title: "Advanced AI",
+                    status: "locked",
+                    description: "Deep learning and neural networks"
+                },
+                {
+                    id: 4,
+                    title: "AI Applications",
+                    status: "locked",
+                    description: "Real-world AI implementations"
+                }
+            ];
+            displayLearningPath(path);
+        });
+}
+
+function displayLearningPath(path) {
+    const container = document.getElementById('learning-path');
+    
+    if (path.length === 0) {
+        container.innerHTML = '<p class="text-muted">No learning path found.</p>';
+        return;
+    }
+    
+    container.innerHTML = path.map((step, index) => `
+        <div class="d-flex align-items-center mb-3">
+            <div class="flex-shrink-0 me-3">
+                <div class="rounded-circle d-flex align-items-center justify-content-center" 
+                     style="width: 40px; height: 40px; background-color: ${getStepColor(step.status)};">
+                    <i class="fas ${getStepIcon(step.status)} text-white"></i>
+                </div>
+            </div>
+            <div class="flex-grow-1">
+                <h6 class="mb-1">${step.title}</h6>
+                <p class="text-muted mb-0">${step.description}</p>
+            </div>
+            ${index < path.length - 1 ? '<div class="ms-3"><i class="fas fa-arrow-down text-muted"></i></div>' : ''}
+        </div>
+    `).join('');
+}
+
+function getStepColor(status) {
+    switch(status) {
+        case 'completed': return '#28a745';
+        case 'in-progress': return '#007bff';
+        case 'locked': return '#6c757d';
+        default: return '#6c757d';
+    }
+}
+
+function getStepIcon(status) {
+    switch(status) {
+        case 'completed': return 'fa-check';
+        case 'in-progress': return 'fa-play';
+        case 'locked': return 'fa-lock';
+        default: return 'fa-circle';
+    }
+}
+
+function loadAchievements() {
+    // Simulate loading achievements from API
+    fetch('/api/achievements')
+        .then(response => response.json())
+        .then(data => {
+            displayAchievements(data.achievements);
+        })
+        .catch(error => {
+            console.error('Error loading achievements:', error);
+            // Fallback to static data
+            const achievements = [
+                {
+                    id: 1,
+                    title: "First Course Completed",
+                    description: "Successfully completed your first course",
+                    date: "2025-06-15",
+                    icon: "fa-trophy"
+                },
+                {
+                    id: 2,
+                    title: "Perfect Score",
+                    description: "Achieved 100% on a quiz",
+                    date: "2025-06-14",
+                    icon: "fa-star"
+                },
+                {
+                    id: 3,
+                    title: "Study Streak",
+                    description: "Studied for 7 consecutive days",
+                    date: "2025-06-13",
+                    icon: "fa-fire"
+                }
+            ];
+            displayAchievements(achievements);
+        });
+}
+
+function displayAchievements(achievements) {
+    const container = document.getElementById('achievements');
+    
+    if (achievements.length === 0) {
+        container.innerHTML = '<p class="text-muted">No achievements found.</p>';
+        return;
+    }
+    
+    container.innerHTML = achievements.map(achievement => `
+        <div class="border-bottom pb-3 mb-3">
+            <div class="d-flex align-items-center">
+                <div class="flex-shrink-0 me-3">
+                    <div class="bg-warning text-white rounded-circle d-flex align-items-center justify-content-center" 
+                         style="width: 40px; height: 40px;">
+                        <i class="fas ${achievement.icon}"></i>
+                    </div>
+                </div>
+                <div class="flex-grow-1">
+                    <h6 class="mb-1">${achievement.title}</h6>
+                    <p class="text-muted mb-1">${achievement.description}</p>
+                    <small class="text-muted">Earned on ${achievement.date}</small>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+</script>
+{% endblock %}

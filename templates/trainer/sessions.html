@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block title %}My Sessions - Trainer Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-4 trainer-theme">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">My Sessions</h2>
+            
+            <!-- Session Stats -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Session Overview</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 text-center">
+                            <div class="border rounded p-3">
+                                <h4 class="text-primary" id="total-sessions">0</h4>
+                                <p class="text-muted mb-0">Total Sessions</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="border rounded p-3">
+                                <h4 class="text-success" id="completed-sessions">0</h4>
+                                <p class="text-muted mb-0">Completed</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="border rounded p-3">
+                                <h4 class="text-warning" id="upcoming-sessions">0</h4>
+                                <p class="text-muted mb-0">Upcoming</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="border rounded p-3">
+                                <h4 class="text-info" id="avg-attendance">0%</h4>
+                                <p class="text-muted mb-0">Avg Attendance</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sessions List -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">All Sessions</h5>
+                </div>
+                <div class="card-body">
+                    <div id="sessions-list">
+                        <!-- Sessions will be loaded here -->
+                        <div class="text-center">
+                            <p class="text-muted">Loading sessions...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadSessionStats();
+    loadSessions();
+});
+
+function loadSessionStats() {
+    const stats = {
+        total: 15,
+        completed: 12,
+        upcoming: 3,
+        attendance: 92
+    };
+    
+    document.getElementById('total-sessions').textContent = stats.total;
+    document.getElementById('completed-sessions').textContent = stats.completed;
+    document.getElementById('upcoming-sessions').textContent = stats.upcoming;
+    document.getElementById('avg-attendance').textContent = stats.attendance + '%';
+}
+
+function loadSessions() {
+    const sessions = [
+        {
+            id: 1,
+            class: "Introduction to AI",
+            date: "2025-06-15",
+            time: "10:00",
+            duration: 90,
+            students: 28,
+            maxStudents: 30,
+            status: "completed",
+            attendance: "28/30"
+        },
+        {
+            id: 2,
+            class: "Advanced Mathematics",
+            date: "2025-06-20",
+            time: "14:00",
+            duration: 120,
+            students: 22,
+            maxStudents: 25,
+            status: "upcoming",
+            attendance: "22/25"
+        },
+        {
+            id: 3,
+            class: "Communication Skills",
+            date: "2025-06-25",
+            time: "16:00",
+            duration: 60,
+            students: 18,
+            maxStudents: 20,
+            status: "upcoming",
+            attendance: "18/20"
+        }
+    ];
+    
+    displaySessions(sessions);
+}
+
+function displaySessions(sessions) {
+    const container = document.getElementById('sessions-list');
+    
+    container.innerHTML = sessions.map(session => `
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h6 class="card-title">${session.class}</h6>
+                        <p class="card-text text-muted">
+                            📅 ${session.date} at ${session.time} | 
+                            ⏱️ ${session.duration} minutes | 
+                            👥 ${session.attendance}
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <span class="badge bg-${session.status === 'completed' ? 'success' : 'warning'} mb-2">${session.status}</span>
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-outline-primary" onclick="viewSession(${session.id})">View</button>
+                            <button class="btn btn-outline-info" onclick="editSession(${session.id})">Edit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function viewSession(sessionId) {
+    window.location.href = `/trainer/session/${sessionId}`;
+}
+
+function editSession(sessionId) {
+    alert('Edit session functionality will be implemented here.');
+}
+</script>
+{% endblock %} 

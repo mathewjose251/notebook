@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geography Star - Interactive Geography Learning | Sanchari Mentors</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body class="bg-gradient-to-br from-lime-100 via-green-50 to-emerald-100 min-h-screen">
+<div id="geographystar-root" class="max-w-4xl mx-auto py-8"></div>
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+// Enhanced Geography questions with grade levels
+const GEOGRAPHY_QUESTIONS = {
+  countries: {
+    4: [
+      { question: "What is the capital of India?", options: ['Mumbai', 'Delhi', 'Bangalore', 'Chennai'], correct: 'Delhi' },
+      { question: "Which country is known as the Land of the Rising Sun?", options: ['China', 'Japan', 'Korea', 'Thailand'], correct: 'Japan' },
+      { question: "What is the largest country in the world?", options: ['China', 'USA', 'Canada', 'Russia'], correct: 'Russia' }
+    ],
+    5: [
+      { question: "What is the capital of Australia?", options: ['Sydney', 'Melbourne', 'Canberra', 'Brisbane'], correct: 'Canberra' },
+      { question: "Which country has the most people?", options: ['India', 'China', 'USA', 'Russia'], correct: 'China' },
+      { question: "What is the capital of Brazil?", options: ['Rio de Janeiro', 'São Paulo', 'Brasília', 'Salvador'], correct: 'Brasília' }
+    ],
+    6: [
+      { question: "What is the capital of South Africa?", options: ['Johannesburg', 'Cape Town', 'Pretoria', 'All of the above'], correct: 'All of the above' },
+      { question: "Which country is home to the Great Barrier Reef?", options: ['New Zealand', 'Australia', 'Indonesia', 'Philippines'], correct: 'Australia' },
+      { question: "What is the capital of Egypt?", options: ['Alexandria', 'Cairo', 'Giza', 'Luxor'], correct: 'Cairo' }
+    ]
+  },
+  continents: {
+    4: [
+      { question: "How many continents are there?", options: ['5', '6', '7', '8'], correct: '7' },
+      { question: "Which continent is the largest?", options: ['Asia', 'Africa', 'North America', 'Europe'], correct: 'Asia' },
+      { question: "Which continent is the smallest?", options: ['Europe', 'Australia', 'Antarctica', 'South America'], correct: 'Australia' }
+    ],
+    5: [
+      { question: "Which continent has the most countries?", options: ['Asia', 'Africa', 'Europe', 'North America'], correct: 'Africa' },
+      { question: "Which continent is completely in the Southern Hemisphere?", options: ['Africa', 'Australia', 'South America', 'Antarctica'], correct: 'Antarctica' },
+      { question: "Which continent is home to the Amazon Rainforest?", options: ['Africa', 'Asia', 'South America', 'North America'], correct: 'South America' }
+    ],
+    6: [
+      { question: "Which continent has the highest population?", options: ['Asia', 'Africa', 'Europe', 'North America'], correct: 'Asia' },
+      { question: "Which continent is known as the 'Dark Continent'?", options: ['Asia', 'Africa', 'Europe', 'South America'], correct: 'Africa' },
+      { question: "Which continent has the most languages?", options: ['Asia', 'Africa', 'Europe', 'North America'], correct: 'Asia' }
+    ]
+  },
+  landforms: {
+    4: [
+      { question: "What is the highest mountain in the world?", options: ['Mount Everest', 'K2', 'Kangchenjunga', 'Lhotse'], correct: 'Mount Everest' },
+      { question: "What is the largest ocean?", options: ['Atlantic', 'Pacific', 'Indian', 'Arctic'], correct: 'Pacific' },
+      { question: "What is the largest desert in the world?", options: ['Sahara', 'Arabian', 'Gobi', 'Antarctic'], correct: 'Antarctic' }
+    ],
+    5: [
+      { question: "What is the longest river in the world?", options: ['Nile', 'Amazon', 'Yangtze', 'Mississippi'], correct: 'Nile' },
+      { question: "What is the deepest ocean trench?", options: ['Mariana Trench', 'Puerto Rico Trench', 'Java Trench', 'Philippine Trench'], correct: 'Mariana Trench' },
+      { question: "What is the largest lake in the world?", options: ['Caspian Sea', 'Lake Superior', 'Lake Victoria', 'Lake Baikal'], correct: 'Caspian Sea' }
+    ],
+    6: [
+      { question: "What type of landform is a peninsula?", options: ['Land surrounded by water on 3 sides', 'Land surrounded by water on all sides', 'A mountain', 'A valley'], correct: 'Land surrounded by water on 3 sides' },
+      { question: "What is the Ring of Fire?", options: ['A volcano', 'A mountain range', 'A region with many volcanoes', 'A type of earthquake'], correct: 'A region with many volcanoes' },
+      { question: "What is the Great Rift Valley?", options: ['A mountain range', 'A valley in Africa', 'A river', 'A desert'], correct: 'A valley in Africa' }
+    ]
+  }
+};
+
+const topics = {
+  countries: { name: 'Countries & Capitals', icon: '🏛️', color: 'bg-blue-500' },
+  continents: { name: 'Continents', icon: '🌍', color: 'bg-green-500' },
+  landforms: { name: 'Landforms & Oceans', icon: '🏔️', color: 'bg-brown-500' }
+};
+
+function generateGeographyQuestion(selectedTopic, selectedGrade) {
+  if (GEOGRAPHY_QUESTIONS[selectedTopic] && GEOGRAPHY_QUESTIONS[selectedTopic][selectedGrade]) {
+    const questions = GEOGRAPHY_QUESTIONS[selectedTopic][selectedGrade];
+    return questions[getRandomInt(0, questions.length - 1)];
+  }
+  // Fallback
+  return {
+    question: "What is the capital of India?",
+    options: ['Mumbai', 'Delhi', 'Bangalore', 'Chennai'],
+    correct: 'Delhi'
+  };
+}
+
+function GeographyStarGame() {
+  const [studentName, setStudentName] = useState(localStorage.getItem('geographystar_student_name') || '');
+  const [studentClass, setStudentClass] = useState(localStorage.getItem('geographystar_student_class') || '');
+  const [showNameInput, setShowNameInput] = useState(!(studentName && studentClass));
+  const [selectedGrade, setSelectedGrade] = useState(4);
+  const [selectedTopic, setSelectedTopic] = useState('countries');
+  const [stars, setStars] = useState(100);
+  const [problemsSolved, setProblemsSolved] = useState(0);
+  const [currentQ, setCurrentQ] = useState(generateGeographyQuestion('countries', 4));
+  const [selected, setSelected] = useState('');
+  const [showResult, setShowResult] = useState(false);
+  const [isCorrect, setIsCorrect] = useState(false);
+  const [attempts, setAttempts] = useState(0);
+  const [leaderboard, setLeaderboard] = useState(JSON.parse(localStorage.getItem('geographystar_leaderboard') || '[]'));
+
+  useEffect(() => {
+    if (!showNameInput) {
+      localStorage.setItem('geographystar_student_name', studentName);
+      localStorage.setItem('geographystar_student_class', studentClass);
+    }
+  }, [studentName, studentClass, showNameInput]);
+
+  function saveStudentInfo() {
+    if (studentName && studentClass) setShowNameInput(false);
+  }
+
+  function selectGrade(grade) {
+    setSelectedGrade(grade);
+    setCurrentQ(generateGeographyQuestion(selectedTopic, grade));
+    setSelected('');
+    setShowResult(false);
+    setIsCorrect(false);
+    setAttempts(0);
+  }
+
+  function selectTopic(topic) {
+    setSelectedTopic(topic);
+    setCurrentQ(generateGeographyQuestion(topic, selectedGrade));
+    setSelected('');
+    setShowResult(false);
+    setIsCorrect(false);
+    setAttempts(0);
+  }
+
+  function checkAnswer() {
+    if (!selected) return;
+    setAttempts(a => a + 1);
+    if (selected === currentQ.correct) {
+      setIsCorrect(true);
+      setShowResult(true);
+      setStars(s => s + (attempts === 0 ? 5 : attempts === 1 ? 3 : 1));
+      setProblemsSolved(p => p + 1);
+      updateLeaderboard(stars + (attempts === 0 ? 5 : attempts === 1 ? 3 : 1), problemsSolved + 1);
+    } else {
+      setIsCorrect(false);
+      setShowResult(true);
+    }
+  }
+
+  function nextQuestion() {
+    setCurrentQ(generateGeographyQuestion(selectedTopic, selectedGrade));
+    setSelected('');
+    setShowResult(false);
+    setIsCorrect(false);
+    setAttempts(0);
+  }
+
+  function updateLeaderboard(newStars, newSolved) {
+    let lb = JSON.parse(localStorage.getItem('geographystar_leaderboard') || '[]');
+    const idx = lb.findIndex(e => e.name === studentName && e.class === studentClass);
+    if (idx >= 0) {
+      lb[idx].stars = Math.max(lb[idx].stars, newStars);
+      lb[idx].solved = Math.max(lb[idx].solved, newSolved);
+    } else {
+      lb.push({ name: studentName, class: studentClass, stars: newStars, solved: newSolved });
+    }
+    lb.sort((a, b) => b.stars - a.stars);
+    lb = lb.slice(0, 10);
+    localStorage.setItem('geographystar_leaderboard', JSON.stringify(lb));
+    setLeaderboard(lb);
+  }
+
+  function resetStudent() {
+    setStudentName('');
+    setStudentClass('');
+    setShowNameInput(true);
+    setStars(100);
+    setProblemsSolved(0);
+  }
+
+  function selectExistingStudent(name, className) {
+    setStudentName(name);
+    setStudentClass(className);
+    localStorage.setItem('geographystar_student_name', name);
+    localStorage.setItem('geographystar_student_class', className);
+    setShowNameInput(false);
+  }
+
+  return (
+    <div className="bg-white rounded-xl shadow-lg p-6">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-3xl font-bold text-lime-600 mb-2">Geography Star</h1>
+          <p className="text-gray-600">Interactive Geography Learning with Grade & Topic Selection</p>
+        </div>
+        <div className="flex items-center space-x-4">
+          <div className="bg-yellow-100 px-3 py-1 rounded-full">
+            <span className="font-bold text-yellow-700">⭐ {stars}</span>
+          </div>
+          <div className="bg-lime-100 px-3 py-1 rounded-full">
+            <span className="font-bold text-lime-700">✔️ {problemsSolved}</span>
+          </div>
+        </div>
+      </div>
+
+      {showNameInput ? (
+        <div className="mb-6">
+          <h3 className="text-xl font-bold mb-4">Welcome to Geography Star!</h3>
+          <div className="space-y-3">
+            <input className="w-full border p-2 rounded" placeholder="Your Name" value={studentName} onChange={e => setStudentName(e.target.value)} />
+            <input className="w-full border p-2 rounded" placeholder="Your Class" value={studentClass} onChange={e => setStudentClass(e.target.value)} />
+            <button className="w-full bg-lime-500 text-white px-4 py-2 rounded" onClick={saveStudentInfo}>Start Learning</button>
+          </div>
+          <div id="existing-students" className="mt-4">
+            <h4 className="text-md font-semibold mb-2">Or select your name:</h4>
+            <div className="flex flex-wrap gap-2">
+              {leaderboard.map(entry => (
+                <button key={entry.name + entry.class} onClick={() => selectExistingStudent(entry.name, entry.class)} className="bg-lime-100 hover:bg-lime-200 text-lime-800 px-3 py-1 rounded">{entry.name} ({entry.class})</button>
+              ))}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <>
+          <div className="mb-4 flex items-center justify-between bg-blue-50 p-2 rounded">
+            <span className="font-semibold text-blue-800">{studentName} - {studentClass}</span>
+            <button className="text-sm text-red-600 underline" onClick={resetStudent}>Change</button>
+          </div>
+
+          {/* Grade Selection */}
+          <div className="mb-4">
+            <h3 className="font-bold mb-2">Grade Level:</h3>
+            <div className="grid grid-cols-3 gap-2">
+              {[4, 5, 6, 7, 8, 9, 10, 11, 12].map(grade => (
+                <button
+                  key={grade}
+                  className={`p-2 rounded ${selectedGrade === grade ? 'bg-lime-500 text-white' : 'bg-gray-200'}`}
+                  onClick={() => selectGrade(grade)}
+                >
+                  Grade {grade}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Topic Selection */}
+          <div className="mb-6">
+            <h3 className="font-bold mb-2">Geography Topics:</h3>
+            <div className="grid grid-cols-1 gap-2">
+              {Object.entries(topics).map(([key, topic]) => (
+                <button
+                  key={key}
+                  className={`p-3 rounded text-left ${selectedTopic === key ? 'bg-lime-500 text-white' : 'bg-gray-100'}`}
+                  onClick={() => selectTopic(key)}
+                >
+                  {topic.icon} {topic.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Question */}
+          <div className="mb-6">
+            <div className="text-xl font-bold mb-4">{currentQ.question}</div>
+            <div className="grid grid-cols-2 gap-3">
+              {currentQ.options.map(opt => (
+                <button
+                  key={opt}
+                  className={`border rounded p-3 text-left ${selected === opt ? 'bg-lime-200' : 'bg-white'} ${showResult && opt === currentQ.correct ? 'border-green-500' : ''}`}
+                  disabled={showResult}
+                  onClick={() => setSelected(opt)}
+                >
+                  {opt}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="mb-6">
+            {!showResult ? (
+              <button className="bg-lime-500 text-white px-4 py-2 rounded" disabled={!selected} onClick={checkAnswer}>Check Answer</button>
+            ) : (
+              <div className="flex items-center space-x-4">
+                <span className={`font-bold ${isCorrect ? 'text-green-600' : 'text-red-600'}`}>
+                  {isCorrect ? '✅ Correct!' : '❌ Try Again!'}
+                </span>
+                <button className="bg-lime-500 text-white px-4 py-2 rounded" onClick={nextQuestion}>Next Question</button>
+              </div>
+            )}
+          </div>
+
+          {/* Leaderboard */}
+          <div className="mt-8">
+            <h2 className="text-xl font-bold mb-4">🏆 Leaderboard</h2>
+            <div className="bg-gray-50 rounded p-4">
+              {leaderboard.length === 0 ? <div>No scores yet.</div> : leaderboard.map((entry, i) => (
+                <div key={i} className={`flex justify-between ${entry.name === studentName && entry.class === studentClass ? 'font-bold text-lime-600' : ''}`}>
+                  <span>{i + 1}. {entry.name} ({entry.class})</span>
+                  <span>⭐ {entry.stars} | ✔️ {entry.solved}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.render(<GeographyStarGame />, document.getElementById('geographystar-root'));
+</script>
+</body>
+</html> 

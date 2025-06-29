@@ -1,0 +1,70 @@
+{
+  "sessions": [
+    {
+      "id": 1,
+      "class_id": 1,
+      "student_email": "student1@gmail.com",
+      "attendance_status": "present",
+      "join_time": "2025-06-15T10:05:00Z",
+      "leave_time": "2025-06-15T11:30:00Z",
+      "participation_score": 85,
+      "quiz_score": 78,
+      "assignment_submitted": true,
+      "assignment_score": 92,
+      "notes": "Active participation, good understanding of concepts"
+    },
+    {
+      "id": 2,
+      "class_id": 1,
+      "student_email": "student2@gmail.com",
+      "attendance_status": "present",
+      "join_time": "2025-06-15T10:02:00Z",
+      "leave_time": "2025-06-15T11:35:00Z",
+      "participation_score": 90,
+      "quiz_score": 85,
+      "assignment_submitted": true,
+      "assignment_score": 88,
+      "notes": "Excellent engagement, asked thoughtful questions"
+    },
+    {
+      "id": 3,
+      "class_id": 2,
+      "student_email": "student1@gmail.com",
+      "attendance_status": "absent",
+      "join_time": null,
+      "leave_time": null,
+      "participation_score": 0,
+      "quiz_score": 0,
+      "assignment_submitted": false,
+      "assignment_score": 0,
+      "notes": "Did not attend the session"
+    },
+    {
+      "id": 4,
+      "class_id": 2,
+      "student_email": "student2@gmail.com",
+      "attendance_status": "present",
+      "join_time": "2025-06-16T14:10:00Z",
+      "leave_time": "2025-06-16T16:05:00Z",
+      "participation_score": 75,
+      "quiz_score": 82,
+      "assignment_submitted": true,
+      "assignment_score": 90,
+      "notes": "Good performance, needs improvement in problem-solving speed"
+    },
+    {
+      "id": 5,
+      "class_id": 3,
+      "student_email": "student1@gmail.com",
+      "attendance_status": "present",
+      "join_time": "2025-06-17T16:00:00Z",
+      "leave_time": "2025-06-17T17:00:00Z",
+      "participation_score": 95,
+      "quiz_score": 90,
+      "assignment_submitted": true,
+      "assignment_score": 95,
+      "notes": "Outstanding communication skills, natural presenter"
+    }
+  ]
+}
+

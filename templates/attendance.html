@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Attendance - Sanchari Mentors</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #4A90E2;
+            --secondary: #F5A623;
+            --success: #7ED321;
+            --danger: #D0021B;
+            --warning: #F5A623;
+            --info: #50E3C2;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .attendance-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: none;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, var(--primary), #667eea);
+            color: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            height: 100%;
+        }
+
+        .metric-card.success {
+            background: linear-gradient(135deg, var(--success), #56ab2f);
+        }
+
+        .metric-card.danger {
+            background: linear-gradient(135deg, var(--danger), #ff416c);
+        }
+
+        .metric-card.warning {
+            background: linear-gradient(135deg, var(--warning), #f093fb);
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .class-attendance-item {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid var(--primary);
+        }
+
+        .attendance-excellent {
+            border-left-color: var(--success);
+        }
+
+        .attendance-good {
+            border-left-color: var(--info);
+        }
+
+        .attendance-average {
+            border-left-color: var(--warning);
+        }
+
+        .attendance-poor {
+            border-left-color: var(--danger);
+        }
+
+        .attendance-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin: 0.2rem;
+        }
+
+        .present-badge {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .absent-badge {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .sidebar {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            height: fit-content;
+        }
+
+        .nav-link {
+            color: #666;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 2rem 0;
+        }
+
+        .session-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            border-left: 3px solid var(--primary);
+        }
+
+        .session-item.present {
+            border-left-color: var(--success);
+            background-color: #f0fff4;
+        }
+
+        .session-item.absent {
+            border-left-color: var(--danger);
+            background-color: #fff5f5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 p-3">
+                <div class="sidebar">
+                    <h5 class="mb-3">
+                        <i class="fas fa-user-graduate me-2"></i>
+                        Student Portal
+                    </h5>
+                    <nav class="nav flex-column">
+                        <a class="nav-link" href="/student/dashboard">
+                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                        </a>
+                        <a class="nav-link" href="/student/classes">
+                            <i class="fas fa-chalkboard me-2"></i>Live Sessions
+                        </a>
+                        <a class="nav-link" href="/student/progress">
+                            <i class="fas fa-chart-line me-2"></i>My Progress
+                        </a>
+                        <a class="nav-link active" href="/student/attendance">
+                            <i class="fas fa-calendar-check me-2"></i>My Attendance
+                        </a>
+                        <a class="nav-link" href="/student/resources">
+                            <i class="fas fa-book me-2"></i>Resources
+                        </a>
+                        <a class="nav-link" href="/student/doubts">
+                            <i class="fas fa-question-circle me-2"></i>Doubt Clearing
+                        </a>
+                        <a class="nav-link" href="/student/career">
+                            <i class="fas fa-briefcase me-2"></i>Career Guidance
+                        </a>
+                        <a class="nav-link" href="/student/skills">
+                            <i class="fas fa-cogs me-2"></i>Skill Development
+                        </a>
+                        <a class="nav-link" href="/student/achievements">
+                            <i class="fas fa-trophy me-2"></i>Achievements
+                        </a>
+                        <a class="nav-link" href="/student/community">
+                            <i class="fas fa-users me-2"></i>Community
+                        </a>
+                        <a class="nav-link" href="/student/interests">
+                            <i class="fas fa-heart me-2"></i>My Interests
+                        </a>
+                    </nav>
+                    <hr>
+                    <a href="/logout" class="nav-link text-danger">
+                        <i class="fas fa-sign-out-alt me-2"></i>Logout
+                    </a>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 p-3">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2><i class="fas fa-calendar-check me-2"></i>My Attendance Report</h2>
+                    <button class="btn btn-primary" onclick="window.print()">
+                        <i class="fas fa-download me-2"></i>Download Report
+                    </button>
+                </div>
+
+                <!-- Attendance Overview Cards -->
+                <div class="row mb-4">
+                    <div class="col-md-3 mb-3">
+                        <div class="metric-card">
+                            <div class="metric-value">{{ attendance.total_sessions }}</div>
+                            <div class="metric-label">Total Sessions</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="metric-card success">
+                            <div class="metric-value">{{ attendance.present_sessions }}</div>
+                            <div class="metric-label">Sessions Attended</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="metric-card danger">
+                            <div class="metric-value">{{ attendance.absent_sessions }}</div>
+                            <div class="metric-label">Sessions Missed</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="metric-card warning">
+                            <div class="metric-value">{{ attendance.attendance_rate }}%</div>
+                            <div class="metric-label">Attendance Rate</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Attendance Chart -->
+                <div class="attendance-card">
+                    <h4 class="mb-4"><i class="fas fa-chart-pie me-2"></i>Attendance Overview</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <canvas id="attendanceChart"></canvas>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mt-4">
+                                <h6>Attendance Status</h6>
+                                {% if attendance.attendance_rate >= 90 %}
+                                    <div class="alert alert-success">
+                                        <i class="fas fa-star me-2"></i>
+                                        <strong>Excellent Attendance!</strong> You have {{ attendance.attendance_rate }}% attendance rate.
+                                    </div>
+                                {% elif attendance.attendance_rate >= 75 %}
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-thumbs-up me-2"></i>
+                                        <strong>Good Attendance!</strong> You have {{ attendance.attendance_rate }}% attendance rate.
+                                    </div>
+                                {% elif attendance.attendance_rate >= 60 %}
+                                    <div class="alert alert-warning">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>
+                                        <strong>Average Attendance.</strong> Try to improve your attendance rate of {{ attendance.attendance_rate }}%.
+                                    </div>
+                                {% else %}
+                                    <div class="alert alert-danger">
+                                        <i class="fas fa-exclamation-circle me-2"></i>
+                                        <strong>Poor Attendance!</strong> Your attendance rate is {{ attendance.attendance_rate }}%. Please attend more classes.
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Class-wise Attendance -->
+                <div class="attendance-card">
+                    <h4 class="mb-4"><i class="fas fa-list me-2"></i>Class-wise Attendance</h4>
+                    {% if attendance.class_attendance %}
+                        {% for class_id, class_data in attendance.class_attendance.items() %}
+                        {% set attendance_class = 'attendance-excellent' if class_data.attendance_rate >= 90 else 'attendance-good' if class_data.attendance_rate >= 75 else 'attendance-average' if class_data.attendance_rate >= 60 else 'attendance-poor' %}
+                        <div class="class-attendance-item {{ attendance_class }}">
+                            <div class="row align-items-center">
+                                <div class="col-md-6">
+                                    <h6 class="mb-1">{{ class_data.class_info.title or 'Unknown Class' }}</h6>
+                                    <small class="text-muted">
+                                        <i class="fas fa-tag me-1"></i>{{ class_data.class_info.category or 'Unknown' }} | 
+                                        <i class="fas fa-user me-1"></i>{{ class_data.class_info.trainer or 'Unknown' }}
+                                    </small>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="text-center">
+                                        <h6 class="mb-1">{{ class_data.attendance_rate }}%</h6>
+                                        <small class="text-muted">Attendance Rate</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="text-end">
+                                        <span class="attendance-badge present-badge">
+                                            Present: {{ class_data.present_sessions }}
+                                        </span><br>
+                                        <span class="attendance-badge absent-badge">
+                                            Absent: {{ class_data.absent_sessions }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No attendance data available</h5>
+                            <p class="text-muted">Start attending classes to see your attendance record here!</p>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Detailed Session History -->
+                <div class="attendance-card">
+                    <h4 class="mb-4"><i class="fas fa-history me-2"></i>Session History</h4>
+                    {% if attendance.detailed_sessions %}
+                        {% for session in attendance.detailed_sessions %}
+                        {% set class_info = attendance.class_attendance[session.class_id].class_info %}
+                        <div class="session-item {% if session.attendance_status == 'present' %}present{% else %}absent{% endif %}">
+                            <div class="row align-items-center">
+                                <div class="col-md-6">
+                                    <h6 class="mb-1">{{ class_info.title or 'Unknown Class' }}</h6>
+                                    <small class="text-muted">
+                                        <i class="fas fa-calendar me-1"></i>{{ class_info.date or 'Unknown Date' }} | 
+                                        <i class="fas fa-clock me-1"></i>{{ class_info.time or 'Unknown Time' }}
+                                    </small>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="text-center">
+                                        {% if session.attendance_status == 'present' %}
+                                            <span class="badge bg-success">Present</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Absent</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    {% if session.attendance_status == 'present' %}
+                                        <div class="text-end">
+                                            <small class="text-muted">
+                                                <i class="fas fa-sign-in-alt me-1"></i>{{ session.join_time or 'N/A' }}<br>
+                                         
+(Content truncated due to size limit. Use line ranges to read in chunks)

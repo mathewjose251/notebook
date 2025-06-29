@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content Management - Sanchari Mentors Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem 0;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-header {
+            padding: 0 2rem 2rem;
+            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-header h2 {
+            color: #333;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            padding: 1rem 2rem;
+            color: #666;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .sidebar-nav a i {
+            margin-right: 1rem;
+            width: 20px;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .content-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .content-header h1 {
+            color: #333;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .content-header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .content-tabs {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .tab-nav {
+            display: flex;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 1rem 2rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #666;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .tab-button.active {
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .tab-content {
+            padding: 2rem;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .content-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .content-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .content-thumbnail {
+            width: 100%;
+            height: 150px;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 3rem;
+        }
+
+        .content-info h3 {
+            color: #333;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .content-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .content-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .status-approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .content-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .upload-area {
+            border: 2px dashed #e0e0e0;
+            border-radius: 12px;
+            padding: 3rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .upload-text {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-subtext {
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            padding: 0.5rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 0.5rem 1rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .add-content-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .add-content-btn:hover {
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 768px) {
+            .admin-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                padding: 1rem 0;
+            }
+
+            .sidebar-nav {
+                display: flex;
+                overflow-x: auto;
+                padding: 0 1rem;
+            }
+
+            .sidebar-nav li {
+                margin-right: 1rem;
+                margin-bottom: 0;
+                white-space: nowrap;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tab-nav {
+                flex-direction: column;
+            }
+
+            .filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Admin Panel</h2>
+            </div>
+            <ul class="sidebar-nav">
+                <li><a href="/admin/dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="/admin/users"><i class="fas fa-users"></i> User Management</a></li>
+                <li><a href="/admin/trainers"><i class="fas fa-chalkboard-teacher"></i> Trainers</a></li>
+                <li><a href="/admin/classes"><i class="fas fa-graduation-cap"></i> Classes</a></li>
+                <li><a href="/admin/sessions"><i class="fas fa-video"></i> Sessions</a></li>
+                <li><a href="/admin/content" class="active"><i class="fas fa-file-alt"></i> Content</a></li>
+                <li><a href="/admin/reports"><i class="fas fa-chart-bar"></i> Reports</a></li>
+                <li><a href="/admin/communications"><i class="fas fa-comments"></i> Communications</a></li>
+                <li><a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <div class="content-header">
+                <h1>Content Management</h1>
+                <p>Approve, organize, and manage educational content across the platform</p>
+            </div>
+
+            <div class="content-tabs">
+                <div class="tab-nav">
+                    <button class="tab-button active" onclick="showTab('study-materials')">Study Materials</button>
+                    <button class="tab-button" onclick="showTab('assignments')">Assignments</button>
+                    <button class="tab-button" onclick="showTab('videos')">Video Content</button>
+                    <button class="tab-button" onclick="showTab('assessments')">Assessments</button>
+                </div>
+
+                <div class="tab-content" id="study-materials">
+                    <div class="stats-row">
+                        <div class="stat-card">
+                            <div class="stat-number">245</div>
+                            <div class="stat-label">Total Materials</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">12</div>
+                            <div class="stat-label">Pending Approval</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">8</div>
+                            <div class="stat-label">Rejected</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">225</div>
+                            <div class="stat-label">Approved</div>
+                        </div>
+                    </div>
+
+                    <div class="filter-bar">
+                        <select class="filter-select">
+                            <option>All Subjects</option>
+                            <option>Mathematics</option>
+                            <option>Science</option>
+                            <option>English</option>
+                            <option>Social Studies</option>
+                        </select>
+                        <select class="filter-select">
+                            <option>All Status</option>
+                            <option>Pending</option>
+                            <option>Approved</option>
+                            <option>Rejected</option>
+                        </select>
+                        <select class="filter-select">
+                            <option>All Classes</option>
+                            <option>Class 8</option>
+                            <option>Class 9</option>
+                            <option>Class 10</option>
+                            <option>Class 11</option>
+                            <option>Class 12</option>
+                        </select>
+                        <input type="text" class="search-input" placeholder="Search materials...">
+                    </div>
+
+                    <div class="upload-area">
+                        <div class="upload-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <div class="upload-text">Upload New Study Material</div>
+                        <div class="upload-subtext">Drag and drop files here or click to browse</div>
+                    </div>
+
+                    <div class="content-grid">
+                        <div class="content-card">
+                            <div class="content-thumbnail">
+                                <i class="fas fa-file-pdf"></i>
+                            </div>
+                            <div class="content-info">
+                                <h3>Quadratic Equations - Chapter 4</h3>
+                                <div class="content-meta">
+                                    <span>Mathematics • Class 10</span>
+                                    <span class="content-status status-approved">Approved</span>
+                                </div>
+                                <p style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">Comprehensive guide to solving quadratic equations with examples and practice problems.</p>
+                                <div class="content-actions">
+                                    <button class="btn btn-primary"><i class="fas fa-eye"></i> Preview</button>
+                                    <button class="btn btn-warning"><i class="fas fa-edit"></i> Edit</button>
+                                    <button class="btn btn-danger"><i class="fas fa-trash"></i> Delete</button>
+                                </div>
+                            </div>
+                        </div>
+
+         
+(Content truncated due to size limit. Use line ranges to read in chunks)

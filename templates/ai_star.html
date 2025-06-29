@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Star - Interactive AI Learning | Sanchari Mentors</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body class="bg-gradient-to-br from-cyan-100 via-blue-50 to-indigo-100 min-h-screen">
+<div id="aistar-root" class="max-w-4xl mx-auto py-8"></div>
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+// Enhanced AI questions with grade levels
+const AI_QUESTIONS = {
+  basics: {
+    8: [
+      { question: "What does AI stand for?", options: ['Artificial Intelligence', 'Advanced Internet', 'Automated Information', 'Applied Intelligence'], correct: 'Artificial Intelligence' },
+      { question: "What is machine learning?", options: ['A type of computer', 'A programming language', 'Teaching computers to learn', 'A software program'], correct: 'Teaching computers to learn' },
+      { question: "What is a chatbot?", options: ['A robot', 'A computer program that talks', 'A type of AI', 'All of the above'], correct: 'All of the above' }
+    ],
+    9: [
+      { question: "What is deep learning?", options: ['A type of AI', 'A type of machine learning', 'A programming language', 'A computer part'], correct: 'A type of machine learning' },
+      { question: "What is a neural network?", options: ['A computer network', 'A brain-like system', 'A type of software', 'A hardware component'], correct: 'A brain-like system' },
+      { question: "What is data in AI?", options: ['Information', 'Numbers', 'Text', 'All of the above'], correct: 'All of the above' }
+    ],
+    10: [
+      { question: "What is supervised learning?", options: ['Learning with a teacher', 'Learning without a teacher', 'Learning by trial and error', 'Learning from books'], correct: 'Learning with a teacher' },
+      { question: "What is an algorithm?", options: ['A computer program', 'A step-by-step solution', 'A type of AI', 'A software tool'], correct: 'A step-by-step solution' },
+      { question: "What is pattern recognition?", options: ['Finding patterns in data', 'Creating patterns', 'Drawing patterns', 'Copying patterns'], correct: 'Finding patterns in data' }
+    ]
+  },
+  applications: {
+    8: [
+      { question: "Which of these uses AI?", options: ['Smartphones', 'Social media', 'Video games', 'All of the above'], correct: 'All of the above' },
+      { question: "What is a recommendation system?", options: ['A type of AI', 'A system that suggests things', 'A computer program', 'All of the above'], correct: 'All of the above' },
+      { question: "What is computer vision?", options: ['Teaching computers to see', 'Computer screens', 'Video games', 'Virtual reality'], correct: 'Teaching computers to see' }
+    ],
+    9: [
+      { question: "What is natural language processing?", options: ['Teaching computers to understand language', 'A programming language', 'A type of software', 'A computer part'], correct: 'Teaching computers to understand language' },
+      { question: "What is a virtual assistant?", options: ['A robot', 'An AI helper', 'A computer program', 'All of the above'], correct: 'All of the above' },
+      { question: "What is autonomous driving?", options: ['Self-driving cars', 'Remote control cars', 'Electric cars', 'Fast cars'], correct: 'Self-driving cars' }
+    ],
+    10: [
+      { question: "What is facial recognition?", options: ['Identifying faces', 'Taking photos', 'Drawing faces', 'Making faces'], correct: 'Identifying faces' },
+      { question: "What is speech recognition?", options: ['Converting speech to text', 'Recording audio', 'Playing music', 'Making phone calls'], correct: 'Converting speech to text' },
+      { question: "What is predictive analytics?", options: ['Predicting the future', 'Analyzing data', 'Making predictions from data', 'All of the above'], correct: 'All of the above' }
+    ]
+  },
+  ethics: {
+    8: [
+      { question: "What is AI bias?", options: ['Unfair treatment by AI', 'A type of AI', 'A computer error', 'A programming mistake'], correct: 'Unfair treatment by AI' },
+      { question: "What is privacy in AI?", options: ['Keeping information safe', 'Hiding data', 'Protecting personal information', 'All of the above'], correct: 'All of the above' },
+      { question: "What is transparency in AI?", options: ['Making AI clear', 'Understanding how AI works', 'Seeing through AI', 'All of the above'], correct: 'All of the above' }
+    ],
+    9: [
+      { question: "What is AI safety?", options: ['Making AI safe', 'Protecting people from AI', 'Ensuring AI works correctly', 'All of the above'], correct: 'All of the above' },
+      { question: "What is job displacement?", options: ['AI taking jobs', 'People losing jobs', 'Jobs changing due to AI', 'All of the above'], correct: 'All of the above' },
+      { question: "What is AI regulation?", options: ['Rules for AI', 'Laws about AI', 'Controlling AI use', 'All of the above'], correct: 'All of the above' }
+    ],
+    10: [
+      { question: "What is responsible AI?", options: ['Ethical AI use', 'Safe AI development', 'Fair AI systems', 'All of the above'], correct: 'All of the above' },
+      { question: "What is AI governance?", options: ['Managing AI', 'Controlling AI', 'Overseeing AI development', 'All of the above'], correct: 'All of the above' },
+      { question: "What is AI literacy?", options: ['Understanding AI', 'Learning about AI', 'Teaching AI', 'All of the above'], correct: 'All of the above' }
+    ]
+  }
+};
+
+const topics = {
+  basics: { name: 'AI Basics', icon: '🤖', color: 'bg-cyan-500' },
+  applications: { name: 'AI Applications', icon: '🚀', color: 'bg-blue-500' },
+  ethics: { name: 'AI Ethics', icon: '⚖️', color: 'bg-indigo-500' }
+};
+
+function generateAIQuestion(selectedTopic, selectedGrade) {
+  if (AI_QUESTIONS[selectedTopic] && AI_QUESTIONS[selectedTopic][selectedGrade]) {
+    const questions = AI_QUESTIONS[selectedTopic][selectedGrade];
+    return questions[getRandomInt(0, questions.length - 1)];
+  }
+  // Fallback
+  return {
+    question: "What does AI stand for?",
+    options: ['Artificial Intelligence', 'Advanced Internet', 'Automated Information', 'Applied Intelligence'],
+    correct: 'Artificial Intelligence'
+  };
+}
+
+function AIStarGame() {
+  const [studentName, setStudentName] = useState(localStorage.getItem('aistar_student_name') || '');
+  const [studentClass, setStudentClass] = useState(localStorage.getItem('aistar_student_class') || '');
+  const [showNameInput, setShowNameInput] = useState(!(studentName && studentClass));
+  const [selectedGrade, setSelectedGrade] = useState(8);
+  const [selectedTopic, setSelectedTopic] = useState('basics');
+  const [stars, setStars] = useState(100);
+  const [problemsSolved, setProblemsSolved] = useState(0);
+  const [currentQ, setCurrentQ] = useState(generateAIQuestion('basics', 8));
+  const [selected, setSelected] = useState('');
+  const [showResult, setShowResult] = useState(false);
+  const [isCorrect, setIsCorrect] = useState(false);
+  const [attempts, setAttempts] = useState(0);
+  const [leaderboard, setLeaderboard] = useState(JSON.parse(localStorage.getItem('aistar_leaderboard') || '[]'));
+
+  useEffect(() => {
+    if (!showNameInput) {
+      localStorage.setItem('aistar_student_name', studentName);
+      localStorage.setItem('aistar_student_class', studentClass);
+    }
+  }, [studentName, studentClass, showNameInput]);
+
+  function saveStudentInfo() {
+    if (studentName && studentClass) setShowNameInput(false);
+  }
+
+  function selectGrade(grade) {
+    setSelectedGrade(grade);
+    setCurrentQ(generateAIQuestion(selectedTopic, grade));
+    setSelected('');
+    setShowResult(false);
+    setIsCorrect(false);
+    setAttempts(0);
+  }
+
+  function selectTopic(topic) {
+    setSelectedTopic(topic);
+    setCurrentQ(generateAIQuestion(topic, selectedGrade));
+    setSelected('');
+    setShowResult(false);
+    setIsCorrect(false);
+    setAttempts(0);
+  }
+
+  function checkAnswer() {
+    if (!selected) return;
+    setAttempts(a => a + 1);
+    if (selected === currentQ.correct) {
+      setIsCorrect(true);
+      setShowResult(true);
+      setStars(s => s + (attempts === 0 ? 5 : attempts === 1 ? 3 : 1));
+      setProblemsSolved(p => p + 1);
+      updateLeaderboard(stars + (attempts === 0 ? 5 : attempts === 1 ? 3 : 1), problemsSolved + 1);
+    } else {
+      setIsCorrect(false);
+      setShowResult(true);
+    }
+  }
+
+  function nextQuestion() {
+    setCurrentQ(generateAIQuestion(selectedTopic, selectedGrade));
+    setSelected('');
+    setShowResult(false);
+    setIsCorrect(false);
+    setAttempts(0);
+  }
+
+  function updateLeaderboard(newStars, newSolved) {
+    let lb = JSON.parse(localStorage.getItem('aistar_leaderboard') || '[]');
+    const idx = lb.findIndex(e => e.name === studentName && e.class === studentClass);
+    if (idx >= 0) {
+      lb[idx].stars = Math.max(lb[idx].stars, newStars);
+      lb[idx].solved = Math.max(lb[idx].solved, newSolved);
+    } else {
+      lb.push({ name: studentName, class: studentClass, stars: newStars, solved: newSolved });
+    }
+    lb.sort((a, b) => b.stars - a.stars);
+    lb = lb.slice(0, 10);
+    localStorage.setItem('aistar_leaderboard', JSON.stringify(lb));
+    setLeaderboard(lb);
+  }
+
+  function resetStudent() {
+    setStudentName('');
+    setStudentClass('');
+    setShowNameInput(true);
+    setStars(100);
+    setProblemsSolved(0);
+  }
+
+  function selectExistingStudent(name, className) {
+    setStudentName(name);
+    setStudentClass(className);
+    localStorage.setItem('aistar_student_name', name);
+    localStorage.setItem('aistar_student_class', className);
+    setShowNameInput(false);
+  }
+
+  return (
+    <div className="bg-white rounded-xl shadow-lg p-6">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-3xl font-bold text-cyan-600 mb-2">AI Star</h1>
+          <p className="text-gray-600">Interactive AI Learning with Grade & Topic Selection</p>
+        </div>
+        <div className="flex items-center space-x-4">
+          <div className="bg-yellow-100 px-3 py-1 rounded-full">
+            <span className="font-bold text-yellow-700">⭐ {stars}</span>
+          </div>
+          <div className="bg-cyan-100 px-3 py-1 rounded-full">
+            <span className="font-bold text-cyan-700">✔️ {problemsSolved}</span>
+          </div>
+        </div>
+      </div>
+
+      {showNameInput ? (
+        <div className="mb-6">
+          <h3 className="text-xl font-bold mb-4">Welcome to AI Star!</h3>
+          <div className="space-y-3">
+            <input className="w-full border p-2 rounded" placeholder="Your Name" value={studentName} onChange={e => setStudentName(e.target.value)} />
+            <input className="w-full border p-2 rounded" placeholder="Your Class" value={studentClass} onChange={e => setStudentClass(e.target.value)} />
+            <button className="w-full bg-cyan-500 text-white px-4 py-2 rounded" onClick={saveStudentInfo}>Start Learning</button>
+          </div>
+          <div id="existing-students" className="mt-4">
+            <h4 className="text-md font-semibold mb-2">Or select your name:</h4>
+            <div className="flex flex-wrap gap-2">
+              {leaderboard.map(entry => (
+                <button key={entry.name + entry.class} onClick={() => selectExistingStudent(entry.name, entry.class)} className="bg-blue-100 hover:bg-blue-200 text-blue-800 px-3 py-1 rounded">{entry.name} ({entry.class})</button>
+              ))}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <>
+          <div className="mb-4 flex items-center justify-between bg-blue-50 p-2 rounded">
+            <span className="font-semibold text-blue-800">{studentName} - {studentClass}</span>
+            <button className="text-sm text-red-600 underline" onClick={resetStudent}>Change</button>
+          </div>
+
+          {/* Grade Selection */}
+          <div className="mb-4">
+            <h3 className="font-bold mb-2">Grade Level:</h3>
+            <div className="grid grid-cols-3 gap-2">
+              {[8, 9, 10, 11, 12].map(grade => (
+                <button
+                  key={grade}
+                  className={`p-2 rounded ${selectedGrade === grade ? 'bg-cyan-500 text-white' : 'bg-gray-200'}`}
+                  onClick={() => selectGrade(grade)}
+                >
+                  Grade {grade}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Topic Selection */}
+          <div className="mb-6">
+            <h3 className="font-bold mb-2">AI Topics:</h3>
+            <div className="grid grid-cols-1 gap-2">
+              {Object.entries(topics).map(([key, topic]) => (
+                <button
+                  key={key}
+                  className={`p-3 rounded text-left ${selectedTopic === key ? 'bg-cyan-500 text-white' : 'bg-gray-100'}`}
+                  onClick={() => selectTopic(key)}
+                >
+                  {topic.icon} {topic.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Question */}
+          <div className="mb-6">
+            <div className="text-xl font-bold mb-4">{currentQ.question}</div>
+            <div className="grid grid-cols-2 gap-3">
+              {currentQ.options.map(opt => (
+                <button
+                  key={opt}
+                  className={`border rounded p-3 text-left ${selected === opt ? 'bg-cyan-200' : 'bg-white'} ${showResult && opt === currentQ.correct ? 'border-green-500' : ''}`}
+                  disabled={showResult}
+                  onClick={() => setSelected(opt)}
+                >
+                  {opt}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="mb-6">
+            {!showResult ? (
+              <button className="bg-cyan-500 text-white px-4 py-2 rounded" disabled={!selected} onClick={checkAnswer}>Check Answer</button>
+            ) : (
+              <div className="flex items-center space-x-4">
+                <span className={`font-bold ${isCorrect ? 'text-green-600' : 'text-red-600'}`}>
+                  {isCorrect ? '✅ Correct!' : '❌ Try Again!'}
+                </span>
+                <button className="bg-cyan-500 text-white px-4 py-2 rounded" onClick={nextQuestion}>Next Question</button>
+              </div>
+            )}
+          </div>
+
+          {/* Leaderboard */}
+          <div className="mt-8">
+            <h2 className="text-xl font-bold mb-4">🏆 Leaderboard</h2>
+            <div className="bg-gray-50 rounded p-4">
+              {leaderboard.length === 0 ? <div>No scores yet.</div> : leaderboard.map((entry, i) => (
+                <div key={i} className={`flex justify-between ${entry.name === studentName && entry.class === studentClass ? 'font-bold text-cyan-600' : ''}`}>
+                  <span>{i + 1}. {entry.name} ({entry.class})</span>
+                  <span>⭐ {entry.stars} | ✔️ {entry.solved}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.render(<AIStarGame />, document.getElementById('aistar-root'));
+</script>
+</body>
+</html> 

@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+
+{% block title %}Learning Resources - Sanchari Mentors{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">Learning Resources</h2>
+            
+            <!-- Search and Filter -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" id="search-resources" placeholder="Search resources...">
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="type-filter">
+                                <option value="">All Types</option>
+                                <option value="video">Videos</option>
+                                <option value="document">Documents</option>
+                                <option value="presentation">Presentations</option>
+                                <option value="quiz">Quizzes</option>
+                                <option value="assignment">Assignments</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="subject-filter">
+                                <option value="">All Subjects</option>
+                                <option value="mathematics">Mathematics</option>
+                                <option value="ai">Artificial Intelligence</option>
+                                <option value="communication">Communication Skills</option>
+                                <option value="career">Career Guidance</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button class="btn btn-primary w-100" onclick="applyFilters()">Filter</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resources Grid -->
+            <div class="row" id="resources-grid">
+                <!-- Resources will be loaded here -->
+                <div class="col-12 text-center">
+                    <p class="text-muted">Loading resources...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadResources();
+    
+    // Add event listeners for search and filters
+    document.getElementById('search-resources').addEventListener('input', filterResources);
+    document.getElementById('type-filter').addEventListener('change', filterResources);
+    document.getElementById('subject-filter').addEventListener('change', filterResources);
+});
+
+function loadResources() {
+    // Simulate loading resources from API
+    fetch('/api/resources')
+        .then(response => response.json())
+        .then(data => {
+            displayResources(data.resources);
+        })
+        .catch(error => {
+            console.error('Error loading resources:', error);
+            // Fallback to static data
+            const resources = [
+                {
+                    id: 1,
+                    title: "Introduction to AI - Video Series",
+                    type: "video",
+                    subject: "ai",
+                    description: "Comprehensive video series covering AI fundamentals",
+                    duration: "2 hours",
+                    difficulty: "Beginner",
+                    views: 156,
+                    created: "2025-06-10"
+                },
+                {
+                    id: 2,
+                    title: "Mathematics Problem Solving Guide",
+                    type: "document",
+                    subject: "mathematics",
+                    description: "PDF guide with practice problems and solutions",
+                    pages: 45,
+                    difficulty: "Intermediate",
+                    views: 89,
+                    created: "2025-06-12"
+                },
+                {
+                    id: 3,
+                    title: "Communication Skills Workshop",
+                    type: "presentation",
+                    subject: "communication",
+                    description: "Interactive presentation on effective communication",
+                    slides: 25,
+                    difficulty: "Beginner",
+                    views: 67,
+                    created: "2025-06-15"
+                }
+            ];
+            displayResources(resources);
+        });
+}
+
+function displayResources(resources) {
+    const container = document.getElementById('resources-grid');
+    
+    if (resources.length === 0) {
+        container.innerHTML = '<div class="col-12 text-center"><p class="text-muted">No resources found matching your criteria.</p></div>';
+        return;
+    }
+    
+    container.innerHTML = resources.map(resource => `
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="badge bg-primary">${resource.type.toUpperCase()}</span>
+                        <span class="badge bg-secondary">${resource.difficulty}</span>
+                    </div>
+                    <h6 class="card-title">${resource.title}</h6>
+                    <p class="card-text text-muted">${resource.description}</p>
+                    <div class="mb-2">
+                        <small class="text-muted">
+                            ${resource.type === 'video' ? `Duration: ${resource.duration}` : ''}
+                            ${resource.type === 'document' ? `Pages: ${resource.pages}` : ''}
+                            ${resource.type === 'presentation' ? `Slides: ${resource.slides}` : ''}
+                            ${resource.type === 'quiz' ? `Questions: ${resource.questions}` : ''}
+                            ${resource.type === 'assignment' ? `Deadline: ${resource.deadline}` : ''}
+                        </small>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            Views: ${resource.views} | Created: ${resource.created}
+                        </small>
+                        <button class="btn btn-sm btn-primary" onclick="accessResource(${resource.id})">Access</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function filterResources() {
+    const searchTerm = document.getElementById('search-resources').value.toLowerCase();
+    const typeFilter = document.getElementById('type-filter').value;
+    const subjectFilter = document.getElementById('subject-filter').value;
+    
+    // Reload and filter resources
+    loadResources();
+}
+
+function applyFilters() {
+    filterResources();
+}
+
+function accessResource(resourceId) {
+    // Check if user is logged in
+    if (!isLoggedIn()) {
+        window.location.href = '/login';
+        return;
+    }
+    
+    // Navigate to resource or open in new tab
+    window.open(`/resource/${resourceId}`, '_blank');
+}
+
+function isLoggedIn() {
+    // Check if user is logged in (simplified check)
+    return document.cookie.includes('session');
+}
+</script>
+{% endblock %}

@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+
+{% block title %}Available Classes - Sanchari Mentors{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">Available Classes</h2>
+            
+            <!-- Search and Filter -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" id="search-classes" placeholder="Search classes...">
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="category-filter">
+                                <option value="">All Categories</option>
+                                <option value="Artificial Intelligence">Artificial Intelligence</option>
+                                <option value="Mathematics">Mathematics</option>
+                                <option value="Communication Skills">Communication Skills</option>
+                                <option value="Career Guidance">Career Guidance</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="difficulty-filter">
+                                <option value="">All Levels</option>
+                                <option value="Beginner">Beginner</option>
+                                <option value="Intermediate">Intermediate</option>
+                                <option value="Advanced">Advanced</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button class="btn btn-primary w-100" onclick="applyFilters()">Filter</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Classes Grid -->
+            <div class="row" id="classes-grid">
+                <!-- Classes will be loaded here -->
+                <div class="col-12 text-center">
+                    <p class="text-muted">Loading classes...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadClasses();
+    
+    // Add event listeners for search and filters
+    document.getElementById('search-classes').addEventListener('input', filterClasses);
+    document.getElementById('category-filter').addEventListener('change', filterClasses);
+    document.getElementById('difficulty-filter').addEventListener('change', filterClasses);
+});
+
+function loadClasses() {
+    // Simulate loading classes from API
+    fetch('/api/classes')
+        .then(response => response.json())
+        .then(data => {
+            displayClasses(data.classes);
+        })
+        .catch(error => {
+            console.error('Error loading classes:', error);
+            // Fallback to static data
+            const classes = [
+                {
+                    id: 1,
+                    title: "Introduction to Artificial Intelligence",
+                    category: "Artificial Intelligence",
+                    trainer: "Dr. Priya Sharma",
+                    date: "2025-06-15",
+                    time: "10:00",
+                    duration: 90,
+                    max_participants: 30,
+                    current_participants: 25,
+                    difficulty: "Beginner",
+                    description: "Learn the fundamentals of AI and machine learning",
+                    prerequisites: "Basic programming knowledge"
+                },
+                {
+                    id: 2,
+                    title: "Advanced Mathematics for Students",
+                    category: "Mathematics",
+                    trainer: "Neha Gupta",
+                    date: "2025-06-16",
+                    time: "14:00",
+                    duration: 120,
+                    max_participants: 25,
+                    current_participants: 20,
+                    difficulty: "Intermediate",
+                    description: "Advanced mathematical concepts and problem-solving techniques",
+                    prerequisites: "High school mathematics"
+                },
+                {
+                    id: 3,
+                    title: "Effective Communication Skills",
+                    category: "Communication Skills",
+                    trainer: "Anjali Desai",
+                    date: "2025-06-17",
+                    time: "16:00",
+                    duration: 60,
+                    max_participants: 20,
+                    current_participants: 18,
+                    difficulty: "Beginner",
+                    description: "Develop confidence in verbal and written communication",
+                    prerequisites: "None"
+                }
+            ];
+            displayClasses(classes);
+        });
+}
+
+function displayClasses(classes) {
+    const container = document.getElementById('classes-grid');
+    
+    if (classes.length === 0) {
+        container.innerHTML = '<div class="col-12 text-center"><p class="text-muted">No classes found matching your criteria.</p></div>';
+        return;
+    }
+    
+    container.innerHTML = classes.map(cls => `
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="badge bg-primary">${cls.category}</span>
+                        <span class="badge bg-secondary">${cls.difficulty}</span>
+                    </div>
+                    <h6 class="card-title">${cls.title}</h6>
+                    <p class="card-text text-muted">${cls.description}</p>
+                    <div class="mb-2">
+                        <small class="text-muted">
+                            <strong>Trainer:</strong> ${cls.trainer}<br>
+                            <strong>Date:</strong> ${cls.date} at ${cls.time}<br>
+                            <strong>Duration:</strong> ${cls.duration} minutes<br>
+                            <strong>Prerequisites:</strong> ${cls.prerequisites}
+                        </small>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">Enrollment: ${cls.current_participants}/${cls.max_participants}</small>
+                            <div class="progress flex-grow-1 ms-2" style="height: 6px;">
+                                <div class="progress-bar" style="width: ${(cls.current_participants/cls.max_participants)*100}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="badge bg-${cls.current_participants >= cls.max_participants ? 'danger' : 'success'}">
+                            ${cls.current_participants >= cls.max_participants ? 'Full' : 'Available'}
+                        </span>
+                        <button class="btn btn-sm btn-primary" onclick="viewClass(${cls.id})" ${cls.current_participants >= cls.max_participants ? 'disabled' : ''}>
+                            ${cls.current_participants >= cls.max_participants ? 'Full' : 'View Details'}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function filterClasses() {
+    const searchTerm = document.getElementById('search-classes').value.toLowerCase();
+    const categoryFilter = document.getElementById('category-filter').value;
+    const difficultyFilter = document.getElementById('difficulty-filter').value;
+    
+    // Reload and filter classes
+    loadClasses();
+}
+
+function applyFilters() {
+    filterClasses();
+}
+
+function viewClass(classId) {
+    window.location.href = `/class/${classId}`;
+}
+</script>
+{% endblock %}

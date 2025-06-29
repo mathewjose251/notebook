@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}Feedback Management - Trainer Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-4 trainer-theme">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">Feedback Management</h2>
+            
+            <!-- Feedback Stats -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Feedback Overview</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 text-center">
+                            <div class="border rounded p-3">
+                                <h4 class="text-primary" id="total-feedback">0</h4>
+                                <p class="text-muted mb-0">Total Feedback</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="border rounded p-3">
+                                <h4 class="text-success" id="positive-feedback">0</h4>
+                                <p class="text-muted mb-0">Positive</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="border rounded p-3">
+                                <h4 class="text-warning" id="pending-feedback">0</h4>
+                                <p class="text-muted mb-0">Pending</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="border rounded p-3">
+                                <h4 class="text-info" id="avg-rating">0.0</h4>
+                                <p class="text-muted mb-0">Avg Rating</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feedback List -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">All Feedback</h5>
+                </div>
+                <div class="card-body">
+                    <div id="feedback-list">
+                        <!-- Feedback will be loaded here -->
+                        <div class="text-center">
+                            <p class="text-muted">Loading feedback...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadFeedbackStats();
+    loadFeedback();
+});
+
+function loadFeedbackStats() {
+    const stats = {
+        total: 25,
+        positive: 20,
+        pending: 5,
+        avgRating: 4.3
+    };
+    
+    document.getElementById('total-feedback').textContent = stats.total;
+    document.getElementById('positive-feedback').textContent = stats.positive;
+    document.getElementById('pending-feedback').textContent = stats.pending;
+    document.getElementById('avg-rating').textContent = stats.avgRating;
+}
+
+function loadFeedback() {
+    const feedback = [
+        {
+            id: 1,
+            student: "Priya Sharma",
+            class: "Introduction to AI",
+            rating: 5,
+            comment: "Excellent teaching style and very helpful explanations.",
+            date: "2025-06-15",
+            status: "reviewed"
+        },
+        {
+            id: 2,
+            student: "Rahul Kumar",
+            class: "Advanced Mathematics",
+            rating: 4,
+            comment: "Good course content, but could use more examples.",
+            date: "2025-06-14",
+            status: "pending"
+        },
+        {
+            id: 3,
+            student: "Anjali Desai",
+            class: "Communication Skills",
+            rating: 5,
+            comment: "Amazing course! Learned a lot about public speaking.",
+            date: "2025-06-13",
+            status: "reviewed"
+        }
+    ];
+    
+    displayFeedback(feedback);
+}
+
+function displayFeedback(feedback) {
+    const container = document.getElementById('feedback-list');
+    
+    container.innerHTML = feedback.map(item => `
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h6 class="card-title">${item.student}</h6>
+                        <p class="card-text text-muted">Class: ${item.class}</p>
+                        <p class="card-text">${item.comment}</p>
+                        <small class="text-muted">Submitted on ${item.date}</small>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <div class="mb-2">
+                            ${'⭐'.repeat(item.rating)}${'☆'.repeat(5-item.rating)}
+                        </div>
+                        <span class="badge bg-${item.status === 'reviewed' ? 'success' : 'warning'} mb-2">${item.status}</span>
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-outline-primary" onclick="respondToFeedback(${item.id})">Respond</button>
+                            <button class="btn btn-outline-info" onclick="viewFeedback(${item.id})">View</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function respondToFeedback(feedbackId) {
+    const response = prompt('Enter your response to this feedback:');
+    if (response) {
+        alert('Response sent successfully!');
+    }
+}
+
+function viewFeedback(feedbackId) {
+    window.location.href = `/trainer/feedback/${feedbackId}`;
+}
+</script>
+{% endblock %} 

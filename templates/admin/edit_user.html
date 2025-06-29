@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit User - Admin Console</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="/static/css/new-theme.css" rel="stylesheet">
+</head>
+<body class="admin-page">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 sidebar p-0">
+                <div class="d-flex flex-column p-3">
+                    <a href="/" class="d-flex align-items-center mb-3 text-decoration-none">
+                        <img src="/static/images/logo.png" alt="Sanchari Mentors Logo" width="40" height="40" class="me-2">
+                        <span class="fw-bold">Sanchari Mentors</span>
+                    </a>
+                    
+                    <div class="mb-3">
+                        <span class="badge bg-success">Admin</span>
+                    </div>
+                    
+                    <ul class="nav nav-pills flex-column mb-auto">
+                        <li class="nav-item">
+                            <a href="/admin/dashboard" class="nav-link sidebar-link">
+                                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/admin/users" class="nav-link sidebar-link active">
+                                <i class="fas fa-users me-2"></i>User Management
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/admin/trainers" class="nav-link sidebar-link">
+                                <i class="fas fa-chalkboard-teacher me-2"></i>Trainers
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/admin/classes" class="nav-link sidebar-link">
+                                <i class="fas fa-book me-2"></i>Classes
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/admin/sessions" class="nav-link sidebar-link">
+                                <i class="fas fa-video me-2"></i>Sessions
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/admin/content" class="nav-link sidebar-link">
+                                <i class="fas fa-file-alt me-2"></i>Content
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/admin/reports" class="nav-link sidebar-link">
+                                <i class="fas fa-chart-bar me-2"></i>Reports
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/admin/communications" class="nav-link sidebar-link">
+                                <i class="fas fa-comments me-2"></i>Communications
+                            </a>
+                        </li>
+                    </ul>
+                    
+                    <div class="mt-auto">
+                        <a href="/logout" class="btn btn-outline-danger btn-sm">
+                            <i class="fas fa-sign-out-alt me-2"></i>Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 main-content">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="h3 mb-0">Edit User</h1>
+                    <a href="/admin/users" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Users
+                    </a>
+                </div>
+                
+                <!-- Flash Messages -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                <!-- Edit User Form -->
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-user-edit me-2"></i>Edit User: {{ user.name }}
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <form method="POST">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="name" class="form-label">Full Name *</label>
+                                            <input type="text" class="form-control" id="name" name="name" value="{{ user.name }}" required>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="email" class="form-label">Email Address</label>
+                                            <input type="email" class="form-control" id="email" value="{{ user.email }}" disabled>
+                                            <div class="form-text">Email cannot be changed</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="password" class="form-label">New Password</label>
+                                            <input type="password" class="form-control" id="password" name="password">
+                                            <div class="form-text">Leave blank to keep current password</div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="role" class="form-label">Role *</label>
+                                            <select class="form-select" id="role" name="role" required>
+                                                <option value="student" {{ 'selected' if user.role == 'student' }}>Student</option>
+                                                <option value="trainer" {{ 'selected' if user.role == 'trainer' }}>Trainer/Mentor</option>
+                                                <option value="admin" {{ 'selected' if user.role == 'admin' }}>Admin</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <small class="text-muted">Created: {{ user.created_at[:10] if user.created_at else 'Unknown' }}</small>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <small class="text-muted">Last Updated: {{ user.updated_at[:10] if user.updated_at else 'Never' }}</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="d-flex gap-2">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-save me-2"></i>Update User
+                                        </button>
+                                        <a href="/admin/users" class="btn btn-secondary">
+                                            <i class="fas fa-times me-2"></i>Cancel
+                                        </a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6 class="card-title mb-0">
+                                    <i class="fas fa-user me-2"></i>User Details
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <strong>Current Role:</strong>
+                                    <span class="badge bg-{{ 'primary' if user.role == 'student' else 'warning' if user.role == 'trainer' else 'danger' }} ms-2">
+                                        {{ user.role.title() }}
+                                    </span>
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Email:</strong><br>
+                                    <small class="text-muted">{{ user.email }}</small>
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Created By:</strong><br>
+                                    <small class="text-muted">{{ user.created_by if user.created_by else 'System' }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card mt-3">
+                            <div class="card-header">
+                                <h6 class="card-title mb-0">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>Danger Zone
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted mb-3">Permanently delete this user account. This action cannot be undone.</p>
+                                <form method="POST" action="/admin/delete-user/{{ user.email }}" onsubmit="return confirm('Are you sure you want to delete this user? This action cannot be undone.')">
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        <i class="fas fa-trash me-2"></i>Delete User
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

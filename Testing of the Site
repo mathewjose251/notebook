@@ -1,0 +1,44 @@
+Testing of the Site
+    Login as a student
+    View the student dashboard
+    View the student profile
+    View the student profile    
+    Login as a trainer
+    View the trainer dashboard
+    View the trainer profile
+    View the trainer profile    
+    Login as an admin
+    View the admin dashboard
+    View the admin profile
+    View the admin profile    
+    
+Student Endpoints:
+/student/dashboard (Login as student: student@sanchari.org / student123 )
+/student/sessions
+/student/resources
+/student/doubts
+/student/career
+/student/skills
+/student/achievements
+/student/community
+Admin Endpoints:
+/admin/dashboard (Login as admin: admin@sanchari.org / admin)
+/admin/users
+/admin/trainers
+/admin/classes
+/admin/sessions
+/admin/content
+/admin/reports
+/admin/communications
+/admin/google-meet-settings
+/admin/publish-training
+Trainer Endpoints:
+/trainer/dashboard (Login as trainer: trainer@sanchari.org / trainer123)
+/trainer/sessions
+/trainer/students
+/trainer/resources
+/trainer/training
+/trainer/feedback
+Authentication Endpoints:
+/login
+/logout    

@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+
+{% block title %}Communications - Sanchari Mentors{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">Communications</h2>
+            
+            <!-- Communication Channels -->
+            <div class="row mb-4">
+                <div class="col-md-4 mb-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="fas fa-comments fa-3x text-primary mb-3"></i>
+                            <h5 class="card-title">Discussion Forums</h5>
+                            <p class="card-text">Join topic-based discussions and share knowledge</p>
+                            <button class="btn btn-primary" onclick="openForums()">Browse Forums</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="fas fa-bullhorn fa-3x text-success mb-3"></i>
+                            <h5 class="card-title">Announcements</h5>
+                            <p class="card-text">Stay updated with latest news and announcements</p>
+                            <button class="btn btn-success" onclick="viewAnnouncements()">View All</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="fas fa-envelope fa-3x text-info mb-3"></i>
+                            <h5 class="card-title">Direct Messages</h5>
+                            <p class="card-text">Connect directly with mentors and peers</p>
+                            <button class="btn btn-info" onclick="openMessages()">Open Messages</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Communications -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent Communications</h5>
+                </div>
+                <div class="card-body">
+                    <div id="communications-list">
+                        <!-- Communications will be loaded here -->
+                        <div class="text-center">
+                            <p class="text-muted">Loading communications...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadCommunications();
+});
+
+function loadCommunications() {
+    // Simulate loading communications from API
+    fetch('/api/communications')
+        .then(response => response.json())
+        .then(data => {
+            displayCommunications(data.communications);
+        })
+        .catch(error => {
+            console.error('Error loading communications:', error);
+            // Fallback to static data
+            const communications = [
+                {
+                    id: 1,
+                    type: "announcement",
+                    title: "New AI Course Starting Next Week",
+                    content: "We're excited to announce our new AI fundamentals course starting next week. Register now to secure your spot!",
+                    author: "Admin Team",
+                    date: "2025-06-15",
+                    priority: "high"
+                },
+                {
+                    id: 2,
+                    type: "forum",
+                    title: "Mathematics Problem Discussion",
+                    content: "Let's discuss the quadratic equation problem from yesterday's session. Share your solutions!",
+                    author: "Neha Gupta",
+                    date: "2025-06-14",
+                    replies: 5
+                },
+                {
+                    id: 3,
+                    type: "message",
+                    title: "Assignment Submission Reminder",
+                    content: "Don't forget to submit your communication skills assignment by Friday.",
+                    author: "Anjali Desai",
+                    date: "2025-06-13",
+                    priority: "medium"
+                }
+            ];
+            displayCommunications(communications);
+        });
+}
+
+function displayCommunications(communications) {
+    const container = document.getElementById('communications-list');
+    
+    if (communications.length === 0) {
+        container.innerHTML = '<div class="text-center"><p class="text-muted">No communications found.</p></div>';
+        return;
+    }
+    
+    container.innerHTML = communications.map(comm => `
+        <div class="border-bottom pb-3 mb-3">
+            <div class="d-flex justify-content-between align-items-start">
+                <div class="flex-grow-1">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="badge bg-${getTypeColor(comm.type)} me-2">${comm.type.toUpperCase()}</span>
+                        ${comm.priority ? `<span class="badge bg-${getPriorityColor(comm.priority)} me-2">${comm.priority.toUpperCase()}</span>` : ''}
+                        <h6 class="mb-0">${comm.title}</h6>
+                    </div>
+                    <p class="text-muted mb-2">${comm.content}</p>
+                    <small class="text-muted">
+                        By ${comm.author} • ${comm.date}
+                        ${comm.replies ? ` • ${comm.replies} replies` : ''}
+                    </small>
+                </div>
+                <button class="btn btn-sm btn-outline-primary" onclick="viewCommunication(${comm.id})">
+                    View
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function getTypeColor(type) {
+    switch(type) {
+        case 'announcement': return 'success';
+        case 'forum': return 'primary';
+        case 'message': return 'info';
+        default: return 'secondary';
+    }
+}
+
+function getPriorityColor(priority) {
+    switch(priority) {
+        case 'high': return 'danger';
+        case 'medium': return 'warning';
+        case 'low': return 'secondary';
+        default: return 'secondary';
+    }
+}
+
+function openForums() {
+    if (!isLoggedIn()) {
+        window.location.href = '/login';
+        return;
+    }
+    window.location.href = '/forums';
+}
+
+function viewAnnouncements() {
+    window.location.href = '/announcements';
+}
+
+function openMessages() {
+    if (!isLoggedIn()) {
+        window.location.href = '/login';
+        return;
+    }
+    window.location.href = '/messages';
+}
+
+function viewCommunication(commId) {
+    window.location.href = `/communication/${commId}`;
+}
+
+function isLoggedIn() {
+    return document.cookie.includes('session');
+}
+</script>
+{% endblock %}

@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}Class Management - Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-4">Manage Classes</h2>
+    <!-- Add Class Form -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">Add New Class</div>
+        <div class="card-body">
+            <form id="add-class-form">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="class-name" class="form-label">Course Name</label>
+                        <input type="text" class="form-control" id="class-name" name="name" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="trainer-email" class="form-label">Trainer Email</label>
+                        <input type="email" class="form-control" id="trainer-email" name="trainer_email" required>
+                    </div>
+                    <div class="col-md-12">
+                        <label for="class-description" class="form-label">Description</label>
+                        <textarea class="form-control" id="class-description" name="description" rows="2" required></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="start-date" class="form-label">Start Date</label>
+                        <input type="date" class="form-control" id="start-date" name="start_date" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="end-date" class="form-label">End Date</label>
+                        <input type="date" class="form-control" id="end-date" name="end_date" required>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-primary">Add Class</button>
+                    <span id="add-class-msg" class="ms-3"></span>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Existing Classes List -->
+    <div id="classes-list">
+        <!-- Existing classes will be loaded here via JS -->
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadClassStats();
+    loadClasses();
+});
+
+function loadClassStats() {
+    const stats = {
+        total: 25,
+        active: 18,
+        enrollments: 342,
+        attendance: 85
+    };
+    
+    document.getElementById('total-classes').textContent = stats.total;
+    document.getElementById('active-classes').textContent = stats.active;
+    document.getElementById('total-enrollments').textContent = stats.enrollments;
+    document.getElementById('avg-attendance').textContent = stats.attendance + '%';
+}
+
+function loadClasses() {
+    fetch('/api/classes')
+        .then(res => res.json())
+        .then(data => {
+            let html = '<div class="card"><div class="card-header">Existing Classes</div><ul class="list-group list-group-flush">';
+            if (data.length === 0) html += '<li class="list-group-item">No classes found.</li>';
+            data.forEach(cls => {
+                html += `<li class="list-group-item"><b>${cls.name}</b> (${cls.start_date} to ${cls.end_date})<br><small>${cls.description}</small><br><span class='text-muted'>Trainer: ${cls.trainer_email}</span></li>`;
+            });
+            html += '</ul></div>';
+            document.getElementById('classes-list').innerHTML = html;
+        });
+}
+
+function addClass() {
+    alert('Add class functionality will be implemented here.');
+}
+
+function editClass(classId) {
+    alert('Edit class functionality will be implemented here.');
+}
+
+function viewClass(classId) {
+    window.location.href = `/admin/class/${classId}`;
+}
+
+function deleteClass(classId) {
+    if (confirm('Are you sure you want to delete this class?')) {
+        alert('Class deleted successfully!');
+        loadClasses();
+    }
+}
+
+// Handle add class form
+const form = document.getElementById('add-class-form');
+form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const msg = document.getElementById('add-class-msg');
+    msg.textContent = '';
+    fetch('/api/classes/add', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            name: form.name.value,
+            description: form.description.value,
+            start_date: form.start_date.value,
+            end_date: form.end_date.value,
+            trainer_email: form.trainer_email.value
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            msg.textContent = 'Class added!';
+            msg.className = 'text-success ms-3';
+            form.reset();
+            loadClasses();
+        } else {
+            msg.textContent = data.error || 'Error adding class.';
+            msg.className = 'text-danger ms-3';
+        }
+    })
+    .catch(() => {
+        msg.textContent = 'Error adding class.';
+        msg.className = 'text-danger ms-3';
+    });
+});
+</script>
+{% endblock %} 

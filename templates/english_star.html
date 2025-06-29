@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Star - Interactive English Learning | Sanchari Mentors</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide React Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    
+    <!-- React and ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Custom CSS -->
+    <style>
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .logo-img {
+            height: 48px;
+            width: auto;
+            object-fit: contain;
+        }
+        
+        .topic-button {
+            transition: all 0.3s ease;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            background: white;
+            box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .topic-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .topic-button.active {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border-color: #10b981;
+        }
+        
+        .grade-button {
+            transition: all 0.3s ease;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            background: white;
+            box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .grade-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .grade-button.active {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            border-color: #3b82f6;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-green-100 via-emerald-50 to-teal-100 min-h-screen">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top" style="margin-top: 60px;">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <img src="/static/images/logo.png" alt="Sanchari Mentors Logo" class="logo-img me-2" />
+                <span class="fw-bold">Sanchari Mentors</span>
+            </a>
+            <div class="ms-auto">
+                <a href="/game-hub" class="btn btn-outline-primary me-2">
+                    <i class="fas fa-gamepad me-2"></i>Game Hub
+                </a>
+                <a href="/" class="btn btn-outline-primary me-2">
+                    <i class="fas fa-home me-2"></i>Home
+                </a>
+                <a href="/login/google" class="btn btn-primary">
+                    <i class="fab fa-google me-2"></i>Join as Student
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- English Star Game Container -->
+    <div id="englishstar-root" class="max-w-4xl mx-auto py-8"></div>
+
+    <!-- Game JavaScript -->
+    <script type="text/babel">
+    console.log('EnglishStarGame script loaded');
+    const { useState, useEffect } = React;
+
+    function getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function shuffle(array) {
+        let currentIndex = array.length, randomIndex;
+        while (currentIndex !== 0) {
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
+            [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+        }
+        return array;
+    }
+
+    // Enhanced English questions with grade levels
+    const ENGLISH_QUESTIONS = {
+        vocabulary: {
+            4: [
+                { question: "What is the meaning of 'brave'?", options: ['scared', 'courageous', 'happy', 'sad'], correct: 'courageous' },
+                { question: "What is the meaning of 'enormous'?", options: ['small', 'big', 'huge', 'tiny'], correct: 'huge' },
+                { question: "What is the meaning of 'delicious'?", options: ['tasty', 'sour', 'bitter', 'cold'], correct: 'tasty' },
+                { question: "What is the meaning of 'beautiful'?", options: ['ugly', 'pretty', 'nice', 'good'], correct: 'pretty' },
+                { question: "What is the meaning of 'quick'?", options: ['slow', 'fast', 'steady', 'careful'], correct: 'fast' },
+                { question: "What is the meaning of 'quiet'?", options: ['loud', 'silent', 'noisy', 'busy'], correct: 'silent' },
+                { question: "What is the meaning of 'bright'?", options: ['dark', 'shiny', 'dull', 'dim'], correct: 'shiny' },
+                { question: "What is the meaning of 'strong'?", options: ['weak', 'powerful', 'small', 'thin'], correct: 'powerful' },
+                { question: "What is the meaning of 'clean'?", options: ['dirty', 'neat', 'messy', 'rough'], correct: 'neat' },
+                { question: "What is the meaning of 'soft'?", options: ['hard', 'gentle', 'rough', 'sharp'], correct: 'gentle' },
+                { question: "What is the meaning of 'warm'?", options: ['cold', 'hot', 'cozy', 'cool'], correct: 'cozy' },
+                { question: "What is the meaning of 'fresh'?", options: ['old', 'new', 'stale', 'rotten'], correct: 'new' },
+                { question: "What is the meaning of 'smooth'?", options: ['rough', 'even', 'bumpy', 'jagged'], correct: 'even' },
+                { question: "What is the meaning of 'gentle'?", options: ['rough', 'kind', 'harsh', 'mean'], correct: 'kind' },
+                { question: "What is the meaning of 'clever'?", options: ['stupid', 'smart', 'foolish', 'silly'], correct: 'smart' },
+                { question: "What is the meaning of 'friendly'?", options: ['mean', 'nice', 'rude', 'angry'], correct: 'nice' },
+                { question: "What is the meaning of 'careful'?", options: ['careless', 'cautious', 'reckless', 'bold'], correct: 'cautious' },
+                { question: "What is the meaning of 'patient'?", options: ['impatient', 'calm', 'angry', 'hasty'], correct: 'calm' },
+                { question: "What is the meaning of 'honest'?", options: ['dishonest', 'truthful', 'lying', 'fake'], correct: 'truthful' },
+                { question: "What is the meaning of 'polite'?", options: ['rude', 'courteous', 'impolite', 'mean'], correct: 'courteous' }
+            ],
+            5: [
+                { question: "What is the meaning of 'determined'?", options: ['lazy', 'confused', 'resolved', 'worried'], correct: 'resolved' },
+                { question: "What is the meaning of 'generous'?", options: ['selfish', 'giving', 'angry', 'quiet'], correct: 'giving' },
+                { question: "What is the meaning of 'curious'?", options: ['bored', 'interested', 'tired', 'happy'], correct: 'interested' },
+                { question: "What is the meaning of 'confident'?", options: ['shy', 'sure', 'nervous', 'afraid'], correct: 'sure' },
+                { question: "What is the meaning of 'creative'?", options: ['boring', 'imaginative', 'dull', 'plain'], correct: 'imaginative' },
+                { question: "What is the meaning of 'energetic'?", options: ['tired', 'lively', 'sleepy', 'weak'], correct: 'lively' },
+                { question: "What is the meaning of 'enthusiastic'?", options: ['bored', 'excited', 'calm', 'quiet'], correct: 'excited' },
+                { question: "What is the meaning of 'faithful'?", options: ['unfaithful', 'loyal', 'dishonest', 'false'], correct: 'loyal' },
+                { question: "What is the meaning of 'grateful'?", options: ['ungrateful', 'thankful', 'rude', 'mean'], correct: 'thankful' },
+                { question: "What is the meaning of 'helpful'?", options: ['useless', 'assisting', 'harmful', 'hurtful'], correct: 'assisting' },
+                { question: "What is the meaning of 'independent'?", options: ['dependent', 'self-reliant', 'needy', 'helpless'], correct: 'self-reliant' },
+                { question: "What is the meaning of 'intelligent'?", options: ['stupid', 'smart', 'foolish', 'dumb'], correct: 'smart' },
+                { question: "What is the meaning of 'kind'?", options: ['mean', 'nice', 'cruel', 'harsh'], correct: 'nice' },
+                { question: "What is the meaning of 'loyal'?", options: ['disloyal', 'faithful', 'treacherous', 'false'], correct: 'faithful' },
+                { question: "What is the meaning of 'mature'?", options: ['immature', 'grown-up', 'childish', 'young'], correct: 'grown-up' },
+                { question: "What is the meaning of 'modest'?", options: ['proud', 'humble', 'arrogant', 'boastful'], correct: 'humble' },
+                { question: "What is the meaning of 'optimistic'?", options: ['pessimistic', 'hopeful', 'negative', 'gloomy'], correct: 'hopeful' },
+                { question: "What is the meaning of 'organized'?", options: ['messy', 'neat', 'disorganized', 'chaotic'], correct: 'neat' },
+                { question: "What is the meaning of 'patient'?", options: ['impatient', 'calm', 'hasty', 'rushed'], correct: 'calm' },
+                { question: "What is the meaning of 'reliable'?", options: ['unreliable', 'trustworthy', 'untrustworthy', 'false'], correct: 'trustworthy' },
+                { question: "What is the meaning of 'responsible'?", options: ['irresponsible', 'accountable', 'careless', 'reckless'], correct: 'accountable' }
+            ],
+            6: [
+                { question: "What is the meaning of 'accomplish'?", options: ['fail', 'achieve', 'start', 'stop'], correct: 'achieve' },
+                { question: "What is the meaning of 'persevere'?", options: ['give up', 'continue', 'rest', 'sleep'], correct: 'continue' },
+                { question: "What is the meaning of 'innovative'?", options: ['old', 'creative', 'boring', 'simple'], correct: 'creative' },
+                { question: "What is the meaning of 'ambitious'?", options: ['lazy', 'driven', 'unmotivated', 'careless'], correct: 'driven' },
+                { question: "What is the meaning of 'analytical'?", options: ['emotional', 'logical', 'irrational', 'confused'], correct: 'logical' },
+                { question: "What is the meaning of 'articulate'?", options: ['mumbled', 'clear', 'unclear', 'confused'], correct: 'clear' },
+                { question: "What is the meaning of 'assertive'?", options: ['shy', 'confident', 'timid', 'quiet'], correct: 'confident' },
+                { question: "What is the meaning of 'authentic'?", options: ['fake', 'genuine', 'false', 'imitation'], correct: 'genuine' },
+                { question: "What is the meaning of 'charismatic'?", options: ['boring', 'charming', 'dull', 'plain'], correct: 'charming' },
+                { question: "What is the meaning of 'compassionate'?", options: ['cold', 'caring', 'heartless', 'mean'], correct: 'caring' },
+                { question: "What is the meaning of 'competent'?", options: ['incompetent', 'capable', 'unskilled', 'useless'], correct: 'capable' },
+                { question: "What is the meaning of 'diligent'?", options: ['lazy', 'hardworking', 'careless', 'sloppy'], correct: 'hardworking' },
+                { question: "What is the meaning of 'diplomatic'?", options: ['rude', 'tactful', 'blunt', 'harsh'], correct: 'tactful' },
+                { question: "What is the meaning of 'eloquent'?", options: ['mumbled', 'well-spoken', 'unclear', 'confused'], correct: 'well-spoken' },
+                { question: "What is the meaning of 'empathetic'?", options: ['cold', 'understanding', 'heartless', 'mean'], correct: 'understanding' },
+                { question: "What is the meaning of 'enthusiastic'?", options: ['bored', 'excited', 'calm', 'quiet'], correct: 'excited' },
+                { question: "What is the meaning of 'flexible'?", options: ['rigid', 'adaptable', 'stubborn', 'fixed'], correct: 'adaptable' },
+                { question: "What is the meaning of 'focused'?", options: ['distracted', 'concentrated', 'scattered', 'confused'], correct: 'concentrated' },
+                { question: "What is the meaning of 'genuine'?", options: ['fake', 'real', 'false', 'imitation'], correct: 'real' },
+                { question: "What is the meaning of 'gracious'?", options: ['rude', 'polite', 'impolite', 'mean'], correct: 'polite' },
+                { question: "What is the meaning of 'humble'?", options: ['proud', 'modest', 'arrogant', 'boastful'], correct: 'modest' }
+            ]
+        },
+        grammar: {
+            4: [
+                { question: "Choose the correct verb: The cat ___ on the mat.", options: ['sit', 'sits', 'sitting', 'sat'], correct: 'sits' },
+                { question: "Which word is a noun?", options: ['run', 'quickly', 'happy', 'book'], correct: 'book' },
+                { question: "Choose the correct article: ___ apple is red.", options: ['a', 'an', 'the', 'none'], correct: 'an' },
+                { question: "Which word is a verb?", options: ['happy', 'quickly', 'jump', 'tall'], correct: 'jump' },
+                { question: "Choose the correct pronoun: ___ is my friend.", options: ['Me', 'I', 'Him', 'He'], correct: 'He' },
+                { question: "Which sentence is correct?", options: ['I am happy', 'I is happy', 'I are happy', 'I be happy'], correct: 'I am happy' },
+                { question: "What is the plural of 'cat'?", options: ['cat', 'cats', 'cates', 'caties'], correct: 'cats' },
+                { question: "Which word is an adjective?", options: ['quickly', 'beautiful', 'jump', 'cat'], correct: 'beautiful' },
+                { question: "Choose the correct form: The boy ___ to school.", options: ['go', 'goes', 'going', 'went'], correct: 'goes' },
+                { question: "Which word is an adverb?", options: ['happy', 'quickly', 'jump', 'cat'], correct: 'quickly' },
+                { question: "What is the past tense of 'run'?", options: ['run', 'runs', 'running', 'ran'], correct: 'ran' },
+                { question: "Which sentence uses correct punctuation?", options: ['Hello, how are you?', 'Hello how are you?', 'Hello, how are you', 'Hello how are you'], correct: 'Hello, how are you?' },
+                { question: "What is the plural of 'child'?", options: ['child', 'childs', 'children', 'childes'], correct: 'children' },
+                { question: "Which word is a conjunction?", options: ['and', 'quickly', 'happy', 'jump'], correct: 'and' },
+                { question: "Choose the correct form: She ___ a book.", options: ['read', 'reads', 'reading', 'readed'], correct: 'reads' },
+                { question: "What is the comparative form of 'big'?", options: ['big', 'bigger', 'biggest', 'more big'], correct: 'bigger' },
+                { question: "Which sentence is a question?", options: ['I am happy', 'Are you happy?', 'She is tall', 'They run fast'], correct: 'Are you happy?' },
+                { question: "What is the superlative form of 'good'?", options: ['good', 'better', 'best', 'more good'], correct: 'best' },
+                { question: "Which word is a preposition?", options: ['in', 'quickly', 'happy', 'jump'], correct: 'in' },
+                { question: "Choose the correct form: They ___ to the park.", options: ['go', 'goes', 'going', 'went'], correct: 'go' },
+                { question: "What is the past tense of 'eat'?", options: ['eat', 'eats', 'eating', 'ate'], correct: 'ate' }
+            ],
+            5: [
+                { question: "Which sentence is correct?", options: ['I goed to school', 'I went to school', 'I going to school', 'I goes to school'], correct: 'I went to school' },
+                { question: "Choose the correct pronoun: ___ is my friend.", options: ['Me', 'I', 'Him', 'He'], correct: 'He' },
+                { question: "Which word is an adjective?", options: ['quickly', 'beautiful', 'jump', 'cat'], correct: 'beautiful' },
+                { question: "What is the plural of 'foot'?", options: ['foot', 'foots', 'feet', 'footes'], correct: 'feet' },
+                { question: "Which sentence uses correct capitalization?", options: ['i live in new york', 'I live in New York', 'I Live In New York', 'i Live in new york'], correct: 'I live in New York' },
+                { question: "What is the past tense of 'write'?", options: ['write', 'writes', 'writing', 'wrote'], correct: 'wrote' },
+                { question: "Which word is an adverb?", options: ['happy', 'quickly', 'jump', 'cat'], correct: 'quickly' },
+                { question: "Choose the correct form: The birds ___ in the sky.", options: ['fly', 'flies', 'flying', 'flew'], correct: 'fly' },
+                { question: "What is the comparative form of 'tall'?", options: ['tall', 'taller', 'tallest', 'more tall'], correct: 'taller' },
+                { question: "Which sentence is a command?", options: ['I am happy', 'Are you ready?', 'Go to bed!', 'She is tall'], correct: 'Go to bed!' },
+                { question: "What is the superlative form of 'bad'?", options: ['bad', 'worse', 'worst', 'more bad'], correct: 'worst' },
+                { question: "Which word is a conjunction?", options: ['but', 'quickly', 'happy', 'jump'], correct: 'but' },
+                { question: "Choose the correct form: He ___ a car.", options: ['drive', 'drives', 'driving', 'drove'], correct: 'drives' },
+                { question: "What is the past tense of 'see'?", options: ['see', 'sees', 'seeing', 'saw'], correct: 'saw' },
+                { question: "Which sentence uses correct punctuation?", options: ['What time is it?', 'What time is it', 'what time is it?', 'What time is it.'], correct: 'What time is it?' },
+                { question: "What is the plural of 'man'?", options: ['man', 'mans', 'men', 'manes'], correct: 'men' },
+                { question: "Which word is a preposition?", options: ['on', 'quickly', 'happy', 'jump'], correct: 'on' },
+                { question: "Choose the correct form: We ___ dinner.", options: ['eat', 'eats', 'eating', 'ate'], correct: 'eat' },
+                { question: "What is the comparative form of 'small'?", options: ['small', 'smaller', 'smallest', 'more small'], correct: 'smaller' },
+                { question: "Which sentence is an exclamation?", options: ['I am happy', 'Are you ready?', 'Wow!', 'She is tall'], correct: 'Wow!' }
+            ],
+            6: [
+                { question: "Choose the correct tense: She ___ to the store yesterday.", options: ['go', 'goes', 'went', 'going'], correct: 'went' },
+                { question: "Which sentence uses correct punctuation?", options: ['Hello, how are you?', 'Hello how are you?', 'Hello, how are you', 'Hello how are you'], correct: 'Hello, how are you?' },
+                { question: "Choose the correct conjunction: I like tea ___ coffee.", options: ['and', 'but', 'or', 'so'], correct: 'and' },
+                { question: "What is the past perfect tense of 'go'?", options: ['go', 'went', 'gone', 'had gone'], correct: 'had gone' },
+                { question: "Which sentence uses correct subject-verb agreement?", options: ['The team are playing', 'The team is playing', 'The team be playing', 'The team were playing'], correct: 'The team is playing' },
+                { question: "What is the future tense of 'run'?", options: ['run', 'runs', 'will run', 'ran'], correct: 'will run' },
+                { question: "Which sentence uses correct capitalization?", options: ['i love reading harry potter', 'I love reading Harry Potter', 'I Love Reading Harry Potter', 'i Love reading harry potter'], correct: 'I love reading Harry Potter' },
+                { question: "What is the present participle of 'write'?", options: ['write', 'writes', 'writing', 'wrote'], correct: 'writing' },
+                { question: "Which sentence uses correct punctuation?", options: ['The cat, dog, and bird are pets.', 'The cat dog and bird are pets.', 'The cat, dog and bird are pets', 'The cat, dog, and bird are pets'], correct: 'The cat, dog, and bird are pets.' },
+                { question: "What is the past tense of 'bring'?", options: ['bring', 'brings', 'bringing', 'brought'], correct: 'brought' },
+                { question: "Which sentence uses correct grammar?", options: ['Me and him went to the store', 'Him and I went to the store', 'He and I went to the store', 'I and he went to the store'], correct: 'He and I went to the store' },
+                { question: "What is the comparative form of 'good'?", options: ['good', 'better', 'best', 'more good'], correct: 'better' },
+                { question: "Which sentence uses correct punctuation?", options: ["She said, 'Hello!'", "She said 'Hello!'", "She said, 'Hello!'", "She said 'Hello!'"] , correct: "She said, 'Hello!'" },
+                { question: "What is the superlative form of 'far'?", options: ['far', 'farther', 'farthest', 'more far'], correct: 'farthest' },
+                { question: "Which sentence uses correct grammar?", options: ['Between you and I', 'Between you and me', 'Between I and you', 'Between me and you'], correct: 'Between you and me' },
+                { question: "What is the present perfect tense of 'eat'?", options: ['eat', 'eats', 'ate', 'have eaten'], correct: 'have eaten' },
+                { question: "Which sentence uses correct punctuation?", options: ['The book is red, blue, and green.', 'The book is red blue and green.', 'The book is red, blue and green', 'The book is red blue, and green.'], correct: 'The book is red, blue, and green.' },
+                { question: "What is the past tense of 'teach'?", options: ['teach', 'teaches', 'teaching', 'taught'], correct: 'taught' },
+                { question: "Which sentence uses correct grammar?", options: ['The data is ready', 'The data are ready', 'The datas is ready', 'The datas are ready'], correct: 'The data is ready' },
+                { question: "What is the future perfect tense of 'finish'?", options: ['finish', 'finishes', 'will finish', 'will have finished'], correct: 'will have finished' }
+            ]
+        },
+        spelling: {
+            4: [
+                { question: "Choose the correct spelling:", options: ['recieve', 'receive', 'receeve', 'receve'], correct: 'receive' },
+                { question: "Choose the correct spelling:", options: ['beautiful', 'beutiful', 'beautifull', 'beautifal'], correct: 'beautiful' },
+                { question: "Choose the correct spelling:", options: ['friend', 'freind', 'frend', 'frien'], correct: 'friend' },
+                { question: "Choose the correct spelling:", options: ['because', 'becuase', 'becase', 'becouse'], correct: 'because' },
+                { question: "Choose the correct spelling:", options: ['believe', 'beleive', 'belive', 'beleve'], correct: 'believe' },
+                { question: "Choose the correct spelling:", options: ['calendar', 'calender', 'calandar', 'calendr'], correct: 'calendar' },
+                { question: "Choose the correct spelling:", options: ['certain', 'sertain', 'certin', 'sertin'], correct: 'certain' },
+                { question: "Choose the correct spelling:", options: ['complete', 'compleat', 'complet', 'compleet'], correct: 'complete' },
+                { question: "Choose the correct spelling:", options: ['different', 'diferent', 'diffrent', 'differnt'], correct: 'different' },
+                { question: "Choose the correct spelling:", options: ['everyone', 'every one', 'everybody', 'every body'], correct: 'everyone' },
+                { question: "Choose the correct spelling:", options: ['favorite', 'favourite', 'favrite', 'favrit'], correct: 'favorite' },
+                { question: "Choose the correct spelling:", options: ['finally', 'finaly', 'finnaly', 'finnaly'], correct: 'finally' },
+                { question: "Choose the correct spelling:", options: ['government', 'goverment', 'govermnent', 'goverment'], correct: 'government' },
+                { question: "Choose the correct spelling:", options: ['important', 'importent', 'importnt', 'importent'], correct: 'important' },
+                { question: "Choose the correct spelling:", options: ['knowledge', 'knowlege', 'knowledg', 'knowlege'], correct: 'knowledge' },
+                { question: "Choose the correct spelling:", options: ['library', 'libary', 'librery', 'libary'], correct: 'library' },
+                { question: "Choose the correct spelling:", options: ['medicine', 'medecine', 'medicin', 'medecin'], correct: 'medicine' },
+                { question: "Choose the correct spelling:", options: ['necessary', 'neccessary', 'necesary', 'nessesary'], correct: 'necessary' },
+                { question: "Choose the correct spelling:", options: ['neighbor', 'neighbour', 'neigbor', 'neigbour'], correct: 'neighbor' },
+                { question: "Choose the correct spelling:", options: ['probably', 'probly', 'probaly', 'probabaly'], correct: 'probably' },
+                { question: "Choose the correct spelling:", options: ['remember', 'rember', 'remembe', 'rember'], correct: 'remember' }
+            ],
+            5: [
+                { question: "Choose the correct spelling:", options: ['accommodate', 'accomodate', 'acommodate', 'accomadate'], correct: 'accommodate' },
+                { question: "Choose the correct spelling:", options: ['definitely', 'definately', 'definitly', 'definetly'], correct: 'definitely' },
+                { question: "Choose the correct spelling:", options: ['separate', 'seperate', 'seperete', 'seperat'], correct: 'separate' },
+                { question: "Choose the correct spelling:", options: ['appreciate', 'apreciate', 'apprecaite', 'aprecaite'], correct: 'appreciate' },
+                { question: "Choose the correct spelling:", options: ['argument', 'arguement', 'argumant', 'argumint'], correct: 'argument' },
+                { question: "Choose the correct spelling:", options: ['beginning', 'begining', 'begginning', 'beggining'], correct: 'beginning' },
+                { question: "Choose the correct spelling:", options: ['business', 'buisness', 'busness', 'buisnes'], correct: 'business' },
+                { question: "Choose the correct spelling:", options: ['committee', 'comittee', 'commitee', 'comitee'], correct: 'committee' },
+                { question: "Choose the correct spelling:", options: ['convenient', 'convienient', 'convinient', 'convienent'], correct: 'convenient' },
+                { question: "Choose the correct spelling:", options: ['decision', 'desicion', 'decison', 'desision'], correct: 'decision' },
+                { question: "Choose the correct spelling:", options: ['embarrass', 'embarass', 'embarras', 'embarras'], correct: 'embarrass' },
+                { question: "Choose the correct spelling:", options: ['separate', 'seperate', 'seperete', 'seperat'], correct: 'separate' }
+            ],
+            6: [
+                { question: "Choose the correct spelling:", options: ['necessary', 'neccessary', 'necesary', 'nessesary'], correct: 'necessary' },
+                { question: "Choose the correct spelling:", options: ['embarrass', 'embarass', 'embarras', 'embarras'], correct: 'embarrass' },
+                { question: "Choose the correct spelling:", options: ['occurrence', 'occurence', 'occurance', 'occurence'], correct: 'occurrence' }
+            ]
+        }
+    };
+
+    const topics = {
+        vocabulary: { name: 'Vocabulary', icon: '📚', color: 'bg-blue-500' },
+        grammar: { name: 'Grammar', icon: '📝', color: 'bg-green-500' },
+        spelling: { name: 'Spelling', icon: '✏️', color: 'bg-purple-500' }
+    };
+
+    function generateEnglishQuestion(selectedTopic, selectedGrade) {
+        if (ENGLISH_QUESTIONS[selectedTopic] && ENGLISH_QUESTIONS[selectedTopic][selectedGrade]) {
+            const questions = ENGLISH_QUESTIONS[selectedTopic][selectedGrade];
+            if (questions.length === 0) {
+                console.warn('No questions for topic', selectedTopic, 'grade', selectedGrade);
+                return null;
+            }
+            return questions[getRandomInt(0, questions.length - 1)];
+        }
+        console.warn('No questions for topic', selectedTopic, 'grade', selectedGrade);
+        return null;
+    }
+
+    function EnglishStarGame() {
+        const [studentName, setStudentName] = useState(localStorage.getItem('englishstar_student_name') || '');
+        const [studentClass, setStudentClass] = useState(localStorage.getItem('englishstar_student_class') || '');
+        const [showNameInput, setShowNameInput] = useState(!(studentName && studentClass));
+        const [selectedGrade, setSelectedGrade] = useState(4);
+        const [selectedTopic, setSelectedTopic] = useState('vocabulary');
+        const [stars, setStars] = useState(100);
+        const [problemsSolved, setProblemsSolved] = useState(0);
+        const [currentQ, setCurrentQ] = useState(generateEnglishQuestion('vocabulary', 4));
+        const [selected, setSelected] = useState('');
+        const [showResult, setShowResult] = useState(false);
+        const [isCorrect, setIsCorrect] = useState(false);
+        const [attempts, setAttempts] = useState(0);
+        const [leaderboard, setLeaderboard] = useState(JSON.parse(localStorage.getItem('englishstar_leaderboard') || '[]'));
+
+        useEffect(() => {
+            if (!showNameInput) {
+                localStorage.setItem('englishstar_student_name', studentName);
+                localStorage.setItem('englishstar_student_class', studentClass);
+            }
+        }, [studentName, studentClass, showNameInput]);
+
+        function saveStudentInfo() {
+            if (studentName && studentClass) setShowNameInput(false);
+        }
+
+        function selectGrade(grade) {
+            setSelectedGrade(grade);
+            setCurrentQ(generateEnglishQuestion(selectedTopic, grade));
+            setSelected('');
+            setShowResult(false);
+            setIsCorrect(false);
+            setAttempts(0);
+        }
+
+        function selectTopic(topic) {
+            setSelectedTopic(topic);
+            setCurrentQ(generateEnglishQuestion(topic, selectedGrade));
+            setSelected('');
+            setShowResult(false);
+            setIsCorrect(false);
+            setAttempts(0);
+        }
+
+        function checkAnswer() {
+            if (!selected) return;
+            setAttempts(a => a + 1);
+            if (selected === currentQ.correct) {
+                setIsCorrect(true);
+                setShowResult(true);
+                setStars(s => s + (attempts === 0 ? 5 : attempts === 1 ? 3 : 1));
+                setProblemsSolved(p => p + 1);
+                updateLeaderboard(stars + (attempts === 0 ? 5 : attempts === 1 ? 3 : 1), problemsSolved + 1);
+            } else {
+                setIsCorrect(false);
+                setShowResult(true);
+            }
+        }
+
+        function nextQuestion() {
+            setCurrentQ(generateEnglishQuestion(selectedTopic, selectedGrade));
+            setSelected('');
+            setShowResult(false);
+            setIsCorrect(false);
+            setAttempts(0);
+        }
+
+        function updateLeaderboard(newStars, newSolved) {
+            let lb = JSON.parse(localStorage.getItem('englishstar_leaderboard') || '[]');
+            const idx = lb.findIndex(e => e.name === studentName && e.class === studentClass);
+            if (idx >= 0) {
+                lb[idx].stars = Math.max(lb[idx].stars, newStars);
+                lb[idx].solved = Math.max(lb[idx].solved, newSolved);
+            } else {
+                lb.push({ name: studentName, class: studentClass, stars: newStars, solved: newSolved });
+            }
+            lb.sort((a, b) => b.stars - a.stars);
+            lb = lb.slice(0, 10);
+            localStorage.setItem('englishstar_leaderboard', JSON.stringify(lb));
+            setLeaderboard(lb);
+        }
+
+        function resetStudent() {
+            setStudentName('');
+            setStudentClass('');
+            setShowNameInput(true);
+            setStars(100);
+            setProblemsSolved(0);
+        }
+
+        function selectExistingStudent(name, className) {
+            setStudentName(name);
+            setStudentClass(className);
+            localStorage.setItem('englishstar_student_name', name);
+            localStorage.setItem('englishstar_student_class', className);
+            setShowNameInput(false);
+        }
+
+        return (
+            <div className="bg-white rounded-xl shadow-lg p-6">
+                <div className="flex items-center justify-between mb-6">
+                    <div>
+                        <h1 className="text-3xl font-bold text-green-600 mb-2">English Star</h1>
+                        <p className="text-gray-600">Interactive English Learning with Grade & Topic Selection</p>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                        <div className="bg-yellow-100 px-3 py-1 rounded-full">
+                            <span className="font-bold text-yellow-700">⭐ {stars}</span>
+                        </div>
+                        <div className="bg-green-100 px-3 py-1 rounded-full">
+                            <span className="font-bold text-green-700">✔️ {problemsSolved}</span>
+                        </div>
+                    </div>
+                </div>
+
+                {showNameInput ? (
+                    <div className="mb-6">
+                        <h3 className="text-xl font-bold mb-4">Welcome to English Star!</h3>
+                        <div className="space-y-3">
+                            <input className="w-full border p-2 rounded" placeholder="Your Name" value={studentName} onChange={e => setStudentName(e.target.value)} />
+                            <input className="w-full border p-2 rounded" placeholder="Your Class" value={studentClass} onChange={e => setStudentClass(e.target.value)} />
+                            <button className="w-full bg-green-500 text-white px-4 py-2 rounded" onClick={saveStudentInfo}>Start Learning</button>
+                        </div>
+                        {leaderboard.length > 0 && (
+                            <div id="existing-students" className="mt-4">
+                                <h4 className="text-md font-semibold mb-2">Or select your name:</h4>
+                                <div className="flex flex-wrap gap-2">
+                                    {leaderboard.map(entry => (
+                                        <button key={entry.name + entry.class} onClick={() => selectExistingStudent(entry.name, entry.class)} className="bg-green-100 hover:bg-green-200 text-green-800 px-3 py-1 rounded">{entry.name} ({entry.class})</button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                ) : (
+                    <>
+                        <div className="mb-4 flex items-center justify-between bg-blue-50 p-2 rounded">
+                            <span className="font-semibold text-blue-800">{studentName} - {studentClass}</span>
+                            <button className="text-sm text-red-600 underline" onClick={resetStudent}>Change</button>
+                        </div>
+
+                        {/* Grade Selection */}
+                        <div className="mb-4">
+                            <h3 className="font-bold mb-2">Grade Level:</h3>
+                            <div className="grid grid-cols-3 gap-2">
+                                {[4, 5, 6, 7, 8, 9, 10, 11, 12].map(grade => (
+                                    <button
+                                        key={grade}
+                                        className={`p-2 rounded ${selectedGrade === grade ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                                        onClick={() => selectGrade(grade)}
+                                    >
+                                        Grade {grade}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Topic Selection */}
+                        <div className="mb-6">
+                            <h3 className="font-bold mb-2">English Topics:</h3>
+                            <div className="grid grid-cols-1 gap-2">
+                                {Object.entries(topics).map(([key, topic]) => (
+                                    <button
+                                        key={key}
+                                        className={`p-3 rounded text-left ${selectedTopic === key ? 'bg-green-500 text-white' : 'bg-gray-100'}`}
+                                        onClick={() => selectTopic(key)}
+                                    >
+                                        {topic.icon} {topic.name}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Question */}
+                        <div className="mb-6">
+                            {currentQ ? (
+                                <>
+                                    <div className="text-xl font-bold mb-4">{currentQ.question}</div>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        {currentQ.options.map(opt => (
+                                            <button
+                                                key={opt}
+                                                className={`border rounded p-3 text-left ${selected === opt ? 'bg-green-200' : 'bg-white'} ${showResult && opt === currentQ.correct ? 'border-green-500' : ''}`}
+                                                disabled={showResult}
+                                                onClick={() => setSelected(opt)}
+                                            >
+                                                {opt}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </>
+                            ) : (
+                                <div className="text-red-600 font-bold">No questions available for this grade and topic. Please select a different combination.</div>
+                            )}
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="mb-6">
+                            {currentQ && !showResult ? (
+                                <button className="bg-green-500 text-white px-4 py-2 rounded" disabled={!selected} onClick={checkAnswer}>Check Answer</button>
+                            ) : currentQ && showResult ? (
+                                <div className="flex items-center space-x-4">
+                                    <span className={`font-bold ${isCorrect ? 'text-green-600' : 'text-red-600'}`}>{isCorrect ? '✅ Correct!' : '❌ Try Again!'}</span>
+                                    <button className="bg-green-500 text-white px-4 py-2 rounded" onClick={nextQuestion}>Next Question</button>
+                                </div>
+                            ) : null}
+                        </div>
+
+                        {/* Leaderboard */}
+                        <div className="mt-8">
+                            <h2 className="text-xl font-bold mb-4">🏆 Leaderboard</h2>
+                            <div className="bg-gray-50 rounded p-4">
+                                {leaderboard.length === 0 ? <div>No scores yet.</div> : leaderboard.map((entry, i) => (
+                                    <div key={i} className={`flex justify-between ${entry.name === studentName && entry.class === studentClass ? 'font-bold text-green-600' : ''}`}>
+                                        <span>{i + 1}. {entry.name} ({entry.class})</span>
+                                        <span>⭐ {entry.stars} | ✔️ {entry.solved}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </>
+                )}
+            </div>
+        );
+    }
+
+    ReactDOM.render(<EnglishStarGame />, document.getElementById('englishstar-root'));
+    </script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+</body>
+</html> 

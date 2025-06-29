@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %}Training Management - Trainer Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-4 trainer-theme">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Training Management</h2>
+                <button class="btn btn-primary" onclick="createTraining()">Create Training</button>
+            </div>
+            
+            <!-- Training Stats -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Training Overview</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 text-center">
+                            <div class="border rounded p-3">
+                                <h4 class="text-primary" id="total-trainings">0</h4>
+                                <p class="text-muted mb-0">Total Trainings</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="border rounded p-3">
+                                <h4 class="text-success" id="active-trainings">0</h4>
+                                <p class="text-muted mb-0">Active</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="border rounded p-3">
+                                <h4 class="text-warning" id="total-students">0</h4>
+                                <p class="text-muted mb-0">Total Students</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <div class="border rounded p-3">
+                                <h4 class="text-info" id="avg-rating">0.0</h4>
+                                <p class="text-muted mb-0">Avg Rating</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trainings Grid -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">My Trainings</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row" id="trainings-grid">
+                        <!-- Trainings will be loaded here -->
+                        <div class="col-12 text-center">
+                            <p class="text-muted">Loading trainings...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadTrainingStats();
+    loadTrainings();
+});
+
+function loadTrainingStats() {
+    const stats = {
+        total: 8,
+        active: 6,
+        students: 156,
+        rating: 4.5
+    };
+    
+    document.getElementById('total-trainings').textContent = stats.total;
+    document.getElementById('active-trainings').textContent = stats.active;
+    document.getElementById('total-students').textContent = stats.students;
+    document.getElementById('avg-rating').textContent = stats.rating;
+}
+
+function loadTrainings() {
+    const trainings = [
+        {
+            id: 1,
+            title: "Introduction to Artificial Intelligence",
+            category: "AI",
+            students: 30,
+            maxStudents: 30,
+            status: "active",
+            rating: 4.8,
+            sessions: 12
+        },
+        {
+            id: 2,
+            title: "Advanced Mathematics",
+            category: "Mathematics",
+            students: 25,
+            maxStudents: 25,
+            status: "active",
+            rating: 4.6,
+            sessions: 8
+        },
+        {
+            id: 3,
+            title: "Communication Skills",
+            category: "Communication",
+            students: 20,
+            maxStudents: 20,
+            status: "completed",
+            rating: 4.7,
+            sessions: 10
+        }
+    ];
+    
+    displayTrainings(trainings);
+}
+
+function displayTrainings(trainings) {
+    const container = document.getElementById('trainings-grid');
+    
+    container.innerHTML = trainings.map(training => `
+        <div class="col-md-6 col-lg-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="badge bg-primary">${training.category}</span>
+                        <span class="badge bg-${training.status === 'active' ? 'success' : 'secondary'}">${training.status}</span>
+                    </div>
+                    <h6 class="card-title">${training.title}</h6>
+                    <p class="card-text text-muted">
+                        Students: ${training.students}/${training.maxStudents}<br>
+                        Sessions: ${training.sessions}<br>
+                        Rating: ⭐ ${training.rating}/5.0
+                    </p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="progress flex-grow-1 me-2" style="height: 6px;">
+                            <div class="progress-bar" style="width: ${(training.students/training.maxStudents)*100}%"></div>
+                        </div>
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-outline-primary" onclick="editTraining(${training.id})">Edit</button>
+                            <button class="btn btn-outline-info" onclick="viewTraining(${training.id})">View</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function createTraining() {
+    alert('Create training functionality will be implemented here.');
+}
+
+function editTraining(trainingId) {
+    alert('Edit training functionality will be implemented here.');
+}
+
+function viewTraining(trainingId) {
+    window.location.href = `/trainer/training/${trainingId}`;
+}
+</script>
+{% endblock %} 

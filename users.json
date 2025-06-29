@@ -1,0 +1,106 @@
+{
+  "student1@gmail.com": {
+    "name": "Priya Sharma",
+    "email": "student1@gmail.com",
+    "role": "student",
+    "interests": [
+      "Artificial Intelligence",
+      "Mathematics"
+    ],
+    "google_id": "google_id_1",
+    "profile_pic": "",
+    "created_at": "2025-06-10T10:00:00Z"
+  },
+  "student2@gmail.com": {
+    "name": "Rahul Kumar",
+    "email": "student2@gmail.com",
+    "role": "student",
+    "interests": [
+      "Communication Skills",
+      "Mathematics"
+    ],
+    "google_id": "google_id_2",
+    "profile_pic": "",
+    "created_at": "2025-06-11T14:30:00Z"
+  },
+  "admin@sanchari.org": {
+    "name": "Admin User",
+    "email": "admin@sanchari.org",
+    "role": "admin",
+    "password": "Admin@2025",
+    "interests": [],
+    "profile_pic": ""
+  },
+  "trainer1@sanchari.org": {
+    "name": "Trainer One",
+    "email": "trainer1@sanchari.org",
+    "role": "trainer",
+    "password": "dummy",
+    "interests": [
+      "Mathematics",
+      "AI"
+    ],
+    "profile_pic": ""
+  },
+  "student1@sanchari.org": {
+    "name": "Student One",
+    "email": "student1@sanchari.org",
+    "role": "student",
+    "password": "dummy",
+    "interests": [
+      "Communication Skills",
+      "Mathematics"
+    ],
+    "profile_pic": "",
+    "enrolled_classes": [
+      1
+    ]
+  },
+  "mathewjose251@gmail.com": {
+    "name": "Mathew Jose",
+    "email": "mathewjose251@gmail.com",
+    "role": "student",
+    "interests": [],
+    "profile_pic": "https://lh3.googleusercontent.com/a/ACg8ocKo9W32Xyb1TU1gQiqBUxo4I6y1e_GzfPPXT7DCJXYk4xfPuQ=s96-c",
+    "enrolled_classes": [
+      1
+    ]
+  },
+  "mcjayaprakash1106@gmail.com": {
+    "name": "JAYAPRAKASH M C",
+    "email": "mcjayaprakash1106@gmail.com",
+    "role": "student",
+    "interests": [],
+    "profile_pic": "https://lh3.googleusercontent.com/a/ACg8ocIH1G4mcVBohH9iSwprTfRilWeZGcf6cTIeXb80cw-PmRJWwQ=s96-c",
+    "enrolled_classes": [
+      1
+    ],
+    "grade": "10",
+    "dob": "1981-06-23",
+    "gender": "Male",
+    "school": "stcollege",
+    "city": "chennai",
+    "bio": "I am a testeer of hte cite",
+    "interested_subjects": [
+      "Artificial Intelligence",
+      "Sociology",
+      "Political Science"
+    ]
+  },
+  "aannjose@gmail.com": {
+    "name": "Mathew Jose",
+    "email": "aannjose@gmail.com",
+    "role": "student",
+    "interests": [],
+    "profile_pic": "https://lh3.googleusercontent.com/a/ACg8ocJ1Kcz3TeEETU0vgUqmFY6hen0UYke_XGDEioPBWsZTsk-IcnTw=s96-c"
+  },
+  "sancharimentors@gmail.com": {
+    "name": "Sanchari mentors",
+    "email": "sancharimentors@gmail.com",
+    "role": "student",
+    "interests": [],
+    "profile_pic": "https://lh3.googleusercontent.com/a/ACg8ocLJDorVWcMkWObbY9dp2sBMf2A6Cq9Dkx_hc4PSwNHSlmKu2w=s96-c",
+    "grade": null,
+    "interested_subjects": []
+  }
+}

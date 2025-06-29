@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Hub - Educational Games | Sanchari Mentors</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide React Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    
+    <!-- Custom CSS -->
+    <style>
+        .game-card {
+            transition: all 0.3s ease;
+            border: 1px solid #e5e7eb;
+            border-radius: 1rem;
+            padding: 2rem;
+            background: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .game-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+        }
+        
+        .game-icon {
+            width: 4rem;
+            height: 4rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4rem 0 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="0.5" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+        
+        .floating-elements {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .logo-img {
+            height: 48px;
+            width: auto;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top" style="margin-top: 60px;">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <img src="/static/images/logo.png" alt="Sanchari Mentors Logo" class="logo-img me-2" />
+                <span class="fw-bold">Sanchari Mentors</span>
+            </a>
+            <div class="ms-auto">
+                <a href="/" class="btn btn-outline-primary me-2">
+                    <i class="fas fa-home me-2"></i>Home
+                </a>
+                <a href="/login/google" class="btn btn-primary">
+                    <i class="fab fa-google me-2"></i>Join as Student
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero-section" style="margin-top: 120px;">
+        <div class="container">
+            <div class="hero-content text-center">
+                <h1 class="text-4xl font-bold mb-4">🎮 Educational Game Hub</h1>
+                <p class="text-xl opacity-90 mb-6">Master subjects through interactive learning games</p>
+                <div class="flex justify-center space-x-4">
+                    <div class="floating-elements">
+                        <div class="bg-white bg-opacity-20 rounded-lg p-4 backdrop-blur-sm">
+                            <i class="fas fa-star text-2xl mb-2"></i>
+                            <div>Earn Stars</div>
+                        </div>
+                    </div>
+                    <div class="floating-elements" style="animation-delay: -2s;">
+                        <div class="bg-white bg-opacity-20 rounded-lg p-4 backdrop-blur-sm">
+                            <i class="fas fa-trophy text-2xl mb-2"></i>
+                            <div>Compete</div>
+                        </div>
+                    </div>
+                    <div class="floating-elements" style="animation-delay: -4s;">
+                        <div class="bg-white bg-opacity-20 rounded-lg p-4 backdrop-blur-sm">
+                            <i class="fas fa-graduation-cap text-2xl mb-2"></i>
+                            <div>Learn</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Games Grid -->
+    <div class="container py-8">
+        <div class="text-center mb-8">
+            <h2 class="section-title">Choose Your Learning Adventure</h2>
+            <p class="text-gray-600 text-lg">Select a subject and start your educational journey!</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- MathStar 3D -->
+            <div class="game-card" style="--gradient-start: #3b82f6; --gradient-end: #1d4ed8;">
+                <div class="game-icon" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">
+                    <i class="fas fa-calculator"></i>
+                </div>
+                <h3 class="text-xl font-bold text-center mb-2">MathStar 3D</h3>
+                <p class="text-gray-600 text-center mb-4">Master mathematics with interactive problems and 3D visualizations</p>
+                <div class="text-center">
+                    <span class="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm mb-4">Grades 4-12</span>
+                    <br>
+                    <a href="/mathstar-3d" class="btn btn-primary w-full">
+                        <i class="fas fa-play me-2"></i>Play Now
+                    </a>
+                </div>
+            </div>
+
+            <!-- English Star -->
+            <div class="game-card" style="--gradient-start: #10b981; --gradient-end: #059669;">
+                <div class="game-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <h3 class="text-xl font-bold text-center mb-2">English Star</h3>
+                <p class="text-gray-600 text-center mb-4">Enhance your English skills with grammar, vocabulary, and comprehension</p>
+                <div class="text-center">
+                    <span class="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm mb-4">Grades 4-12</span>
+                    <br>
+                    <a href="/english-star" class="btn btn-success w-full">
+                        <i class="fas fa-play me-2"></i>Play Now
+                    </a>
+                </div>
+            </div>
+
+            <!-- Science Star -->
+            <div class="game-card" style="--gradient-start: #f59e0b; --gradient-end: #d97706;">
+                <div class="game-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                    <i class="fas fa-flask"></i>
+                </div>
+                <h3 class="text-xl font-bold text-center mb-2">Science Star</h3>
+                <p class="text-gray-600 text-center mb-4">Explore the wonders of science through interactive experiments</p>
+                <div class="text-center">
+                    <span class="inline-block bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm mb-4">Grades 4-12</span>
+                    <br>
+                    <a href="/science-star" class="btn btn-warning w-full">
+                        <i class="fas fa-play me-2"></i>Play Now
+                    </a>
+                </div>
+            </div>
+
+            <!-- History Star -->
+            <div class="game-card" style="--gradient-start: #ef4444; --gradient-end: #dc2626;">
+                <div class="game-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+                    <i class="fas fa-landmark"></i>
+                </div>
+                <h3 class="text-xl font-bold text-center mb-2">History Star</h3>
+                <p class="text-gray-600 text-center mb-4">Journey through time and discover fascinating historical events</p>
+                <div class="text-center">
+                    <span class="inline-block bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm mb-4">Grades 4-12</span>
+                    <br>
+                    <a href="/history-star" class="btn btn-danger w-full">
+                        <i class="fas fa-play me-2"></i>Play Now
+                    </a>
+                </div>
+            </div>
+
+            <!-- Computer Star -->
+            <div class="game-card" style="--gradient-start: #8b5cf6; --gradient-end: #7c3aed;">
+                <div class="game-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+                    <i class="fas fa-laptop-code"></i>
+                </div>
+                <h3 class="text-xl font-bold text-center mb-2">Computer Star</h3>
+                <p class="text-gray-600 text-center mb-4">Learn programming and computer science fundamentals</p>
+                <div class="text-center">
+                    <span class="inline-block bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm mb-4">Grades 6-12</span>
+                    <br>
+                    <a href="/computer-star" class="btn btn-secondary w-full">
+                        <i class="fas fa-play me-2"></i>Play Now
+                    </a>
+                </div>
+            </div>
+
+            <!-- AI Star -->
+            <div class="game-card" style="--gradient-start: #06b6d4; --gradient-end: #0891b2;">
+                <div class="game-icon" style="background: linear-gradient(135deg, #06b6d4, #0891b2);">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <h3 class="text-xl font-bold text-center mb-2">AI Star</h3>
+                <p class="text-gray-600 text-center mb-4">Discover artificial intelligence and machine learning concepts</p>
+                <div class="text-center">
+                    <span class="inline-block bg-cyan-100 text-cyan-800 px-3 py-1 rounded-full text-sm mb-4">Grades 8-12</span>
+                    <br>
+                    <a href="/ai-star" class="btn btn-info w-full">
+                        <i class="fas fa-play me-2"></i>Play Now
+                    </a>
+                </div>
+            </div>
+
+            <!-- Geography Star -->
+            <div class="game-card" style="--gradient-start: #84cc16; --gradient-end: #65a30d;">
+                <div class="game-icon" style="background: linear-gradient(135deg, #84cc16, #65a30d);">
+                    <i class="fas fa-globe-americas"></i>
+                </div>
+                <h3 class="text-xl font-bold text-center mb-2">Geography Star</h3>
+                <p class="text-gray-600 text-center mb-4">Explore the world through maps, countries, and cultures</p>
+                <div class="text-center">
+                    <span class="inline-block bg-lime-100 text-lime-800 px-3 py-1 rounded-full text-sm mb-4">Grades 4-12</span>
+                    <br>
+                    <a href="/geography-star" class="btn btn-success w-full">
+                        <i class="fas fa-play me-2"></i>Play Now
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="mt-16">
+            <div class="text-center mb-8">
+                <h2 class="section-title">Why Choose Our Educational Games?</h2>
+                <p class="text-gray-600 text-lg">Designed to make learning fun and effective</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="text-center p-6">
+                    <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-star text-2xl text-blue-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Star Rewards</h3>
+                    <p class="text-gray-600">Earn stars for correct answers and track your progress</p>
+                </div>
+
+                <div class="text-center p-6">
+                    <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-trophy text-2xl text-green-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Leaderboards</h3>
+                    <p class="text-gray-600">Compete with classmates and see who's on top</p>
+                </div>
+
+                <div class="text-center p-6">
+                    <div class="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-graduation-cap text-2xl text-purple-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Grade-Appropriate</h3>
+                    <p class="text-gray-600">Content tailored to your grade level and learning pace</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="mt-16 text-center">
+            <div class="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl p-8 text-white">
+                <h2 class="text-3xl font-bold mb-4">Ready to Start Learning?</h2>
+                <p class="text-xl mb-6">Choose any game above and begin your educational adventure!</p>
+                <a href="/" class="btn btn-light btn-lg">
+                    <i class="fas fa-home me-2"></i>Back to Home
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+</body>
+</html> 

@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}Resource Details - {{ resource.title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('student_dashboard') }}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('student_resources') }}">Resources</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ resource.title }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Resource Header -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <img src="{{ resource.thumbnail }}" alt="{{ resource.title }}" class="img-fluid rounded">
+                        </div>
+                        <div class="col-md-8">
+                            <h2 class="card-title">{{ resource.title }}</h2>
+                            <p class="text-muted mb-2">
+                                <i class="fas fa-user"></i> {{ resource.instructor }} |
+                                <i class="fas fa-clock"></i> {{ resource.duration }} |
+                                <i class="fas fa-eye"></i> {{ resource.views }} views
+                            </p>
+                            <div class="mb-3">
+                                {% for i in range(5) %}
+                                    {% if i < resource.rating|int %}
+                                        <i class="fas fa-star text-warning"></i>
+                                    {% else %}
+                                        <i class="far fa-star text-warning"></i>
+                                    {% endif %}
+                                {% endfor %}
+                                <span class="ms-2">{{ resource.rating }}/5</span>
+                            </div>
+                            <div class="mb-3">
+                                {% for tag in resource.tags %}
+                                    <span class="badge bg-primary me-1">{{ tag }}</span>
+                                {% endfor %}
+                            </div>
+                            <button class="btn btn-primary btn-lg">
+                                <i class="fas fa-play me-2"></i>Start Learning
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resource Description -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Description</h5>
+                </div>
+                <div class="card-body">
+                    <p class="lead">{{ resource.description }}</p>
+                    <p>This comprehensive resource will help you master the fundamentals and build a strong foundation for your learning journey.</p>
+                </div>
+            </div>
+
+            <!-- Learning Progress -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Your Progress</h5>
+                </div>
+                <div class="card-body">
+                    <div class="progress mb-3" style="height: 25px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: 0%">0%</div>
+                    </div>
+                    <p class="text-muted">You haven't started this resource yet.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Related Resources -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Related Resources</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Advanced Python Concepts</h6>
+                                <small class="text-muted">3.5 hours</small>
+                            </div>
+                            <p class="mb-1">Deep dive into advanced Python programming</p>
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Data Structures & Algorithms</h6>
+                                <small class="text-muted">4 hours</small>
+                            </div>
+                            <p class="mb-1">Essential computer science concepts</p>
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Database Design</h6>
+                                <small class="text-muted">2.5 hours</small>
+                            </div>
+                            <p class="mb-1">Learn database modeling and design</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resource Stats -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Resource Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <h4 class="text-primary">{{ resource.views }}</h4>
+                            <small class="text-muted">Total Views</small>
+                        </div>
+                        <div class="col-6">
+                            <h4 class="text-success">{{ resource.rating }}</h4>
+                            <small class="text-muted">Average Rating</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <button class="btn btn-outline-primary w-100 mb-2">
+                        <i class="fas fa-bookmark me-2"></i>Add to Favorites
+                    </button>
+                    <button class="btn btn-outline-secondary w-100 mb-2">
+                        <i class="fas fa-share me-2"></i>Share Resource
+                    </button>
+                    <button class="btn btn-outline-info w-100">
+                        <i class="fas fa-download me-2"></i>Download Materials
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

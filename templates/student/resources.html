@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block title %}Learning Resources - Sanchari Mentors{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">Learning Resources</h2>
+            
+            <!-- Search and Filter -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" id="search-resources" placeholder="Search resources...">
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="category-filter">
+                                <option value="">All Categories</option>
+                                <option value="video">Videos</option>
+                                <option value="document">Documents</option>
+                                <option value="presentation">Presentations</option>
+                                <option value="quiz">Quizzes</option>
+                                <option value="assignment">Assignments</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="subject-filter">
+                                <option value="">All Subjects</option>
+                                <option value="mathematics">Mathematics</option>
+                                <option value="ai">Artificial Intelligence</option>
+                                <option value="communication">Communication Skills</option>
+                                <option value="career">Career Guidance</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resources Grid -->
+            <div class="row" id="resources-container">
+                <!-- Resources will be loaded here -->
+                <div class="col-12 text-center">
+                    <p class="text-muted">Loading resources...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadResources();
+    
+    // Add event listeners for search and filters
+    document.getElementById('search-resources').addEventListener('input', filterResources);
+    document.getElementById('category-filter').addEventListener('change', filterResources);
+    document.getElementById('subject-filter').addEventListener('change', filterResources);
+});
+
+function loadResources() {
+    // Simulate loading resources (replace with actual API call)
+    const resources = [
+        {
+            id: 1,
+            title: "Introduction to AI - Video Series",
+            category: "video",
+            subject: "ai",
+            description: "Comprehensive video series covering AI fundamentals",
+            duration: "2 hours",
+            difficulty: "Beginner",
+            thumbnail: "/static/images/ai-video.jpg"
+        },
+        {
+            id: 2,
+            title: "Mathematics Problem Solving Guide",
+            category: "document",
+            subject: "mathematics",
+            description: "PDF guide with practice problems and solutions",
+            pages: 45,
+            difficulty: "Intermediate",
+            thumbnail: "/static/images/math-doc.jpg"
+        },
+        {
+            id: 3,
+            title: "Communication Skills Workshop",
+            category: "presentation",
+            subject: "communication",
+            description: "Interactive presentation on effective communication",
+            slides: 25,
+            difficulty: "Beginner",
+            thumbnail: "/static/images/communication-ppt.jpg"
+        },
+        {
+            id: 4,
+            title: "AI Quiz - Machine Learning Basics",
+            category: "quiz",
+            subject: "ai",
+            description: "Test your knowledge of machine learning concepts",
+            questions: 20,
+            difficulty: "Intermediate",
+            thumbnail: "/static/images/ai-quiz.jpg"
+        },
+        {
+            id: 5,
+            title: "Career Planning Assignment",
+            category: "assignment",
+            subject: "career",
+            description: "Self-assessment and career goal setting exercise",
+            deadline: "2025-06-30",
+            difficulty: "Beginner",
+            thumbnail: "/static/images/career-assignment.jpg"
+        }
+    ];
+    
+    displayResources(resources);
+}
+
+function displayResources(resources) {
+    const container = document.getElementById('resources-container');
+    
+    if (resources.length === 0) {
+        container.innerHTML = '<div class="col-12 text-center"><p class="text-muted">No resources found matching your criteria.</p></div>';
+        return;
+    }
+    
+    container.innerHTML = resources.map(resource => `
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="badge bg-primary">${resource.category.toUpperCase()}</span>
+                        <span class="badge bg-secondary">${resource.difficulty}</span>
+                    </div>
+                    <h6 class="card-title">${resource.title}</h6>
+                    <p class="card-text text-muted">${resource.description}</p>
+                    <div class="mb-2">
+                        <small class="text-muted">
+                            ${resource.category === 'video' ? `Duration: ${resource.duration}` : ''}
+                            ${resource.category === 'document' ? `Pages: ${resource.pages}` : ''}
+                            ${resource.category === 'presentation' ? `Slides: ${resource.slides}` : ''}
+                            ${resource.category === 'quiz' ? `Questions: ${resource.questions}` : ''}
+                            ${resource.category === 'assignment' ? `Deadline: ${resource.deadline}` : ''}
+                        </small>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="badge bg-info">${resource.subject}</span>
+                        <button class="btn btn-sm btn-primary" onclick="accessResource(${resource.id})">Access</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function filterResources() {
+    const searchTerm = document.getElementById('search-resources').value.toLowerCase();
+    const categoryFilter = document.getElementById('category-filter').value;
+    const subjectFilter = document.getElementById('subject-filter').value;
+    
+    // Reload and filter resources
+    loadResources();
+}
+
+function accessResource(resourceId) {
+    // Navigate to resource or open in new tab
+    window.open(`/student/resource/${resourceId}`, '_blank');
+}
+</script>
+{% endblock %} 

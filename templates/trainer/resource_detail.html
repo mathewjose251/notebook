@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Resource Detail - Trainer Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-book me-2"></i>Resource Detail</h2>
+                <a href="{{ url_for('trainer_resources') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Resources
+                </a>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">{{ resource.title }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h6>Description</h6>
+                            <p>{{ resource.description }}</p>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <p><strong>Type:</strong> {{ resource.type.title() }}</p>
+                                    <p><strong>Subject:</strong> {{ resource.subject.upper() }}</p>
+                                    <p><strong>Difficulty:</strong> {{ resource.difficulty }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Duration:</strong> {{ resource.duration }}</p>
+                                    <p><strong>File Size:</strong> {{ resource.file_size }}</p>
+                                    <p><strong>Created:</strong> {{ resource.created }}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <h6>Tags</h6>
+                                    {% for tag in resource.tags %}
+                                        <span class="badge bg-primary me-1">{{ tag }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h6>Statistics</h6>
+                                    <div class="row text-center">
+                                        <div class="col-6">
+                                            <h4 class="text-primary">{{ resource.views }}</h4>
+                                            <small>Views</small>
+                                        </div>
+                                        <div class="col-6">
+                                            <h4 class="text-success">{{ resource.downloads }}</h4>
+                                            <small>Downloads</small>
+                                        </div>
+                                    </div>
+                                    
+                                    <hr>
+                                    
+                                    <div class="mb-3">
+                                        <h6>Rating</h6>
+                                        <div class="mb-2">
+                                            {% for i in range(5) %}
+                                                {% if i < resource.rating|int %}
+                                                    <i class="fas fa-star text-warning"></i>
+                                                {% elif i < resource.rating %}
+                                                    <i class="fas fa-star-half-alt text-warning"></i>
+                                                {% else %}
+                                                    <i class="far fa-star text-muted"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                        <span class="text-muted">{{ resource.rating }}/5</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="row">
+                        <div class="col-12">
+                            <button class="btn btn-primary me-2">
+                                <i class="fas fa-download me-2"></i>Download Resource
+                            </button>
+                            <button class="btn btn-success me-2">
+                                <i class="fas fa-edit me-2"></i>Edit Resource
+                            </button>
+                            <button class="btn btn-info me-2">
+                                <i class="fas fa-share me-2"></i>Share
+                            </button>
+                            <button class="btn btn-outline-danger">
+                                <i class="fas fa-trash me-2"></i>Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
