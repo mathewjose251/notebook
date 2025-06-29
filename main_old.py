@@ -49,9 +49,6 @@ Session(app)
 
 
 
-GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID', '102669950361-2do2cq17m4fd9dkoj4da7qiuu3b2snrr.apps.googleusercontent.com')
-GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET', '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')
-
 # For local development only - remove in production
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 # Suppress OAuth scope warnings
