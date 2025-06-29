@@ -52,5 +52,4 @@ services:
     restart: unless-stopped
 
 volumes:
-  data:
   mongo_data: 
