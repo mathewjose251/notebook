@@ -50,21 +50,6 @@ def api_users():
             'error': str(e)
         }), 500
 
-@app.route('/api/sessions')
-def api_sessions():
-    """API endpoint to get all sessions"""
-    try:
-        sessions_data = get_collection_data('sessions')
-        return jsonify({
-            'success': True,
-            'sessions': sessions_data
-        })
-    except Exception as e:
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        }), 500
-
 @app.route('/api/mentors')
 def api_mentors():
     """API endpoint to get all mentors/trainers"""
