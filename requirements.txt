@@ -14,3 +14,4 @@ google-api-python-client==2.108.0
 flask-dance[google]==7.0.0
 Flask-Session
 pymongo==4.7.2
+openpyxl

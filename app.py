@@ -29,21 +29,6 @@ app.config['HOST'] = os.environ.get('FLASK_HOST', '0.0.0.0')
 app.config['PORT'] = int(os.environ.get('FLASK_PORT', 8000))
 
 # Additional routes for API endpoints
-@app.route('/api/classes')
-def api_classes():
-    """API endpoint to get all classes"""
-    try:
-        classes_data = get_collection_data('classes')
-        return jsonify({
-            'success': True,
-            'classes': classes_data
-        })
-    except Exception as e:
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        }), 500
-
 @app.route('/api/users')
 def api_users():
     """API endpoint to get all users (admin only)"""
