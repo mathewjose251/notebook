@@ -90,10 +90,8 @@ def set_collection_data(collection_name, data, key_field=None):
 # 5. Set authorized redirect URIs to: http://localhost:8000/login/google/authorized
 # 6. Copy Client ID and Client Secret below
 
-
-
-GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID', '102669950361-2do2cq17m4fd9dkoj4da7qiuu3b2snrr.apps.googleusercontent.com')
-GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET', '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')
+GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID')
+GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET')
 
 # For local development only - remove in production
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'

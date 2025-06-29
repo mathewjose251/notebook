@@ -68,8 +68,8 @@ create_env_file() {
         cat > .env << EOF
 # Sanchari Mentors Platform Environment Variables
 SECRET_KEY=$(openssl rand -hex 32)
-GOOGLE_CLIENT_ID=your_google_client_id_here
-GOOGLE_CLIENT_SECRET=your_google_client_secret_here
+GOOGLE_CLIENT_ID=$(openssl rand -hex 16)
+GOOGLE_CLIENT_SECRET=$(openssl rand -hex 16)
 FLASK_ENV=production
 FLASK_DEBUG=False
 FLASK_HOST=0.0.0.0
