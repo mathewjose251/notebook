@@ -282,7 +282,16 @@ def student_classes():
         return redirect(url_for('login'))
     
     classes_data = get_collection_data('classes')
-    return render_template('student/classes.html', classes=classes_data.get('classes', []))
+    
+    # Handle classes_data as either list or dict
+    if isinstance(classes_data, list):
+        classes_list = classes_data
+    elif isinstance(classes_data, dict) and 'classes' in classes_data:
+        classes_list = classes_data['classes']
+    else:
+        classes_list = []
+    
+    return render_template('student/classes.html', classes=classes_list)
 
 @app.route('/student/resources')
 def student_resources():
@@ -456,11 +465,34 @@ def admin_dashboard():
     classes_data = get_collection_data('classes')
     sessions_data = get_collection_data('sessions')
 
-    total_students = len([u for u in users_data.values() if u.get('role') == 'student'])
-    total_trainers = len([u for u in users_data.values() if u.get('role') == 'trainer'])
-    total_classes = len(classes_data.get('classes', []))
-    total_sessions = len(sessions_data.get('sessions', []))
-    attendance_records = [s for s in sessions_data.get('sessions', []) if s.get('attendance_status') == 'present']
+    # Handle users_data as either list or dict
+    if isinstance(users_data, list):
+        users_list = users_data
+    else:
+        users_list = list(users_data.values()) if isinstance(users_data, dict) else []
+
+    total_students = len([u for u in users_list if u.get('role') == 'student'])
+    total_trainers = len([u for u in users_list if u.get('role') == 'trainer'])
+    
+    # Handle classes_data as either list or dict
+    if isinstance(classes_data, list):
+        classes_list = classes_data
+    elif isinstance(classes_data, dict) and 'classes' in classes_data:
+        classes_list = classes_data['classes']
+    else:
+        classes_list = []
+    
+    # Handle sessions_data as either list or dict
+    if isinstance(sessions_data, list):
+        sessions_list = sessions_data
+    elif isinstance(sessions_data, dict) and 'sessions' in sessions_data:
+        sessions_list = sessions_data['sessions']
+    else:
+        sessions_list = []
+    
+    total_classes = len(classes_list)
+    total_sessions = len(sessions_list)
+    attendance_records = [s for s in sessions_list if s.get('attendance_status') == 'present']
     attendance_rate = 0
     if total_sessions > 0:
         attendance_rate = int(100 * len(attendance_records) / total_sessions)
@@ -481,7 +513,14 @@ def admin_users():
         return redirect(url_for('login'))
     
     users_data = get_collection_data('users')
-    return render_template('admin/users.html', users=users_data)
+    
+    # Handle users_data as either list or dict
+    if isinstance(users_data, list):
+        users_list = users_data
+    else:
+        users_list = list(users_data.values()) if isinstance(users_data, dict) else []
+    
+    return render_template('admin/users.html', users=users_list)
 
 @app.route('/admin/create-user', methods=['GET', 'POST'])
 def admin_create_user():
@@ -492,15 +531,21 @@ def admin_create_user():
     if request.method == 'POST':
         users_data = get_collection_data('users')
         
+        # Convert to dict if it's a list
+        if isinstance(users_data, list):
+            users_dict = {user.get('email'): user for user in users_data if user.get('email')}
+        else:
+            users_dict = users_data if isinstance(users_data, dict) else {}
+        
         email = request.form.get('email')
         name = request.form.get('name')
         role = request.form.get('role')
         password = request.form.get('password')
         
-        if email in users_data:
+        if email in users_dict:
             flash('User with this email already exists.')
         else:
-            users_data[email] = {
+            users_dict[email] = {
                 'name': name,
                 'email': email,
                 'role': role,
@@ -508,7 +553,7 @@ def admin_create_user():
                 'interests': [],
                 'created_at': datetime.now().isoformat()
             }
-            set_collection_data('users', users_data)
+            set_collection_data('users', users_dict, 'email')
             flash('User created successfully!')
             return redirect(url_for('admin_users'))
     
@@ -521,7 +566,14 @@ def admin_edit_user(email):
         return redirect(url_for('login'))
     
     users_data = get_collection_data('users')
-    user = users_data.get(email)
+    
+    # Convert to dict if it's a list
+    if isinstance(users_data, list):
+        users_dict = {user.get('email'): user for user in users_data if user.get('email')}
+    else:
+        users_dict = users_data if isinstance(users_data, dict) else {}
+    
+    user = users_dict.get(email)
     
     if not user:
         flash('User not found.')
@@ -534,8 +586,8 @@ def admin_edit_user(email):
         if password:
             user['password'] = generate_password_hash(password)
         
-        users_data[email] = user
-        set_collection_data('users', users_data)
+        users_dict[email] = user
+        set_collection_data('users', users_dict, 'email')
         flash('User updated successfully!')
         return redirect(url_for('admin_users'))
     
@@ -556,7 +608,16 @@ def admin_classes():
         return redirect(url_for('login'))
     
     classes_data = get_collection_data('classes')
-    return render_template('admin/classes.html', classes=classes_data.get('classes', []))
+    
+    # Handle classes_data as either list or dict
+    if isinstance(classes_data, list):
+        classes_list = classes_data
+    elif isinstance(classes_data, dict) and 'classes' in classes_data:
+        classes_list = classes_data['classes']
+    else:
+        classes_list = []
+    
+    return render_template('admin/classes.html', classes=classes_list)
 
 @app.route('/admin/sessions')
 def admin_sessions():
@@ -565,7 +626,16 @@ def admin_sessions():
         return redirect(url_for('login'))
     
     sessions_data = get_collection_data('sessions')
-    return render_template('admin/sessions.html', sessions=sessions_data.get('sessions', []))
+    
+    # Handle sessions_data as either list or dict
+    if isinstance(sessions_data, list):
+        sessions_list = sessions_data
+    elif isinstance(sessions_data, dict) and 'sessions' in sessions_data:
+        sessions_list = sessions_data['sessions']
+    else:
+        sessions_list = []
+    
+    return render_template('admin/sessions.html', sessions=sessions_list)
 
 @app.route('/admin/content')
 def admin_content():
