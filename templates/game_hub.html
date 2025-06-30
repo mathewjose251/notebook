@@ -104,11 +104,23 @@
             width: auto;
             object-fit: contain;
         }
+        
+        .navbar .nav-link, .navbar .btn, .navbar .navbar-brand, .navbar .dropdown-toggle {
+            color: #fff !important;
+        }
+        .navbar .btn-outline-primary, .navbar .btn-outline-success, .navbar .btn-outline-warning {
+            color: #fff !important;
+            border-color: #fff !important;
+        }
+        .navbar .btn-outline-primary:hover, .navbar .btn-outline-success:hover, .navbar .btn-outline-warning:hover {
+            background: #1976d2 !important;
+            color: #fff !important;
+        }
     </style>
 </head>
 <body class="bg-gray-50">
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light fixed-top" style="margin-top: 60px;">
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top" style="background: #42a5f5; margin-top: 60px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="/">
                 <img src="/static/images/logo.png" alt="Sanchari Mentors Logo" class="logo-img me-2" />

@@ -25,9 +25,9 @@
         }
         
         .navbar {
-            background: rgba(255, 255, 255, 0.95);
+            background: #42a5f5;
             backdrop-filter: blur(10px);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
             position: sticky;
             top: 0;
             z-index: 1030;
@@ -35,7 +35,7 @@
         
         .navbar-brand {
             font-weight: 700;
-            color: #343a40;
+            color: #fff;
         }
         
         .main-content {
@@ -102,11 +102,23 @@
                 top: max(20px, env(safe-area-inset-top) + 10px);
             }
         }
+        
+        .navbar .nav-link, .navbar .btn, .navbar .navbar-brand, .navbar .dropdown-toggle {
+            color: #fff !important;
+        }
+        .navbar .btn-outline-primary, .navbar .btn-outline-success, .navbar .btn-outline-warning {
+            color: #fff !important;
+            border-color: #fff !important;
+        }
+        .navbar .btn-outline-primary:hover, .navbar .btn-outline-success:hover, .navbar .btn-outline-warning:hover {
+            background: #1976d2 !important;
+            color: #fff !important;
+        }
     </style>
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light">
+    <nav class="navbar navbar-expand-lg navbar-light" style="background: #42a5f5; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
         <div class="container">
             <a class="navbar-brand" href="{{ url_for('index') }}">
                 <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Sanchari Mentors Logo" style="height: 40px; width: auto;">
@@ -123,6 +135,9 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('classes') }}">Classes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('join_our_team') }}">Join Our Team</a>
                     </li>
                     {% if session.user_role == 'student' %}
                         <li class="nav-item">

@@ -9,6 +9,15 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 import openpyxl
 from pymongo import MongoClient
 from bson.objectid import ObjectId
+from functools import wraps
+
+def student_login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'student_email' not in session:
+            return redirect(url_for('student_login', next=request.url))
+        return f(*args, **kwargs)
+    return decorated_function
 
 # Conditional Google OAuth imports
 try:
@@ -47,7 +56,7 @@ app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 app.config['PERMANENT_SESSION_LIFETIME'] = 3600  # 1 hour
 app.config['SESSION_REFRESH_EACH_REQUEST'] = True
-app.config['SESSION_FILE_DIR'] = 'flask_session'
+app.config['SESSION_FILE_DIR'] = 'flask_session_data'
 app.config['SESSION_FILE_THRESHOLD'] = 500
 app.config['SESSION_FILE_MODE'] = 0o600
 app.config['SESSION_KEY_PREFIX'] = 'sanchari_'
@@ -56,15 +65,15 @@ app.config['SESSION_COOKIE_NAME'] = 'sanchari_session'
 
 # Create session directory if it doesn't exist
 try:
-    os.makedirs('flask_session', exist_ok=True)
+    os.makedirs('flask_session_data', exist_ok=True)
     # Ensure the directory has proper permissions
-    os.chmod('flask_session', 0o777)
+    os.chmod('flask_session_data', 0o777)
 except Exception as e:
-    print(f"Warning: Could not create or set permissions for flask_session directory: {e}")
+    print(f"Warning: Could not create or set permissions for flask_session_data directory: {e}")
     # Try to create in /tmp as fallback
     try:
         import tempfile
-        temp_dir = tempfile.mkdtemp(prefix='flask_session_')
+        temp_dir = tempfile.mkdtemp(prefix='flask_session_data_')
         app.config['SESSION_FILE_DIR'] = temp_dir
         print(f"Using temporary session directory: {temp_dir}")
     except Exception as e2:
@@ -85,6 +94,9 @@ def inject_google_oauth_status():
 MONGO_URI = os.environ.get('MONGO_URI', 'mongodb://localhost:27017/sanchari_mentors')
 mongo_client = MongoClient(MONGO_URI)
 mongo_db = mongo_client.get_default_database()
+
+# Add this line to define the students collection
+students_col = mongo_db['students']
 
 def get_db():
     return mongo_db
@@ -1711,36 +1723,43 @@ def student_view_class(class_id):
 
 # MathStar 3D Game Route
 @app.route('/mathstar-3d')
+@student_login_required
 def mathstar_3d():
     """MathStar 3D - Interactive Math Learning Game for Kids"""
     return render_template('mathstar_3d.html')
 
 @app.route('/english-star')
+@student_login_required
 def english_star():
     """English Star - Interactive English Learning Game"""
     return render_template('english_star.html')
 
 @app.route('/science-star')
+@student_login_required
 def science_star():
     """Science Star - Interactive Science Learning Game"""
     return render_template('science_star.html')
 
 @app.route('/history-star')
+@student_login_required
 def history_star():
     """History Star - Interactive History Learning Game"""
     return render_template('history_star.html')
 
 @app.route('/computer-star')
+@student_login_required
 def computer_star():
     """Computer Star - Interactive Computer Science Learning Game"""
     return render_template('computer_star.html')
 
 @app.route('/ai-star')
+@student_login_required
 def ai_star():
     """AI Star - Interactive AI Learning Game"""
     return render_template('ai_star.html')
 
 @app.route('/geography-star')
+@student_login_required
 def geography_star():
     """Geography Star - Interactive Geography Learning Game"""
     return render_template('geography_star.html')
@@ -1750,6 +1769,79 @@ def geography_star():
 def game_hub():
     """Game Hub - Central navigation for all educational games"""
     return render_template('game_hub.html')
+
+@app.route('/join-our-team')
+def join_our_team():
+    return render_template('join_our_team.html')
+
+@app.route('/student-signup', methods=['GET', 'POST'])
+def student_signup():
+    if request.method == 'POST':
+        email = request.form.get('email').strip().lower()
+        name = request.form.get('name').strip()
+        password = request.form.get('password')
+        grade = request.form.get('grade')
+        gender = request.form.get('gender')
+        interests = request.form.getlist('interests')
+        if not (email and name and password and grade and gender and interests):
+            flash('All fields are required.', 'danger')
+            return render_template('student_signup.html')
+        # Check if email already exists
+        if students_col.find_one({'email': email}):
+            flash('Email already registered. Please login.', 'warning')
+            return redirect(url_for('student_login'))
+        student = {
+            'email': email,
+            'name': name,
+            'password_hash': generate_password_hash(password),
+            'grade': grade,
+            'gender': gender,
+            'interests': interests,
+            'created_at': datetime.utcnow()
+        }
+        students_col.insert_one(student)
+        flash('Signup successful! Please login.', 'success')
+        return redirect(url_for('student_login'))
+    return render_template('student_signup.html')
+
+@app.route('/student-login', methods=['GET', 'POST'])
+def student_login():
+    if request.method == 'POST':
+        email = request.form.get('email').strip().lower()
+        password = request.form.get('password')
+        student = students_col.find_one({'email': email})
+        if student and check_password_hash(student.get('password_hash', ''), password):
+            session['student_email'] = student['email']
+            session['student_name'] = student['name']
+            session['student_grade'] = student['grade']
+            session['student_gender'] = student['gender']
+            session['student_interests'] = student['interests']
+            flash('Login successful!', 'success')
+            next_url = request.args.get('next')
+            return redirect(next_url or url_for('index'))
+        else:
+            flash('Invalid email or password.', 'danger')
+    return render_template('student_login.html')
+
+# Helper: require student login for games
+def student_login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'student_email' not in session:
+            return redirect(url_for('student_login', next=request.url))
+        return f(*args, **kwargs)
+    return decorated_function
+
+# Example: protect a game route
+# @app.route('/mathstar-3d')
+# @student_login_required
+# def mathstar_3d():
+#     return render_template('mathstar_3d.html')
+
+@app.route('/leaderboard')
+def leaderboard():
+    # Placeholder: will show top students by stars
+    return render_template('leaderboard.html')
 
 if __name__ == '__main__':
     # Add ProxyFix middleware

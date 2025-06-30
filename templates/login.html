@@ -80,45 +80,31 @@
 
     <div class="login-container">
         <h2 class="mb-4 text-center">Login to Sanchari Mentors</h2>
-        
         <div class="note text-center">
             <i class="fas fa-info-circle me-1"></i>
-            <span class="text-info">Please use admin login below for access.</span><br>
-            <span class="text-danger">Direct registration is disabled.</span>
+            <span class="text-info">Login as <b>Admin</b>, <b>Trainer</b>, or <b>Student</b> below.</span>
         </div>
-        
-        <div class="dummy-login">
-            <strong>For Admin/Testing Only:</strong><br>
+        <form method="POST" action="{{ url_for('login') }}">
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Login</button>
+        </form>
+        <div class="text-center mt-3">
+            <span>New user? <a href="{{ url_for('student_signup') }}">Sign up here</a></span>
+        </div>
+        <div class="dummy-login mt-4">
+            <strong>Demo Credentials:</strong><br>
             <b>Admin:</b> admin@sanchari.org / <span class="password-hidden">••••••••</span><br>
-            <b>Dummy Trainer:</b> trainer1@sanchari.org / <span class="password-hidden">•••••</span><br>
-            <b>Dummy Student:</b> student1@sanchari.org / <span class="password-hidden">•••••</span><br>
+            <b>Trainer:</b> trainer1@sanchari.org / <span class="password-hidden">•••••</span><br>
+            <b>Student:</b> student1@sanchari.org / <span class="password-hidden">•••••</span><br>
             <span class="text-danger">(Do not share these credentials!)</span><br>
             <span class="password-toggle" onclick="togglePasswords()">Show/Hide Passwords</span>
-        </div>
-    </div>
-
-    <!-- Admin Login Modal -->
-    <div class="modal fade" id="adminLoginModal" tabindex="-1">
-        <div class="modal-dialog modal-sm">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Admin Login</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form method="POST" action="{{ url_for('login') }}">
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="password" name="password" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100">Login</button>
-                    </form>
-                </div>
-            </div>
         </div>
     </div>
 
