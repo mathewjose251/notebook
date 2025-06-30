@@ -179,12 +179,24 @@ def index():
 def health():
     return jsonify({"status": "healthy", "timestamp": datetime.now().isoformat()})
 
+# Test session endpoint
+@app.route('/test-session')
+def test_session():
+    return jsonify({
+        "session_data": dict(session),
+        "user_email": session.get('user_email'),
+        "user_role": session.get('user_role'),
+        "user_name": session.get('user_name')
+    })
+
 # Authentication routes
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
+        
+        print(f"Login attempt for email: {email}")
         
         users_data = get_collection_data('users', 'email')  # Get as dict keyed by email
         
@@ -195,24 +207,35 @@ def login():
         
         user = users_data.get(email) if isinstance(users_data, dict) else None
         
+        print(f"User found: {user is not None}")
+        if user:
+            print(f"User role: {user.get('role')}")
+            print(f"Password match: {user.get('password') == password}")
+        
         if user and user.get('password') == password:
             session['user_email'] = email
             session['user_role'] = user['role']
             session['user_name'] = user['name']
+            print(f"Session set - email: {session['user_email']}, role: {session['user_role']}")
             flash(f'Welcome back, {session["user_name"]}!', 'success')
             
             if user['role'] == 'admin':
+                print("Redirecting to admin dashboard")
                 return redirect(url_for('admin_dashboard'))
             elif user['role'] == 'trainer':
+                print("Redirecting to trainer dashboard")
                 return redirect(url_for('trainer_dashboard'))
             else:
+                print("Redirecting to student dashboard")
                 return redirect(url_for('student_dashboard'))
         else:
+            print("Invalid credentials")
             flash('Invalid email or password. Please try again.', 'danger')
             return redirect(url_for('login'))
 
     # If a user is already logged in, redirect them
     if 'user_email' in session:
+        print(f"User already logged in: {session['user_email']} with role: {session.get('user_role')}")
         role = session.get('user_role')
         if role == 'admin':
             return redirect(url_for('admin_dashboard'))
@@ -420,10 +443,15 @@ def student_question_detail(question_id):
 # Admin routes
 @app.route('/admin/dashboard')
 def admin_dashboard():
+    print(f"Admin dashboard accessed. Session: {dict(session)}")
+    print(f"User role in session: {session.get('user_role')}")
+    
     if 'user_role' not in session or session['user_role'] != 'admin':
+        print("Admin access denied - redirecting to login")
         flash('Please login as admin to access this page.')
         return redirect(url_for('login'))
 
+    print("Admin access granted - rendering dashboard")
     users_data = get_collection_data('users')
     classes_data = get_collection_data('classes')
     sessions_data = get_collection_data('sessions')
