@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Sanchari Mentors Platform - Simple Deployment Script
-# This script sets up and deploys the containerized application without nginx
+# Sanchari Mentors Platform - Simple VM Deployment Script
+# This script sets up the Flask application for manual running
 
 set -e
 
@@ -29,20 +29,59 @@ print_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
 
-# Function to check if command exists
-command_exists() {
-    command -v "$1" >/dev/null 2>&1
-}
-
 # Function to get public IP
 get_public_ip() {
-    if command_exists curl; then
+    if command -v curl >/dev/null 2>&1; then
         curl -s ifconfig.me
-    elif command_exists wget; then
+    elif command -v wget >/dev/null 2>&1; then
         wget -qO- ifconfig.me
     else
         echo "localhost"
     fi
+}
+
+# Function to install system dependencies
+install_system_deps() {
+    print_status "Installing system dependencies..."
+    
+    # Update package list
+    sudo apt-get update
+    
+    # Install required packages
+    sudo apt-get install -y \
+        python3 \
+        python3-venv \
+        python3-pip \
+        git \
+        curl \
+        build-essential \
+        python3-dev \
+        libffi-dev \
+        libssl-dev
+    
+    print_success "System dependencies installed"
+}
+
+# Function to setup Python virtual environment
+setup_python_env() {
+    print_status "Setting up Python virtual environment..."
+    
+    # Create virtual environment
+    python3 -m venv venv
+    
+    # Activate virtual environment
+    source venv/bin/activate
+    
+    # Upgrade pip
+    pip install --upgrade pip
+    
+    # Install Python dependencies
+    pip install -r requirements.txt
+    
+    # Install additional production dependencies
+    pip install gunicorn
+    
+    print_success "Python environment setup complete"
 }
 
 # Function to create environment file
@@ -53,8 +92,8 @@ create_env_file() {
         cat > .env << EOF
 # Sanchari Mentors Platform Environment Variables
 SECRET_KEY=$(openssl rand -hex 32)
-GOOGLE_CLIENT_ID=your_google_client_id_here
-GOOGLE_CLIENT_SECRET=your_google_client_secret_here
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
 FLASK_ENV=production
 FLASK_DEBUG=False
 FLASK_HOST=0.0.0.0
@@ -75,56 +114,21 @@ create_data_directories() {
     mkdir -p flask_session
     mkdir -p static/uploads
     
-    # Copy existing JSON files to data directory if they exist
-    if [ -f classes.json ]; then
-        cp classes.json data/
-    fi
-    if [ -f users.json ]; then
-        cp users.json data/
-    fi
-    if [ -f sessions.json ]; then
-        cp sessions.json data/
-    fi
+    # Set proper permissions
+    chmod 755 data flask_session static/uploads
     
     print_success "Data directories created"
 }
 
-# Function to check prerequisites
-check_prerequisites() {
-    print_status "Checking prerequisites..."
+# Function to start the application
+start_application() {
+    print_status "Starting the application..."
     
-    # Check if Docker is installed
-    if ! command_exists docker; then
-        print_error "Docker is not installed. Please install Docker first."
-        exit 1
-    fi
+    # Activate virtual environment
+    source venv/bin/activate
     
-    # Check if Docker Compose is installed
-    if ! command_exists docker-compose; then
-        print_error "Docker Compose is not installed. Please install Docker Compose first."
-        exit 1
-    fi
-    
-    # Check if Docker daemon is running
-    if ! docker info >/dev/null 2>&1; then
-        print_error "Docker daemon is not running. Please start Docker first."
-        exit 1
-    fi
-    
-    print_success "All prerequisites are met"
-}
-
-# Function to build and deploy
-deploy() {
-    print_status "Building and deploying the application..."
-    
-    # Build the Docker image
-    docker-compose -f docker-compose.simple.yml build
-    
-    # Start the services
-    docker-compose -f docker-compose.simple.yml up -d
-    
-    print_success "Application deployed successfully!"
+    # Start with Gunicorn
+    gunicorn -w 4 -b 0.0.0.0:8000 main:app
 }
 
 # Function to show deployment info
@@ -140,87 +144,35 @@ show_deployment_info() {
     echo "  Local:     http://localhost:8000"
     echo "  Public:    http://$public_ip:8000"
     echo ""
-    echo "Health Check:"
-    echo "  http://localhost:8000/health"
-    echo "  http://$public_ip:8000/health"
+    echo "To start the application:"
+    echo "  source venv/bin/activate"
+    echo "  gunicorn -w 4 -b 0.0.0.0:8000 main:app"
     echo ""
-    echo "Useful Commands:"
-    echo "  View logs:     docker-compose -f docker-compose.simple.yml logs -f"
-    echo "  Stop app:      docker-compose -f docker-compose.simple.yml down"
-    echo "  Restart app:   docker-compose -f docker-compose.simple.yml restart"
-    echo "  Update app:    ./deploy-simple.sh update"
+    echo "Or use the start command:"
+    echo "  ./deploy-simple.sh start"
     echo ""
-    print_warning "Note: This is a simple deployment without SSL/HTTPS."
-    print_warning "For production with HTTPS, use the full deployment script."
+    print_warning "Note: Make sure to update GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in .env file"
     echo ""
-}
-
-# Function to update the application
-update() {
-    print_status "Updating the application..."
-    
-    # Pull latest changes (if using git)
-    if [ -d .git ]; then
-        git pull origin main
-    fi
-    
-    # Rebuild and restart
-    docker-compose -f docker-compose.simple.yml down
-    docker-compose -f docker-compose.simple.yml build --no-cache
-    docker-compose -f docker-compose.simple.yml up -d
-    
-    print_success "Application updated successfully!"
-}
-
-# Function to show logs
-show_logs() {
-    docker-compose -f docker-compose.simple.yml logs -f
-}
-
-# Function to stop the application
-stop() {
-    print_status "Stopping the application..."
-    docker-compose -f docker-compose.simple.yml down
-    print_success "Application stopped"
-}
-
-# Function to show status
-status() {
-    print_status "Application status:"
-    docker-compose -f docker-compose.simple.yml ps
 }
 
 # Main script logic
-case "${1:-deploy}" in
-    "deploy")
-        check_prerequisites
+case "${1:-setup}" in
+    "setup")
+        install_system_deps
+        setup_python_env
         create_env_file
         create_data_directories
-        deploy
         show_deployment_info
         ;;
-    "update")
-        update
-        show_deployment_info
-        ;;
-    "logs")
-        show_logs
-        ;;
-    "stop")
-        stop
-        ;;
-    "status")
-        status
+    "start")
+        start_application
         ;;
     "help"|"-h"|"--help")
         echo "Usage: $0 [command]"
         echo ""
         echo "Commands:"
-        echo "  deploy   - Deploy the application (default)"
-        echo "  update   - Update and restart the application"
-        echo "  logs     - Show application logs"
-        echo "  stop     - Stop the application"
-        echo "  status   - Show application status"
+        echo "  setup    - Setup the application (default)"
+        echo "  start    - Start the application"
         echo "  help     - Show this help message"
         ;;
     *)

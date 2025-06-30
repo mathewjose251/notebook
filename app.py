@@ -113,38 +113,6 @@ def api_student_interests(email):
             'error': str(e)
         }), 500
 
-@app.route('/api/classes/<int:class_id>/enroll', methods=['POST'])
-def api_enroll_class(class_id):
-    """API endpoint to enroll a student in a class"""
-    if 'user_role' not in session or session['user_role'] != 'student':
-        return jsonify({
-            'success': False,
-            'error': 'Unauthorized access'
-        }), 401
-    
-    try:
-        classes_data = get_collection_data('classes')
-        class_item = next((c for c in classes_data if c.get('id') == class_id), None)
-        
-        if not class_item:
-            return jsonify({
-                'success': False,
-                'error': 'Class not found'
-            }), 404
-        
-        # Here you would typically add enrollment logic
-        # For now, we'll just return success
-        return jsonify({
-            'success': True,
-            'message': f'Successfully enrolled in {class_item["title"]}'
-        })
-        
-    except Exception as e:
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        }), 500
-
 @app.route('/health')
 def health_check():
     """Health check endpoint for monitoring"""
