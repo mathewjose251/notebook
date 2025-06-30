@@ -32,9 +32,6 @@ services:
     volumes:
       - mongo_data:/data/db
 
-volumes:
-  mongo_data:
-
   nginx:
     image: nginx:alpine
     ports:
