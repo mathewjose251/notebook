@@ -1,5 +1,30 @@
 #!/bin/bash
 
+# ===================== GCP VM DEPLOYMENT INSTRUCTIONS =====================
+#
+# 1. Clean up old containers and volumes (run these on your GCP VM):
+#    docker compose down -v
+#    docker volume prune -f
+#
+# 2. Ensure the following directories exist and are writable:
+#    sudo mkdir -p data flask_session static/uploads
+#    sudo chmod -R 777 data flask_session static/uploads
+#
+# 3. Build and start the app:
+#    docker compose build --no-cache
+#    docker compose up -d
+#
+# 4. Check logs for errors:
+#    docker compose logs -f
+#
+# 5. Test the app:
+#    Visit http://YOUR_VM_EXTERNAL_IP:8000/
+#    Or run: curl http://localhost:8000/health
+#
+# If you see 'ContainerConfig' errors, double-check your docker-compose.yml for volume conflicts.
+#
+# ===========================================================================
+
 # Sanchari Mentors Platform - Deployment Script
 # This script sets up and deploys the containerized application
 
