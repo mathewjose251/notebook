@@ -4,13 +4,23 @@ import json
 from datetime import datetime
 from flask import Flask, render_template, redirect, url_for, request, flash, session, jsonify, send_file
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_dance.contrib.google import make_google_blueprint, google
-from flask_dance.consumer import oauth_authorized
 from flask_session import Session
 from werkzeug.middleware.proxy_fix import ProxyFix
 import openpyxl
 from pymongo import MongoClient
 from bson.objectid import ObjectId
+
+# Conditional Google OAuth imports
+try:
+    from flask_dance.contrib.google import make_google_blueprint, google
+    from flask_dance.consumer import oauth_authorized
+    GOOGLE_OAUTH_AVAILABLE = True
+except ImportError:
+    print("⚠️  flask_dance not installed. Google OAuth will be disabled.")
+    GOOGLE_OAUTH_AVAILABLE = False
+    make_google_blueprint = None
+    google = None
+    oauth_authorized = None
 
 # Load environment variables from .env file if it exists
 def load_env_file():
@@ -103,21 +113,28 @@ os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 # Check if Google credentials are properly set
 if GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET and GOOGLE_CLIENT_ID != 'YOUR_GOOGLE_CLIENT_ID' and GOOGLE_CLIENT_SECRET != 'YOUR_GOOGLE_CLIENT_SECRET':
-    google_bp = make_google_blueprint(
-        client_id=GOOGLE_CLIENT_ID,
-        client_secret=GOOGLE_CLIENT_SECRET,
-        scope=[
-            "openid",
-            "https://www.googleapis.com/auth/userinfo.email",
-            "https://www.googleapis.com/auth/userinfo.profile"
-        ],
-        redirect_url="http://localhost:8000/login/google/authorized",
-        reprompt_consent=True,
-        reprompt_select_account=True,
-        storage=None  # Use Flask session storage
-    )
-    app.register_blueprint(google_bp, url_prefix="/login")
-    print("✅ Google OAuth configured and enabled")
+    if GOOGLE_OAUTH_AVAILABLE:
+        google_bp = make_google_blueprint(
+            client_id=GOOGLE_CLIENT_ID,
+            client_secret=GOOGLE_CLIENT_SECRET,
+            scope=[
+                "openid",
+                "https://www.googleapis.com/auth/userinfo.email",
+                "https://www.googleapis.com/auth/userinfo.profile"
+            ],
+            redirect_url="http://localhost:8000/login/google/authorized",
+            reprompt_consent=True,
+            reprompt_select_account=True,
+            storage=None  # Use Flask session storage
+        )
+        app.register_blueprint(google_bp, url_prefix="/login")
+        print("✅ Google OAuth configured and enabled")
+    else:
+        print("⚠️  WARNING: Google OAuth credentials not configured!")
+        print("Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET environment variables")
+        print("or update the values in main.py")
+        print("Google login will not work until credentials are configured.")
+        print("Users can still register and login with email/password.")
 else:
     print("⚠️  WARNING: Google OAuth credentials not configured!")
     print("Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET environment variables")
@@ -125,88 +142,71 @@ else:
     print("Google login will not work until credentials are configured.")
     print("Users can still register and login with email/password.")
 
-# TEMPORARILY DISABLE GOOGLE OAUTH FOR DEPLOYMENT
-# Uncomment the lines below when you have a proper domain name set up
-# if GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET and GOOGLE_CLIENT_ID != 'YOUR_GOOGLE_CLIENT_ID' and GOOGLE_CLIENT_SECRET != 'YOUR_GOOGLE_CLIENT_SECRET':
-#     google_bp = make_google_blueprint(
-#         client_id=GOOGLE_CLIENT_ID,
-#         client_secret=GOOGLE_CLIENT_SECRET,
-#         scope=[
-#             "openid",
-#             "https://www.googleapis.com/auth/userinfo.email",
-#             "https://www.googleapis.com/auth/userinfo.profile"
-#         ],
-#         redirect_url="http://localhost:8000/login/google/authorized",
-#         reprompt_consent=True,
-#         reprompt_select_account=True,
-#         storage=None  # Use Flask session storage
-#     )
-#     app.register_blueprint(google_bp, url_prefix="/login")
-#     print("✅ Google OAuth configured and enabled")
-# else:
-#     print("⚠️  WARNING: Google OAuth credentials not configured!")
-#     print("Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET environment variables")
-#     print("or update the values in main.py")
-#     print("Google login will not work until credentials are configured.")
-#     print("Users can still register and login with email/password.")
-
 # Signal handler for successful Google OAuth login
-@oauth_authorized.connect_via(google_bp)
-def google_logged_in(blueprint, token):
-    if not token:
-        flash("Failed to log in with Google.", "danger")
-        return redirect(url_for('login'))
-
-    try:
-        resp = blueprint.session.get("/oauth2/v2/userinfo")
-        if not resp.ok:
-            msg = "Failed to fetch user info from Google."
-            flash(msg, "danger")
+if GOOGLE_OAUTH_AVAILABLE and 'google_bp' in locals():
+    @oauth_authorized.connect_via(google_bp)
+    def google_logged_in(blueprint, token):
+        if not token:
+            flash("Failed to log in with Google.", "danger")
             return redirect(url_for('login'))
 
-        user_info = resp.json()
-        email = user_info["email"]
+        try:
+            resp = blueprint.session.get("/oauth2/v2/userinfo")
+            if not resp.ok:
+                msg = "Failed to fetch user info from Google."
+                flash(msg, "danger")
+                return redirect(url_for('login'))
 
-        users_data = get_collection_data('users')
-        user = users_data.get(email)
+            user_info = resp.json()
+            email = user_info["email"]
 
-        # Auto-create user if not present
-        if not user:
-            user = {
-                "name": user_info.get("name", email.split('@')[0]),
-                "email": email,
-                "role": "student",
-                "interests": [],
-                "profile_pic": user_info.get("picture", ""),
-                "grade": None,
-                "interested_subjects": []
-            }
-            users_data[email] = user
-            set_collection_data('users', users_data)
-            flash("Welcome! Your account has been created.", "success")
+            users_data = get_collection_data('users', 'email')  # Get as dict keyed by email
+            
+            # Handle case where users_data might be a list or dict
+            if isinstance(users_data, list):
+                # Convert list to dict keyed by email
+                users_data = {user.get('email'): user for user in users_data if user.get('email')}
+            
+            user = users_data.get(email) if isinstance(users_data, dict) else None
 
-        # Set session data
-        session['user_email'] = email
-        session['user_role'] = user['role']
-        session['user_name'] = user['name']
-        session.permanent = True
+            # Auto-create user if not present
+            if not user:
+                user = {
+                    "name": user_info.get("name", email.split('@')[0]),
+                    "email": email,
+                    "role": "student",
+                    "interests": [],
+                    "profile_pic": user_info.get("picture", ""),
+                    "grade": None,
+                    "interested_subjects": []
+                }
+                if isinstance(users_data, dict):
+                    users_data[email] = user
+                    set_collection_data('users', users_data, 'email')
+                flash("Welcome! Your account has been created.", "success")
 
-        flash(f'Successfully logged in as {user["name"]}!', 'success')
+            # Set session data
+            session['user_email'] = email
+            session['user_role'] = user['role']
+            session['user_name'] = user['name']
+            session.permanent = True
 
-        # Redirect to the correct dashboard
-        if user['role'] == 'admin':
-            return redirect(url_for('admin_dashboard'))
-        elif user['role'] == 'trainer':
-            return redirect(url_for('trainer_dashboard'))
-        else:
-            if user['role'] == 'student' and (not user.get('grade') or not user.get('interested_subjects')):
-                return redirect(url_for('complete_student_profile'))
-            return redirect(url_for('student_dashboard'))
+            flash(f'Successfully logged in as {user["name"]}!', 'success')
 
-    except Exception as e:
-        print(f"Error in google_logged_in signal handler: {e}")
-        flash('An unexpected error occurred during Google login.', 'danger')
-        return redirect(url_for('login'))
+            # Redirect to the correct dashboard
+            if user['role'] == 'admin':
+                return redirect(url_for('admin_dashboard'))
+            elif user['role'] == 'trainer':
+                return redirect(url_for('trainer_dashboard'))
+            else:
+                if user['role'] == 'student' and (not user.get('grade') or not user.get('interested_subjects')):
+                    return redirect(url_for('complete_student_profile'))
+                return redirect(url_for('student_dashboard'))
+
+        except Exception as e:
+            print(f"Error in google_logged_in signal handler: {e}")
+            flash('An unexpected error occurred during Google login.', 'danger')
+            return redirect(url_for('login'))
 
 # Home page route
 @app.route('/')
@@ -225,8 +225,14 @@ def login():
         email = request.form.get('email')
         password = request.form.get('password')
         
-        users_data = get_collection_data('users')
-        user = users_data.get(email)
+        users_data = get_collection_data('users', 'email')  # Get as dict keyed by email
+        
+        # Handle case where users_data might be a list or dict
+        if isinstance(users_data, list):
+            # Convert list to dict keyed by email
+            users_data = {user.get('email'): user for user in users_data if user.get('email')}
+        
+        user = users_data.get(email) if isinstance(users_data, dict) else None
         
         if user and user.get('password') == password:
             session['user_email'] = email
@@ -275,8 +281,14 @@ def student_dashboard():
         flash('Please login as a student to access this page.')
         return redirect(url_for('login'))
     
-    users_data = get_collection_data('users')
-    user = users_data.get(session['user_email'], {})
+    users_data = get_collection_data('users', 'email')  # Get as dict keyed by email
+    
+    # Handle case where users_data might be a list or dict
+    if isinstance(users_data, list):
+        # Convert list to dict keyed by email
+        users_data = {user.get('email'): user for user in users_data if user.get('email')}
+    
+    user = users_data.get(session['user_email'], {}) if isinstance(users_data, dict) else {}
     return render_template('student/dashboard.html', user=user)
 
 @app.route('/student/classes')
@@ -342,15 +354,22 @@ def student_interests():
         flash('Please login as a student to access this page.')
         return redirect(url_for('login'))
     
-    users_data = get_collection_data('users')
-    user = users_data.get(session['user_email'], {})
+    users_data = get_collection_data('users', 'email')  # Get as dict keyed by email
+    
+    # Handle case where users_data might be a list or dict
+    if isinstance(users_data, list):
+        # Convert list to dict keyed by email
+        users_data = {user.get('email'): user for user in users_data if user.get('email')}
+    
+    user = users_data.get(session['user_email'], {}) if isinstance(users_data, dict) else {}
     user_interests = user.get('interests', [])
     
     if request.method == 'POST':
         interests = request.form.getlist('interests')
         user['interests'] = interests
-        users_data[session['user_email']] = user
-        set_collection_data('users', users_data)
+        if isinstance(users_data, dict):
+            users_data[session['user_email']] = user
+            set_collection_data('users', users_data, 'email')
         flash('Your interests have been updated successfully!')
         return redirect(url_for('student_interests'))
     
@@ -1374,7 +1393,12 @@ def api_enroll_class(class_id):
     try:
         # Load existing data
         classes_data = get_collection_data('classes')
-        users_data = get_collection_data('users')
+        users_data = get_collection_data('users', 'email')  # Get as dict keyed by email
+        
+        # Handle case where users_data might be a list or dict
+        if isinstance(users_data, list):
+            # Convert list to dict keyed by email
+            users_data = {user.get('email'): user for user in users_data if user.get('email')}
         
         # Find the class
         class_found = None
@@ -1398,14 +1422,14 @@ def api_enroll_class(class_id):
         class_found['enrolled_students'].append(user_email)
         
         # Update user's enrolled classes
-        if user_email in users_data:
+        if isinstance(users_data, dict) and user_email in users_data:
             if 'enrolled_classes' not in users_data[user_email]:
                 users_data[user_email]['enrolled_classes'] = []
             users_data[user_email]['enrolled_classes'].append(class_id)
         
         # Save updated data
         set_collection_data('classes', classes_data)
-        set_collection_data('users', users_data)
+        set_collection_data('users', users_data, 'email')
         
         return jsonify({
             'success': True,
@@ -1429,7 +1453,12 @@ def api_unenroll_class(class_id):
     try:
         # Load existing data
         classes_data = get_collection_data('classes')
-        users_data = get_collection_data('users')
+        users_data = get_collection_data('users', 'email')  # Get as dict keyed by email
+        
+        # Handle case where users_data might be a list or dict
+        if isinstance(users_data, list):
+            # Convert list to dict keyed by email
+            users_data = {user.get('email'): user for user in users_data if user.get('email')}
         
         # Find the class
         class_found = None
@@ -1453,13 +1482,13 @@ def api_unenroll_class(class_id):
         class_found['enrolled_students'].remove(user_email)
         
         # Update user's enrolled classes
-        if user_email in users_data and 'enrolled_classes' in users_data[user_email]:
+        if isinstance(users_data, dict) and user_email in users_data and 'enrolled_classes' in users_data[user_email]:
             if class_id in users_data[user_email]['enrolled_classes']:
                 users_data[user_email]['enrolled_classes'].remove(class_id)
         
         # Save updated data
         set_collection_data('classes', classes_data)
-        set_collection_data('users', users_data)
+        set_collection_data('users', users_data, 'email')
         
         return jsonify({
             'success': True,
@@ -1580,8 +1609,16 @@ def complete_student_profile():
     if 'user_email' not in session or session.get('user_role') != 'student':
         flash('Please login as a student to complete your profile.')
         return redirect(url_for('login'))
-    users_data = get_collection_data('users')
-    user = users_data.get(session['user_email'], {})
+    
+    users_data = get_collection_data('users', 'email')  # Get as dict keyed by email
+    
+    # Handle case where users_data might be a list or dict
+    if isinstance(users_data, list):
+        # Convert list to dict keyed by email
+        users_data = {user.get('email'): user for user in users_data if user.get('email')}
+    
+    user = users_data.get(session['user_email'], {}) if isinstance(users_data, dict) else {}
+    
     if request.method == 'POST':
         grade = request.form.get('grade')
         dob = request.form.get('dob')
@@ -1601,8 +1638,9 @@ def complete_student_profile():
         user['city'] = city
         user['bio'] = bio
         user['interested_subjects'] = subjects
-        users_data[session['user_email']] = user
-        set_collection_data('users', users_data)
+        if isinstance(users_data, dict):
+            users_data[session['user_email']] = user
+            set_collection_data('users', users_data, 'email')
         flash('Profile completed successfully!')
         return redirect(url_for('student_dashboard'))
     return render_template('student/complete_profile.html', user=user)
