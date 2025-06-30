@@ -29,17 +29,18 @@ RUN pip install --no-cache-dir --upgrade pip \
 # Copy application code
 COPY . .
 
+# Create a non-root user for security
+RUN useradd --create-home --shell /bin/bash app
+
 # Create necessary directories with proper permissions
 RUN mkdir -p flask_session \
     && mkdir -p static/uploads \
     && mkdir -p data \
+    && chown -R app:app /app \
     && chmod 777 flask_session \
     && chmod 777 static/uploads \
     && chmod 777 data
 
-# Create a non-root user for security
-RUN useradd --create-home --shell /bin/bash app \
-    && chown -R app:app /app
 USER app
 
 # Expose port

@@ -186,6 +186,11 @@ def google_logged_in(blueprint, token):
 def index():
     return render_template('index.html')
 
+# Health check endpoint for Docker
+@app.route('/health')
+def health():
+    return jsonify({"status": "healthy", "timestamp": datetime.now().isoformat()})
+
 # Authentication routes
 @app.route('/login', methods=['GET', 'POST'])
 def login():

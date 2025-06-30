@@ -10,7 +10,7 @@
 #    sudo mkdir -p data flask_session static/uploads
 #    sudo chmod -R 777 data flask_session static/uploads
 #
-# 3. Build and start the app:
+# 3. Build and start the app (with no cache to ensure fresh build):
 #    docker compose build --no-cache
 #    docker compose up -d
 #
@@ -22,6 +22,7 @@
 #    Or run: curl http://localhost:8000/health
 #
 # If you see 'ContainerConfig' errors, double-check your docker-compose.yml for volume conflicts.
+# If you see permission errors, make sure the directories have 777 permissions.
 #
 # ===========================================================================
 
