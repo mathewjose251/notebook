@@ -102,26 +102,53 @@ os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE'] = '1'
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 # Check if Google credentials are properly set
-if GOOGLE_CLIENT_ID == 'YOUR_GOOGLE_CLIENT_ID' or GOOGLE_CLIENT_SECRET == 'YOUR_GOOGLE_CLIENT_SECRET':
+if GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET and GOOGLE_CLIENT_ID != 'YOUR_GOOGLE_CLIENT_ID' and GOOGLE_CLIENT_SECRET != 'YOUR_GOOGLE_CLIENT_SECRET':
+    google_bp = make_google_blueprint(
+        client_id=GOOGLE_CLIENT_ID,
+        client_secret=GOOGLE_CLIENT_SECRET,
+        scope=[
+            "openid",
+            "https://www.googleapis.com/auth/userinfo.email",
+            "https://www.googleapis.com/auth/userinfo.profile"
+        ],
+        redirect_url="http://localhost:8000/login/google/authorized",
+        reprompt_consent=True,
+        reprompt_select_account=True,
+        storage=None  # Use Flask session storage
+    )
+    app.register_blueprint(google_bp, url_prefix="/login")
+    print("✅ Google OAuth configured and enabled")
+else:
     print("⚠️  WARNING: Google OAuth credentials not configured!")
     print("Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET environment variables")
     print("or update the values in main.py")
     print("Google login will not work until credentials are configured.")
+    print("Users can still register and login with email/password.")
 
-google_bp = make_google_blueprint(
-    client_id=GOOGLE_CLIENT_ID,
-    client_secret=GOOGLE_CLIENT_SECRET,
-    scope=[
-        "openid",
-        "https://www.googleapis.com/auth/userinfo.email",
-        "https://www.googleapis.com/auth/userinfo.profile"
-    ],
-    redirect_url="http://localhost:8000/login/google/authorized",
-    reprompt_consent=True,
-    reprompt_select_account=True,
-    storage=None  # Use Flask session storage
-)
-app.register_blueprint(google_bp, url_prefix="/login")
+# TEMPORARILY DISABLE GOOGLE OAUTH FOR DEPLOYMENT
+# Uncomment the lines below when you have a proper domain name set up
+# if GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET and GOOGLE_CLIENT_ID != 'YOUR_GOOGLE_CLIENT_ID' and GOOGLE_CLIENT_SECRET != 'YOUR_GOOGLE_CLIENT_SECRET':
+#     google_bp = make_google_blueprint(
+#         client_id=GOOGLE_CLIENT_ID,
+#         client_secret=GOOGLE_CLIENT_SECRET,
+#         scope=[
+#             "openid",
+#             "https://www.googleapis.com/auth/userinfo.email",
+#             "https://www.googleapis.com/auth/userinfo.profile"
+#         ],
+#         redirect_url="http://localhost:8000/login/google/authorized",
+#         reprompt_consent=True,
+#         reprompt_select_account=True,
+#         storage=None  # Use Flask session storage
+#     )
+#     app.register_blueprint(google_bp, url_prefix="/login")
+#     print("✅ Google OAuth configured and enabled")
+# else:
+#     print("⚠️  WARNING: Google OAuth credentials not configured!")
+#     print("Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET environment variables")
+#     print("or update the values in main.py")
+#     print("Google login will not work until credentials are configured.")
+#     print("Users can still register and login with email/password.")
 
 # Signal handler for successful Google OAuth login
 @oauth_authorized.connect_via(google_bp)

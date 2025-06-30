@@ -103,13 +103,20 @@
 
     <div class="login-container">
         <h2 class="mb-4 text-center">Login to Sanchari Mentors</h2>
+        
+        <!-- TEMPORARILY DISABLED: Google OAuth -->
+        <!-- Uncomment when you have a proper domain name set up -->
+        <!--
         <a href="{{ url_for('google.login') }}" class="google-btn">
             <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" class="google-icon" alt="Google Logo">
             Login with Google
         </a>
+        -->
+        
         <div class="note text-center">
             <i class="fas fa-info-circle me-1"></i>
-            Only Google (Gmail) login is allowed for regular users.<br>
+            <span class="text-warning">Google OAuth temporarily disabled.</span><br>
+            Please use admin login below for testing.<br>
             <span class="text-danger">Direct registration is disabled.</span>
         </div>
         <div class="dummy-login">

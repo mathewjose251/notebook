@@ -1,98 +1,188 @@
-# Google OAuth Setup Guide for Sanchari Mentors
+# Google OAuth Setup Guide for Sanchari Mentors Platform
 
-## Current Issue
-The Google OAuth is failing because the redirect URI is not properly configured in the Google Cloud Console.
+## Overview
+This guide explains how to properly configure Google OAuth for both development and production environments.
 
-## Solution Steps
+## Problem
+You're seeing these errors in Google Cloud Console:
+- "Invalid Redirect: must end with a public top-level domain (such as .com or .org)"
+- "Invalid Redirect: must use a domain that is a valid top private domain"
 
-### 1. Access Google Cloud Console
-1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Select your project or create a new one
-3. Navigate to "APIs & Services" > "Credentials"
+This happens because Google OAuth requires proper domain names for redirect URIs, not IP addresses.
 
-### 2. Configure OAuth 2.0 Client ID
-1. Find your existing OAuth 2.0 Client ID or create a new one
-2. Click on the client ID to edit it
-3. In the "Authorized redirect URIs" section, add:
+## Solutions
+
+### Option 1: Use a Custom Domain (Recommended for Production)
+
+1. **Register a Domain Name**
+   - Register a domain like `sanchari-mentors.com` or `your-app.com`
+   - Point it to your GCP VM's IP address (35.231.94.15)
+
+2. **Update Google Cloud Console**
+   - Go to [Google Cloud Console](https://console.cloud.google.com/)
+   - Navigate to "APIs & Services" > "Credentials"
+   - Edit your OAuth 2.0 Client ID
+   - Add these Authorized redirect URIs:
+     ```
+     https://your-domain.com/login/google/authorized
+     https://www.your-domain.com/login/google/authorized
+     ```
+
+3. **Update Environment Variables**
+   ```bash
+   export GOOGLE_OAUTH_REDIRECT_URL=https://your-domain.com
    ```
-   http://localhost:8000/login/google/authorized
+
+### Option 2: Use a Free Domain Service (Quick Solution)
+
+1. **Use a Free Domain Service**
+   - [No-IP](https://www.noip.com/) - Free dynamic DNS
+   - [DuckDNS](https://www.duckdns.org/) - Free subdomain
+   - [Freenom](https://www.freenom.com/) - Free domain names
+
+2. **Example with DuckDNS**
+   - Go to [DuckDNS](https://www.duckdns.org/)
+   - Create a free subdomain like `sanchari-mentors.duckdns.org`
+   - Point it to your IP: 35.231.94.15
+
+3. **Update Google Cloud Console**
+   - Add these redirect URIs:
+     ```
+     https://sanchari-mentors.duckdns.org/login/google/authorized
+     ```
+
+### Option 3: Disable OAuth for Now (Temporary Solution)
+
+If you want to deploy without OAuth for now:
+
+1. **Update main.py**
+   ```python
+   # Comment out or remove the Google OAuth setup
+   # google_bp = make_google_blueprint(...)
+   # app.register_blueprint(google_bp, url_prefix="/login")
    ```
-4. **Important**: Make sure to use `localhost` not `127.0.0.1`
-5. Click "Save"
 
-### 3. Verify Configuration
-Your OAuth 2.0 Client ID should have these settings:
-- **Application type**: Web application
-- **Name**: Sanchari Mentors (or your preferred name)
-- **Authorized JavaScript origins**: 
-  ```
-  http://localhost:8000
-  ```
-- **Authorized redirect URIs**:
-  ```
-  http://localhost:8000/login/google/authorized
-  ```
+2. **Use Regular Login**
+   - Users can still register and login with email/password
+   - OAuth can be added later when you have a proper domain
 
-### 4. Update Environment Variables (Optional)
-You can set environment variables instead of hardcoding credentials:
+## Step-by-Step Setup for Production
 
+### 1. Get a Domain Name
 ```bash
-export GOOGLE_CLIENT_ID="your-client-id-here"
-export GOOGLE_CLIENT_SECRET="your-client-secret-here"
+# Example: Register sanchari-mentors.com
+# Point DNS A record to: 35.231.94.15
 ```
 
-### 5. Test the Setup
-1. Restart your Flask application
-2. Go to `http://localhost:8000/login`
-3. Click "Login with Google"
-4. You should be redirected to Google's consent screen
-5. After authorization, you should be redirected back to the application
+### 2. Update Google Cloud Console
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Select your project
+3. Go to "APIs & Services" > "Credentials"
+4. Click on your OAuth 2.0 Client ID
+5. Under "Authorized redirect URIs", add:
+   ```
+   https://sanchari-mentors.com/login/google/authorized
+   https://www.sanchari-mentors.com/login/google/authorized
+   ```
+6. Click "Save"
+
+### 3. Update Your VM Environment
+```bash
+# SSH into your VM
+ssh your-username@35.231.94.15
+
+# Update environment variables
+sudo nano /etc/environment
+# Add:
+GOOGLE_OAUTH_REDIRECT_URL=https://sanchari-mentors.com
+
+# Or update your .env file
+sudo nano /path/to/your/app/.env
+# Add:
+GOOGLE_OAUTH_REDIRECT_URL=https://sanchari-mentors.com
+
+# Restart your application
+sudo systemctl restart your-app-service
+```
+
+### 4. Test the Setup
+1. Visit your domain: `https://sanchari-mentors.com`
+2. Try the Google login button
+3. Check that you're redirected back properly
+
+## Development Setup
+
+For local development, you can use:
+```
+http://localhost:8000/login/google/authorized
+```
 
 ## Troubleshooting
 
 ### Common Issues:
 
-1. **"redirect_uri_mismatch" error**
-   - Ensure the redirect URI in Google Cloud Console exactly matches: `http://localhost:8000/login/google/authorized`
-   - Check for typos or extra spaces
+1. **"Invalid Redirect URI" Error**
+   - Make sure the redirect URI in your code matches exactly what's in Google Cloud Console
+   - Check for trailing slashes, http vs https, etc.
 
-2. **"invalid_client" error**
-   - Verify your Client ID and Client Secret are correct
-   - Make sure you're using the right OAuth 2.0 Client ID
+2. **"Redirect URI Mismatch" Error**
+   - The redirect URI in your request doesn't match any authorized redirect URIs
+   - Double-check both the code and Google Cloud Console settings
 
-3. **"access_denied" error**
-   - Check if the Google+ API is enabled in your project
-   - Verify the scopes are properly configured
+3. **"Access Blocked" Error**
+   - Your app might not be verified by Google
+   - For testing, add your email as a test user in Google Cloud Console
 
-### Enable Required APIs:
-1. Go to "APIs & Services" > "Library"
-2. Search for and enable:
-   - Google+ API
-   - Google People API
+### Debug Steps:
+
+1. **Check Current Redirect URI**
+   ```python
+   # In your main.py, add this debug line:
+   print(f"OAuth Redirect URL: {GOOGLE_OAUTH_REDIRECT_URL}/login/google/authorized")
+   ```
+
+2. **Verify Google Cloud Console Settings**
+   - Go to Google Cloud Console
+   - Check that your redirect URI is listed exactly
+   - Make sure there are no extra spaces or characters
+
+3. **Test with curl**
+   ```bash
+   # Test your OAuth endpoint
+   curl -I https://your-domain.com/login/google/authorized
+   ```
 
 ## Security Notes
 
-⚠️ **Important Security Considerations:**
+1. **Never commit OAuth secrets to Git**
+   - Use environment variables
+   - Keep .env files out of version control
 
-1. **Never commit credentials to version control**
-   - Use environment variables for production
-   - Add `.env` files to `.gitignore`
+2. **Use HTTPS in Production**
+   - Google OAuth requires HTTPS for production
+   - Set up SSL certificates for your domain
 
-2. **Production Setup**
-   - Use HTTPS in production
-   - Update redirect URIs to your production domain
-   - Remove `OAUTHLIB_INSECURE_TRANSPORT` setting
+3. **Regular Security Updates**
+   - Keep your OAuth libraries updated
+   - Monitor Google Cloud Console for any security alerts
 
-3. **Client Secret Security**
-   - Keep your client secret secure
-   - Rotate secrets regularly
-   - Use different credentials for development and production
+## Quick Fix for Immediate Deployment
 
-## Current Configuration
+If you need to deploy right now without OAuth:
 
-The application is currently configured with:
-- **Client ID**: `102669950361-2do2cq17m4fd9dkoj4da7qiuu3b2snrr.apps.googleusercontent.com`
-- **Redirect URI**: `http://localhost:8000/login/google/authorized`
-- **Scopes**: `profile`, `email`
+1. **Comment out OAuth in main.py**
+   ```python
+   # Temporarily disable Google OAuth
+   # if GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET:
+   #     google_bp = make_google_blueprint(...)
+   #     app.register_blueprint(google_bp, url_prefix="/login")
+   ```
 
-Make sure these match exactly in your Google Cloud Console configuration. 
+2. **Deploy without OAuth**
+   - Users can still register/login with email/password
+   - Add OAuth later when you have a proper domain
+
+3. **Update your login template**
+   - Hide or remove the Google login button temporarily
+
+This way you can deploy your application immediately and add OAuth later when you have a proper domain name set up. 
