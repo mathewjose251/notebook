@@ -29,6 +29,10 @@ RUN pip install --no-cache-dir --upgrade pip \
 # Copy application code
 COPY . .
 
+# Make scripts executable
+RUN chmod +x init_database.py
+RUN chmod +x start.sh
+
 # Create a non-root user for security
 RUN useradd --create-home --shell /bin/bash app
 
@@ -50,5 +54,5 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8000/health || exit 1
 
-# Run the application
-CMD ["python", "main.py"] 
+# Run the startup script
+CMD ["./start.sh"] 
