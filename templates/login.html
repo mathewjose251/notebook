@@ -25,29 +25,6 @@
             max-width: 400px;
             width: 100%;
         }
-        .google-btn {
-            background: #fff;
-            color: #444;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 0.75rem 1.5rem;
-            font-size: 1.1rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            transition: all 0.2s;
-            margin-bottom: 1.5rem;
-        }
-        .google-btn:hover {
-            background: #f5f5f5;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-        }
-        .google-icon {
-            width: 24px;
-            height: 24px;
-        }
         .note {
             font-size: 0.95rem;
             color: #888;
@@ -104,21 +81,12 @@
     <div class="login-container">
         <h2 class="mb-4 text-center">Login to Sanchari Mentors</h2>
         
-        <!-- TEMPORARILY DISABLED: Google OAuth -->
-        <!-- Uncomment when you have a proper domain name set up -->
-        <!--
-        <a href="{{ url_for('google.login') }}" class="google-btn">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" class="google-icon" alt="Google Logo">
-            Login with Google
-        </a>
-        -->
-        
         <div class="note text-center">
             <i class="fas fa-info-circle me-1"></i>
-            <span class="text-warning">Google OAuth temporarily disabled.</span><br>
-            Please use admin login below for testing.<br>
+            <span class="text-info">Please use admin login below for access.</span><br>
             <span class="text-danger">Direct registration is disabled.</span>
         </div>
+        
         <div class="dummy-login">
             <strong>For Admin/Testing Only:</strong><br>
             <b>Admin:</b> admin@sanchari.org / <span class="password-hidden">••••••••</span><br>

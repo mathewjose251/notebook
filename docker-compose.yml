@@ -14,7 +14,6 @@ services:
       - MONGO_URI=mongodb://mongo:27017/sanchari_mentors
     volumes:
       - ./data:/app/data
-      - ./flask_session:/app/flask_session
       - ./static/uploads:/app/static/uploads
     depends_on:
       - mongo

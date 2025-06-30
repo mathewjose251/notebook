@@ -55,9 +55,31 @@ app.config['SESSION_USE_SIGNER'] = True
 app.config['SESSION_COOKIE_NAME'] = 'sanchari_session'
 
 # Create session directory if it doesn't exist
-os.makedirs('flask_session', exist_ok=True)
+try:
+    os.makedirs('flask_session', exist_ok=True)
+    # Ensure the directory has proper permissions
+    os.chmod('flask_session', 0o777)
+except Exception as e:
+    print(f"Warning: Could not create or set permissions for flask_session directory: {e}")
+    # Try to create in /tmp as fallback
+    try:
+        import tempfile
+        temp_dir = tempfile.mkdtemp(prefix='flask_session_')
+        app.config['SESSION_FILE_DIR'] = temp_dir
+        print(f"Using temporary session directory: {temp_dir}")
+    except Exception as e2:
+        print(f"Error: Could not create temporary session directory: {e2}")
+        # Disable session file storage as last resort
+        app.config['SESSION_TYPE'] = 'null'
 
 Session(app)
+
+# Context processor to make Google OAuth status available to templates
+@app.context_processor
+def inject_google_oauth_status():
+    return {
+        'google_oauth_available': False  # Google OAuth is disabled
+    }
 
 # MongoDB connection
 MONGO_URI = os.environ.get('MONGO_URI', 'mongodb://localhost:27017/sanchari_mentors')
@@ -111,30 +133,31 @@ os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE'] = '1'
 os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE'] = '1'
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
+# Initialize google_bp as None
+google_bp = None
+
 # Check if Google credentials are properly set
 if GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET and GOOGLE_CLIENT_ID != 'YOUR_GOOGLE_CLIENT_ID' and GOOGLE_CLIENT_SECRET != 'YOUR_GOOGLE_CLIENT_SECRET':
     if GOOGLE_OAUTH_AVAILABLE:
-        google_bp = make_google_blueprint(
-            client_id=GOOGLE_CLIENT_ID,
-            client_secret=GOOGLE_CLIENT_SECRET,
-            scope=[
-                "openid",
-                "https://www.googleapis.com/auth/userinfo.email",
-                "https://www.googleapis.com/auth/userinfo.profile"
-            ],
-            redirect_url="http://localhost:8000/login/google/authorized",
-            reprompt_consent=True,
-            reprompt_select_account=True,
-            storage=None  # Use Flask session storage
-        )
-        app.register_blueprint(google_bp, url_prefix="/login")
-        print("✅ Google OAuth configured and enabled")
+        # Temporarily disabled Google OAuth
+        # google_bp = make_google_blueprint(
+        #     client_id=GOOGLE_CLIENT_ID,
+        #     client_secret=GOOGLE_CLIENT_SECRET,
+        #     scope=[
+        #         "openid",
+        #         "https://www.googleapis.com/auth/userinfo.email",
+        #         "https://www.googleapis.com/auth/userinfo.profile"
+        #     ],
+        #     redirect_url="http://localhost:8000/login/google/authorized",
+        #     reprompt_consent=True,
+        #     reprompt_select_account=True,
+        #     storage=None  # Use Flask session storage
+        # )
+        # app.register_blueprint(google_bp, url_prefix="/login")
+        print("⚠️  Google OAuth temporarily disabled")
     else:
-        print("⚠️  WARNING: Google OAuth credentials not configured!")
-        print("Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET environment variables")
-        print("or update the values in main.py")
-        print("Google login will not work until credentials are configured.")
-        print("Users can still register and login with email/password.")
+        print("⚠️  Google OAuth not available - flask_dance not installed")
+        print("Google login will not work. Users can still register and login with email/password.")
 else:
     print("⚠️  WARNING: Google OAuth credentials not configured!")
     print("Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET environment variables")
@@ -143,70 +166,8 @@ else:
     print("Users can still register and login with email/password.")
 
 # Signal handler for successful Google OAuth login
-if GOOGLE_OAUTH_AVAILABLE and 'google_bp' in locals():
-    @oauth_authorized.connect_via(google_bp)
-    def google_logged_in(blueprint, token):
-        if not token:
-            flash("Failed to log in with Google.", "danger")
-            return redirect(url_for('login'))
-
-        try:
-            resp = blueprint.session.get("/oauth2/v2/userinfo")
-            if not resp.ok:
-                msg = "Failed to fetch user info from Google."
-                flash(msg, "danger")
-                return redirect(url_for('login'))
-
-            user_info = resp.json()
-            email = user_info["email"]
-
-            users_data = get_collection_data('users', 'email')  # Get as dict keyed by email
-            
-            # Handle case where users_data might be a list or dict
-            if isinstance(users_data, list):
-                # Convert list to dict keyed by email
-                users_data = {user.get('email'): user for user in users_data if user.get('email')}
-            
-            user = users_data.get(email) if isinstance(users_data, dict) else None
-
-            # Auto-create user if not present
-            if not user:
-                user = {
-                    "name": user_info.get("name", email.split('@')[0]),
-                    "email": email,
-                    "role": "student",
-                    "interests": [],
-                    "profile_pic": user_info.get("picture", ""),
-                    "grade": None,
-                    "interested_subjects": []
-                }
-                if isinstance(users_data, dict):
-                    users_data[email] = user
-                    set_collection_data('users', users_data, 'email')
-                flash("Welcome! Your account has been created.", "success")
-
-            # Set session data
-            session['user_email'] = email
-            session['user_role'] = user['role']
-            session['user_name'] = user['name']
-            session.permanent = True
-
-            flash(f'Successfully logged in as {user["name"]}!', 'success')
-
-            # Redirect to the correct dashboard
-            if user['role'] == 'admin':
-                return redirect(url_for('admin_dashboard'))
-            elif user['role'] == 'trainer':
-                return redirect(url_for('trainer_dashboard'))
-            else:
-                if user['role'] == 'student' and (not user.get('grade') or not user.get('interested_subjects')):
-                    return redirect(url_for('complete_student_profile'))
-                return redirect(url_for('student_dashboard'))
-
-        except Exception as e:
-            print(f"Error in google_logged_in signal handler: {e}")
-            flash('An unexpected error occurred during Google login.', 'danger')
-            return redirect(url_for('login'))
+# Temporarily disabled
+# if GOOGLE_OAUTH_AVAILABLE and google_bp is not None:
 
 # Home page route
 @app.route('/')
